@@ -1,0 +1,56 @@
+#######################################
+# Syntax Coloring Map For PID Library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+LDS	KEYWORD1
+LDS_YDLidarX4	KEYWORD1
+LDS_LDSRR02	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+start	KEYWORD2
+stop	KEYWORD2
+loop	KEYWORD2
+getSerialBaudRate	KEYWORD2
+isActive	KEYWORD2
+setScanPointCallback	KEYWORD2
+setMotorPinCallback	KEYWORD2
+setPacketCallback	KEYWORD2
+setSerialReadCallback	KEYWORD2
+setSerialWriteCallback	KEYWORD2
+setInfoCallback	KEYWORD2
+setErrorCallback	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+ERROR_TIMEOUT	LITERAL1
+ERROR_INVALID_PACKET	LITERAL1
+ERROR_CRC	LITERAL1
+ERROR_NOT_READY	LITERAL1
+ERROR_NOT_IMPLEMENTED	LITERAL1
+ERROR_NOT_CONFIGURED	LITERAL1
+ERROR_MOTOR_DISABLED	LITERAL1
+ERROR_INVALID_MODEL	LITERAL1
+ERROR_DEVICE_INFO	LITERAL1
+ERROR_DEVICE_HEALTH	LITERAL1
+ERROR_START_SCAN	LITERAL1
+ERROR_INVALID_VALUE	LITERAL1
+ERROR_UNKNOWN	LITERAL1
+DEFAULT_VALUE	LITERAL1
+LDS_EN	LITERAL1
+LDS_MOTOR_PWM	LITERAL1
+INFO_MODEL	LITERAL1
+INFO_FIRMWARE_VERSION	LITERAL1
+INFO_HARDWARE_VERSION	LITERAL1
+INFO_SERIAL_NUMBER	LITERAL1
+INFO_DEVICE_HEALTH	LITERAL1
+INFO_SAMPLING_RATE	LITERAL1
+INFO_TARGET_SCAN_FREQ_HZ	LITERAL1
