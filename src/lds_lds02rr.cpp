@@ -46,11 +46,11 @@ LDS::result_t LDS_LDSRR02::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
 
 LDS::result_t LDS_LDSRR02::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   scanFreqPID.SetSampleTime(sample_period_ms);
-  return LDS::OK;
+  return LDS::LDS::RESULT_OK;
 }
 
 void LDS_LDSRR02::loop() {
-  LDS::result_t result = LDS::OK;
+  LDS::result_t result = LDS::LDS::RESULT_OK;
   
   while (true) {
     int c = readSerial();
@@ -90,7 +90,7 @@ void LDS_LDSRR02::clearVars() {
   for (ixPacket = 0; ixPacket < PACKET_LENGTH; ixPacket++)  // clear out this packet
     Packet[ixPacket] = 0;
   ixPacket = 0;
-  eState = eState_Find_COMMAND; // This packet is done -- look for next COMMAND byte
+  eState = eState_Find_COMMAND; // This packet is done -- loLDS::RESULT_OK for next COMMAND byte
 }
 
 bool LDS_LDSRR02::isValidPacket() {
@@ -163,7 +163,7 @@ byte LDS_LDSRR02::processDistance(int iQuad) {
     return dataM & BAD_DATA_MASK;        // ...then return non-zero
   dataL = Packet[iOffset];               // LSB of distance data
   aryDist[iQuad] = dataL | ((dataM & 0x3F) << 8);
-  return 0;                              // okay
+  return 0;                              // LDS::RESULT_OKay
 }
 
 void LDS_LDSRR02::processSpeed() {
@@ -189,7 +189,7 @@ LDS::result_t LDS_LDSRR02::processByte(int inByte) {
   // Switch, based on 'eState':
   // State 1: We're scanning for 0xFA (COMMAND) in the input stream
   // State 2: Build a complete data packet
-  LDS::result_t result = LDS::OK;
+  LDS::result_t result = LDS::LDS::RESULT_OK;
   if (eState == eState_Find_COMMAND) {      // flush input until we get COMMAND byte
     if (inByte == COMMAND) {
       eState++;                                 // switch to 'build a packet' state
@@ -242,14 +242,14 @@ LDS::result_t LDS_LDSRR02::setScanTargetFreqHz(float freq) {
   float rpm = freq * 60.0f;
   if (rpm <= 0) {
     scan_rpm_setpoint = DEFAULT_SCAN_RPM;
-    return LDS::OK;
+    return LDS::LDS::RESULT_OK;
   }
   
   if (rpm <= DEFAULT_SCAN_RPM*0.9f || rpm >= DEFAULT_SCAN_RPM*1.1f)
     return ERROR_INVALID_VALUE;
 
   scan_rpm_setpoint = rpm;
-  return LDS::OK;
+  return LDS::LDS::RESULT_OK;
 }
 
 float LDS_LDSRR02::getTargetScanFreqHz() {

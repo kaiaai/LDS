@@ -28,7 +28,7 @@ LDS::result_t LDS_YDLidarX4::start() {
   enableMotor(false);
 
   device_info deviceinfo;
-  if (getDeviceInfo(deviceinfo, 100) != LDS::OK)
+  if (getDeviceInfo(deviceinfo, 100) != LDS::RESULT_OK)
     return ERROR_DEVICE_INFO;
 
   String model = "YDLIDAR ";
@@ -80,17 +80,17 @@ LDS::result_t LDS_YDLidarX4::start() {
   delay(100);
 
   device_health healthinfo;
-  if (getHealth(healthinfo, 100) != LDS::OK)    
+  if (getHealth(healthinfo, 100) != LDS::RESULT_OK)    
     return ERROR_DEVICE_HEALTH;
   postInfo(INFO_DEVICE_HEALTH, healthinfo.status == 0 ? "OK" : "bad");
 
   // Start
-  if (startScan() != LDS::OK)
+  if (startScan() != LDS::RESULT_OK)
     return ERROR_START_SCAN;
   enableMotor(true);
   delay(1000);
 
-  return LDS::OK;
+  return LDS::RESULT_OK;
 }
 
 uint32_t LDS_YDLidarX4::getSerialBaudRate() {
@@ -389,7 +389,7 @@ state2:
     }
   }
   state = 0;
-  return LDS::OK;
+  return LDS::RESULT_OK;
 }
 
 void LDS_YDLidarX4::loop() {
@@ -429,7 +429,7 @@ LDS::result_t LDS_YDLidarX4::sendCommand(uint8_t cmd, const void * payload, size
     writeSerial((const uint8_t *)payload, sizebyte);
     writeSerial(&checksum, 1);
   }
-  return LDS::OK;
+  return LDS::RESULT_OK;
 }
 
 LDS::result_t LDS_YDLidarX4::getDeviceInfo(device_info & info, uint32_t timeout) {
@@ -441,10 +441,10 @@ LDS::result_t LDS_YDLidarX4::getDeviceInfo(device_info & info, uint32_t timeout)
   lidar_ans_header response_header;
 
   ans = sendCommand(LIDAR_CMD_GET_DEVICE_INFO, NULL, 0);
-  if (ans != LDS::OK)
+  if (ans != LDS::RESULT_OK)
     return ans;
 
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::OK)
+  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
     return ans;
 
   if (response_header.type != LIDAR_ANS_TYPE_DEVINFO)
@@ -460,7 +460,7 @@ LDS::result_t LDS_YDLidarX4::getDeviceInfo(device_info & info, uint32_t timeout)
     infobuf[recvPos++] = currentbyte;
 
     if (recvPos == sizeof(device_info))
-      return LDS::OK;
+      return LDS::RESULT_OK;
   }
 
   return ERROR_TIMEOUT;
@@ -493,7 +493,7 @@ LDS::result_t LDS_YDLidarX4::waitResponseHeader(lidar_ans_header * header, uint3
     headerBuffer[recvPos++] = currentbyte;
 
     if (recvPos == sizeof(lidar_ans_header))
-      return LDS::OK;
+      return LDS::RESULT_OK;
   }
   return ERROR_TIMEOUT;
 }
@@ -508,10 +508,10 @@ LDS::result_t LDS_YDLidarX4::getHealth(device_health & health, uint32_t timeout)
   lidar_ans_header response_header;
 
   ans = sendCommand(LIDAR_CMD_GET_DEVICE_HEALTH, NULL, 0);
-  if (ans != LDS::OK)
+  if (ans != LDS::RESULT_OK)
     return ans;
 
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::OK)
+  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
     return ans;
 
   if (response_header.type != LIDAR_ANS_TYPE_DEVHEALTH)
@@ -528,7 +528,7 @@ LDS::result_t LDS_YDLidarX4::getHealth(device_health & health, uint32_t timeout)
     infobuf[recvPos++] = currentbyte;
 
     if (recvPos == sizeof(device_health))
-      return LDS::OK;
+      return LDS::RESULT_OK;
   }
   return ERROR_TIMEOUT;
 }
@@ -539,11 +539,11 @@ LDS::result_t LDS_YDLidarX4::startScan(bool force, uint32_t timeout ) {
 
   abort(); //force the previous operation to stop
 
-  if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : LIDAR_CMD_SCAN, NULL, 0)) != LDS::OK)
+  if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : LIDAR_CMD_SCAN, NULL, 0)) != LDS::RESULT_OK)
     return ans;
 
   lidar_ans_header response_header;
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::OK)
+  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
     return ans;
 
   if (response_header.type != LIDAR_ANS_TYPE_MEASUREMENT)
@@ -552,5 +552,5 @@ LDS::result_t LDS_YDLidarX4::startScan(bool force, uint32_t timeout ) {
   if (response_header.size < sizeof(node_info))
     return ERROR_INVALID_PACKET;
 
-  return LDS::OK;
+  return LDS::RESULT_OK;
 }

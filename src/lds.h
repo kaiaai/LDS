@@ -18,16 +18,13 @@
 // Interface to be implemented
 class LDS {
   public:
-    //typedef int8_t result_t;
-    //typedef int8_t info_t;
-
     enum lds_pin_t {
       LDS_MOTOR_EN_PIN,
       LDS_MOTOR_PWM_PIN,
     };
 
     enum result_t {
-      OK = 0,
+      RESULT_OK = 0,
       ERROR_TIMEOUT,
       ERROR_INVALID_PACKET,
       ERROR_CRC,
@@ -63,7 +60,7 @@ class LDS {
     typedef void (*ErrorCallback)(result_t, String);
 
     static const int8_t DEFAULT_VALUE = -1;
-    enum lds_pin_state {
+    enum lds_pin_state_t {
       VALUE_PWM = 0,
       VALUE_LOW = -1,
       VALUE_HIGH = -2,
