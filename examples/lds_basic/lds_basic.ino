@@ -1,13 +1,26 @@
-/********************************************************
- * PID Basic Example
- * Reading analog input 0 to control analog PWM output 3
- ********************************************************/
+// Copyright 2023-2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 #include <lds_ydlidar_x4.h>
 #include <lds_util.h>
 
-#define LDS_EN_PIN 19 // ESP32 Dev Kit LDS enable pin
+#define LDS_MOTOR_EN_PIN 19 // ESP32 Dev Kit LDS enable pin
 #define LDS_MOTOR_PWM_PIN 15 // LDS motor speed control using PWM
+#define LDS_MOTOR_PWM_FREQ    10000
+#define LDS_MOTOR_PWM_BITS    11
+#define LDS_MOTOR_PWM_CHANNEL    2 // ESP32 PWM channel for LDS motor speed control
+
 HardwareSerial LdSerial(2); // TX 17, RX 16
 LDS_YDLidarX4 lds;
 
@@ -74,14 +87,27 @@ void lds_error_callback(LDS::result_t code, String aux_info) {
   Serial.println(aux_info);
 }
 
-void lds_motor_pin_callback(float value, uint8_t pin) {
-  if (pin == LDS::LDS_EN) {
-    bool en = (value > 0);
-    digitalWrite(LDS_EN_PIN, en);
-    Serial.print(F("LDS "));
-    Serial.println(en ? F("enabled") : F("disabled"));
+void lds_motor_pin_callback(float value, LDS::lds_pin lds_pin) {
+  int pin = (lds_pin == LDS::LDS_MOTOR_EN) ? LDS_MOTOR_EN_PIN : LDS_MOTOR_PWM_PIN;
+
+  if (value <= LDS::INPUT) {
+    // Configure pin direction
+    if (value == LDS::OUTPUT_PWM) {
+      ledcSetup(LDS_MOTOR_PWM_CHANNEL, LDS_MOTOR_PWM_FREQ, LDS_MOTOR_PWM_BITS);
+      ledcAttachPin(pin, LDS_MOTOR_PWM_CHANNEL);
+    } else
+      pinMode(pin, (value == LDS::INPUT) ? INPUT : OUTPUT);
+    return;
+  }
+
+  if (value < LDS::PWM) // set constant output
+    digitalWrite(pin, (value == LDS::HIGH) ? HIGH : LOW);
+  else { // set PWM duty cycle
+    int pwm_value = ((1<<LDS_MOTOR_PWM_BITS)-1)*value;
+    ledcWrite(LDS_MOTOR_PWM_CHANNEL, pwm_value);
   }
 }
+
 
 void loop() {
   lds.loop();

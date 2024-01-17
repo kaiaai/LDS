@@ -63,7 +63,7 @@ void LDS::postPacket(uint8_t* data, uint16_t length, bool scan_completed) {
     packet_callback(data, length, scan_completed);
 }
 
-void LDS::setMotorPin(float value, uint8_t pin) {
+void LDS::setMotorPin(float value, lds_pin_t pin) {
   if (motor_pin_callback)
     motor_pin_callback(value, pin);
 }

@@ -68,7 +68,7 @@ void LDS_LDSRR02::loop() {
   scanFreqPID.Compute();
 
   if (pwm_val != pwm_last) {
-    setMotorPin(pwm_val, uint8_t(LDS_MOTOR_PWM));
+    setMotorPin(pwm_val, LDS_MOTOR_PWM_PIN);
     pwm_last = pwm_val;
   }
 }
@@ -125,7 +125,14 @@ bool LDS_LDSRR02::isValidPacket() {
 
 void LDS_LDSRR02::enableMotor(bool enable) {
   motor_enabled = enable;
-  setMotorPin(enable ? pwm_val : 0, uint8_t(LDS_MOTOR_PWM));  
+
+  if (enable) {
+    setMotorPin(DIR_OUTPUT_PWM, LDS_MOTOR_PWM_PIN);
+    setMotorPin(enable ? pwm_val : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  } else {
+    setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  }
 }
 
 // TODO uint8 iQuad?

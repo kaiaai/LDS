@@ -1,8 +1,3 @@
-// Based on
-//   Copyright 2015 - 2018 EAI TEAM http://www.eaibot.com
-//   https://github.com/EAIBOT/ydlidar_arduino works
-//   https://github.com/YDLIDAR/ydlidar_arduino broken
-//
 // Copyright 2023-2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +11,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// Based on
+//   Copyright 2015 - 2018 EAI TEAM http://www.eaibot.com
+//   https://github.com/EAIBOT/ydlidar_arduino
 
 #pragma once
 #include "lds.h"
@@ -47,19 +46,6 @@ class LDS_YDLidarX4 : public LDS {
     static const uint32_t DEFAULT_TIMEOUT_MS = 500;
     static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 0x80;
 
-    enum result {
-      RESULT_OK = 0,
-      RESULT_TIMEOUT = -1,
-      RESULT_FAIL = -2,
-      RESULT_CRC_ERROR = -3,
-      RESULT_NOT_READY = -4,
-    };
-
-    enum pin {
-      LDS_EN = 0,
-      LDS_MOTOR_PWM = 1,
-    };
-
     typedef enum {
       CT_NORMAL = 0,
       CT_RING_START  = 1,
@@ -83,18 +69,6 @@ class LDS_YDLidarX4 : public LDS {
       uint8_t   status;
       uint16_t  error_code;
     } __attribute__((packed))  ;
-    
-    //struct sampling_rate {
-    //  uint8_t rate;
-    //} __attribute__((packed))  ;
-    
-    //struct scan_frequency {
-    //  uint32_t frequency;
-    //} __attribute__((packed))  ;
-    
-    //struct scan_rotation {
-    //  uint8_t rotation;
-    //} __attribute__((packed))  ;
     
     struct cmd_packet {
       uint8_t syncByte;
@@ -130,6 +104,7 @@ class LDS_YDLidarX4 : public LDS {
     LDS::result_t waitScanDot(); // wait for one sample package to arrive
     LDS::result_t sendCommand(uint8_t cmd, const void * payload = NULL, size_t payloadsize = 0);
     LDS::result_t waitResponseHeader(lidar_ans_header * header, uint32_t timeout = DEFAULT_TIMEOUT_MS);
+    void setupPins();
 
   protected:
     static const uint8_t LIDAR_CMD_STOP = 0x65;

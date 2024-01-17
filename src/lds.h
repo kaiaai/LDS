@@ -18,18 +18,15 @@
 // Interface to be implemented
 class LDS {
   public:
-    typedef int8_t result_t;
-    typedef int8_t info_t;
+    //typedef int8_t result_t;
+    //typedef int8_t info_t;
 
-    typedef void (*ScanPointCallback)(float, float);
-    typedef void (*PacketCallback)(uint8_t*, uint16_t, bool);
-    typedef void (*MotorPinCallback)(float, uint8_t);
-    typedef size_t (*SerialWriteCallback)(const uint8_t *, size_t);
-    typedef int (*SerialReadCallback)(void);
-    typedef void (*InfoCallback)(info_t, String);
-    typedef void (*ErrorCallback)(result_t, String);
+    enum lds_pin_t {
+      LDS_MOTOR_EN_PIN,
+      LDS_MOTOR_PWM_PIN,
+    };
 
-    enum result_enum {
+    enum result_t {
       OK = 0,
       ERROR_TIMEOUT,
       ERROR_INVALID_PACKET,
@@ -45,12 +42,8 @@ class LDS {
       ERROR_INVALID_VALUE,
       ERROR_UNKNOWN,
     };
-    static const int8_t DEFAULT_VALUE = -1;
-    enum lds_pins {
-      LDS_EN,
-      LDS_MOTOR_PWM,
-    };
-    enum info_enum {
+
+    enum info_t {
       INFO_MODEL,
       INFO_FIRMWARE_VERSION,
       INFO_HARDWARE_VERSION,
@@ -61,6 +54,23 @@ class LDS {
       INFO_OTHER,
     };
 
+    typedef void (*ScanPointCallback)(float, float);
+    typedef void (*PacketCallback)(uint8_t*, uint16_t, bool);
+    typedef void (*MotorPinCallback)(float, lds_pin_t);
+    typedef size_t (*SerialWriteCallback)(const uint8_t *, size_t);
+    typedef int (*SerialReadCallback)(void);
+    typedef void (*InfoCallback)(info_t, String);
+    typedef void (*ErrorCallback)(result_t, String);
+
+    static const int8_t DEFAULT_VALUE = -1;
+    enum lds_pin_state {
+      VALUE_PWM = 0,
+      VALUE_LOW = -1,
+      VALUE_HIGH = -2,
+      DIR_INPUT = -3,
+      DIR_OUTPUT_CONST = -4,
+      DIR_OUTPUT_PWM = -5,
+    };
   public:
     LDS();
     result_t start(); // Initialize and start; call from Arduino setup()
@@ -90,7 +100,7 @@ class LDS {
     
   protected:
     void postScanPoint(float angle_deg, float dist_mm);
-    void setMotorPin(float value, uint8_t pin);
+    void setMotorPin(float value, lds_pin_t pin);
     void postPacket(uint8_t* data, uint16_t length, bool scan_completed);
     int readSerial();
     size_t writeSerial(const uint8_t * buffer, size_t length);
