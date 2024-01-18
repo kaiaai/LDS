@@ -48,7 +48,7 @@ class LDS_YDLidarX4 : public LDS {
 
     typedef enum {
       CT_NORMAL = 0,
-      CT_RING_START  = 1,
+      CT_RING_START = 1,
       CT_TAIL,
     } CT;
     
@@ -149,5 +149,5 @@ class LDS_YDLidarX4 : public LDS {
     static const uint8_t NODE_SYNC = 1;
     static const uint8_t NODE_NOT_SYNC = 2;
     static const uint8_t PACKAGE_PAID_BYTES = 10;
-    static const uint16_t PH = 0x55AA;
+    static const uint16_t PH = 0x55AA; // Packet Header
 };

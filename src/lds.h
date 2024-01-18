@@ -51,8 +51,15 @@ class LDS {
       INFO_OTHER,
     };
 
+    enum packet_pos_t {
+      UNKNOWN_POS = 0,
+      START_POS = 1,
+      END_POS = 2,
+      MID_POS = 3,
+    };
+
     typedef void (*ScanPointCallback)(float, float);
-    typedef void (*PacketCallback)(uint8_t*, uint16_t, bool);
+    typedef void (*PacketCallback)(uint8_t*, uint16_t, packet_pos_t);
     typedef void (*MotorPinCallback)(float, lds_pin_t);
     typedef size_t (*SerialWriteCallback)(const uint8_t *, size_t);
     typedef int (*SerialReadCallback)(void);
@@ -98,7 +105,7 @@ class LDS {
   protected:
     void postScanPoint(float angle_deg, float dist_mm);
     void setMotorPin(float value, lds_pin_t pin);
-    void postPacket(uint8_t* data, uint16_t length, bool scan_completed);
+    void postPacket(uint8_t* data, uint16_t length, packet_pos_t packet_position);
     int readSerial();
     size_t writeSerial(const uint8_t * buffer, size_t length);
     void postInfo(info_t code, String info);

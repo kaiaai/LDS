@@ -182,7 +182,7 @@ LDS::result_t LDS_YDLidarX4::waitScanDot() {
     // Read in, parse the packet header: first PACKAGE_PAID_BYTES=10 bytes
     package_Sample_Num = 0;
     package_recvPos = 0;
-    recvPos = 0;
+    recvPos = 0; // Packet start
 
     while (true) {
 state1:
@@ -190,82 +190,83 @@ state1:
       if (currentByte<0) {
         state = 1;
         return ERROR_NOT_READY;
-      } else {
-        uint8_t charBuf = (uint8_t)currentByte;
-        postPacket(&charBuf, 1, false); // TODO signal end-of-scan
       }
+      // else {
+      //  uint8_t charBuf = (uint8_t)currentByte;
+      //  postPacket(&charBuf, 1, false); // TODO signal end-of-scan
+      //}
 
       switch (recvPos) {
-      case 0:
-        if (currentByte!=(PH&0xFF))
-          continue;
-        break;
-      case 1:
-        CheckSumCal = PH;
-        if (currentByte!=(PH>>8)) {
-          recvPos = 0;
-          continue;
-        }
-        break;
-      case 2:
-        SampleNumlAndCTCal = currentByte;
-        if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)){ 
-          recvPos = 0;
-          continue;
-        }
-        break;
-      case 3:
-        SampleNumlAndCTCal += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
-        package_Sample_Num = currentByte;
-        break;
-      case 4:
-        if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
-          FirstSampleAngle = currentByte;
-        } else {
-          recvPos = 0;
-          continue;
-        }
-        break;
-      case 5:
-        FirstSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
-        CheckSumCal ^= FirstSampleAngle;
-        FirstSampleAngle = FirstSampleAngle>>1;
-        break;
-      case 6:
-        if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
-          LastSampleAngle = currentByte;
-        } else {
-          recvPos = 0;
-          continue;
-        }
-        break;
-      case 7:
-        LastSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
-        LastSampleAngleCal = LastSampleAngle;
-        LastSampleAngle = LastSampleAngle>>1;
-        if (package_Sample_Num == 1) {
-          IntervalSampleAngle = 0;
-        } else {
-          if (LastSampleAngle < FirstSampleAngle) {
-            if ((FirstSampleAngle > 17280) && (LastSampleAngle < 5760)) {
-              IntervalSampleAngle = ((float)(23040 + LastSampleAngle
-                - FirstSampleAngle))/(package_Sample_Num-1);
-              IntervalSampleAngle_LastPackage = IntervalSampleAngle;
-            } else {
-              IntervalSampleAngle = IntervalSampleAngle_LastPackage;
-            }
-          } else {
-            IntervalSampleAngle = ((float)(LastSampleAngle -FirstSampleAngle))/(package_Sample_Num-1);
-            IntervalSampleAngle_LastPackage = IntervalSampleAngle;
+        case 0: // 0xAA 1st byte of package header
+          if (currentByte != (PH&0xFF))
+            continue;
+          break;
+        case 1: // 0x55 2nd byte of package header
+          CheckSumCal = PH;
+          if (currentByte != (PH>>8)) {
+            recvPos = 0;
+            continue;
           }
-        }
-        break;
-      case 8:
-        CheckSum = currentByte; 
-        break;
-      case 9:
-        CheckSum += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
-        break;
+          break;
+        case 2:
+          SampleNumlAndCTCal = currentByte;
+          if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
+            recvPos = 0;
+            continue;
+          }
+          break;
+        case 3:
+          SampleNumlAndCTCal += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          package_Sample_Num = currentByte;
+          break;
+        case 4:
+          if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
+            FirstSampleAngle = currentByte;
+          } else {
+            recvPos = 0;
+            continue;
+          }
+          break;
+        case 5:
+          FirstSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          CheckSumCal ^= FirstSampleAngle;
+          FirstSampleAngle = FirstSampleAngle>>1;
+          break;
+        case 6:
+          if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
+            LastSampleAngle = currentByte;
+          } else {
+            recvPos = 0;
+            continue;
+          }
+          break;
+        case 7:
+          LastSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          LastSampleAngleCal = LastSampleAngle;
+          LastSampleAngle = LastSampleAngle>>1;
+          if (package_Sample_Num == 1) {
+            IntervalSampleAngle = 0;
+          } else {
+            if (LastSampleAngle < FirstSampleAngle) {
+              if ((FirstSampleAngle > 17280) && (LastSampleAngle < 5760)) {
+                IntervalSampleAngle = ((float)(23040 + LastSampleAngle
+                  - FirstSampleAngle))/(package_Sample_Num-1);
+                IntervalSampleAngle_LastPackage = IntervalSampleAngle;
+              } else {
+                IntervalSampleAngle = IntervalSampleAngle_LastPackage;
+              }
+            } else {
+              IntervalSampleAngle = ((float)(LastSampleAngle -FirstSampleAngle))/(package_Sample_Num-1);
+              IntervalSampleAngle_LastPackage = IntervalSampleAngle;
+            }
+          }
+          break;
+        case 8:
+          CheckSum = currentByte; 
+          break;
+        case 9:
+          CheckSum += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          break;
       }     
       packageBuffer[recvPos++] = currentByte;
 
@@ -275,30 +276,31 @@ state1:
       }
     }
 
-    // Read in the rest of the packet, i.e. samples
     if (PACKAGE_PAID_BYTES == recvPos) {
-      //startTs = millis();
+      // Packet header looks valid size-wise
       recvPos = 0;
-      package_sample_sum = package_Sample_Num<<1;
+      package_sample_sum = package_Sample_Num<<1; // 2 bytes per sample
 
+      // Read in the rest of the packet, i.e. samples
       while (true) {
 state2:
         currentByte = readSerial();
         if (currentByte < 0){
           state = 2;
           return ERROR_NOT_READY;
-        } else {
-          uint8_t charBuf = (uint8_t)currentByte;
-          postPacket(&charBuf, 1, false); // TODO signal end-of-scan
         }
-        if ((recvPos &1) == 1) {
+        // else {
+        //  uint8_t charBuf = (uint8_t)currentByte;
+        //  postPacket(&charBuf, 1, false); // TODO signal end-of-scan
+        //}
+        if ((recvPos & 1) == 1) {
           Valu8Tou16 += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
           CheckSumCal ^= Valu8Tou16;
         } else {
           Valu8Tou16 = currentByte; 
         }
                     
-        packageBuffer[package_recvPos+recvPos] =currentByte;          
+        packageBuffer[package_recvPos+recvPos] = currentByte;          
         recvPos++;
         if (package_sample_sum == recvPos) {
           package_recvPos += recvPos;
@@ -324,6 +326,24 @@ state2:
     }
   }
 
+  if (CheckSumResult) {
+    // Packet seems valid
+    packet_pos_t packet_position = UNKNOWN_POS;
+    switch (package.package_CT) {
+      case CT_NORMAL:
+        packet_position = MID_POS;
+        break;
+      case CT_RING_START:
+        packet_position = START_POS;
+        break;
+      case CT_TAIL:
+        packet_position = END_POS;
+        break;
+    }
+    postPacket(packageBuffer, recvPos, packet_position);
+  }
+
+  // Process the buffered packet
   while(true) {
     uint8_t package_CT;
     node_info node;
@@ -364,6 +384,7 @@ state2:
         } 
       }
     } else {
+      // Invalid checksum
       node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
       node.angle_q6_checkbit = LIDAR_RESP_MEASUREMENT_CHECKBIT;
       node.distance_q2 = 0;
@@ -376,7 +397,7 @@ state2:
     float point_distance_mm = node.distance_q2*0.25f;
     float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f;
     // uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
-    //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
+    bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
     postScanPoint(point_angle, point_distance_mm);
 

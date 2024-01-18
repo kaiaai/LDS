@@ -58,9 +58,9 @@ void LDS::postScanPoint(float angle_deg, float dist_mm) {
     scan_point_callback(angle_deg, dist_mm);
 }
 
-void LDS::postPacket(uint8_t* data, uint16_t length, bool scan_completed) {
+void LDS::postPacket(uint8_t* data, uint16_t length, packet_pos_t packet_position) {
   if (packet_callback)
-    packet_callback(data, length, scan_completed);
+    packet_callback(data, length, packet_position);
 }
 
 void LDS::setMotorPin(float value, lds_pin_t pin) {
