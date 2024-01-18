@@ -44,7 +44,7 @@ class LDS_YDLidarX4 : public LDS {
 
   protected:
     static const uint32_t DEFAULT_TIMEOUT_MS = 500;
-    static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 0x80; //35
+    static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 40; // 0x80
 
     typedef enum {
       CT_NORMAL = 0,
@@ -108,9 +108,9 @@ class LDS_YDLidarX4 : public LDS {
 
   protected:
     // Scan start packet: 2 bytes
-    // Samples: 16 packets, up to 80B each total
-    //   10 bytes header + 35*2=70 bytes samples
-    // At 7Hz max total 1,282 bytes per scan
+    // Samples: 16 packets, up to 90B each total
+    //   10 bytes header + 40*2=70 bytes samples
+    // At 7Hz max total 1,442 bytes per scan
     static const uint8_t LIDAR_CMD_STOP = 0x65;
     static const uint8_t LIDAR_CMD_SCAN = 0x60;
     static const uint8_t LIDAR_CMD_FORCE_SCAN = 0x61;
