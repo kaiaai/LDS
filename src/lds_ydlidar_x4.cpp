@@ -28,7 +28,7 @@ LDS::result_t LDS_YDLidarX4::start() {
   enableMotor(false);
 
   device_info deviceinfo;
-  if (getDeviceInfo(deviceinfo, 100) != LDS::RESULT_OK)
+  if (getDeviceInfo(deviceinfo, 500) != LDS::RESULT_OK)
     return ERROR_DEVICE_INFO;
 
   String model = "YDLIDAR ";
