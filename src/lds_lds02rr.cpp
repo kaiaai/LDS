@@ -262,6 +262,7 @@ void LDS_LDSRR02::stop() {
 
 LDS::result_t LDS_LDSRR02::start() {
   enableMotor(true);
+  postInfo(INFO_MODEL, "LDS02RR");
   postInfo(INFO_SAMPLING_RATE, String(getSamplingRateHz()));
   postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(DEFAULT_SCAN_RPM/60.0f));
   return LDS::RESULT_OK;

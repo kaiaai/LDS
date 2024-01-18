@@ -105,7 +105,6 @@ float LDS_YDLidarX4::getTargetScanFreqHz() {
   return target_scan_freq;
 }
 
-
 int LDS_YDLidarX4::getSamplingRateHz() {
   return sampling_rate;
 }
@@ -133,7 +132,6 @@ bool LDS_YDLidarX4::isActive() {
 LDS::result_t LDS_YDLidarX4::setScanTargetFreqHz(float freq) {
   return ERROR_NOT_IMPLEMENTED;
 }
-
 
 LDS::result_t LDS_YDLidarX4::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   return ERROR_NOT_IMPLEMENTED;
