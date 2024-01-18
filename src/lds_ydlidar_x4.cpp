@@ -175,26 +175,23 @@ LDS::result_t LDS_YDLidarX4::waitScanDot() {
       goto state2;
   }
 
-  // Read in a packet; a packet contains up to 40 samples
-  // Each packet has a Start and End (absolute) angles
   if (package_Sample_Index == 0) {
     
-    // Read in, parse the packet header: first PACKAGE_PAID_BYTES=10 bytes
     package_Sample_Num = 0;
     package_recvPos = 0;
     recvPos = 0; // Packet start
 
+    // Read in 10-byte packet header
     while (true) {
 state1:
       currentByte = readSerial();
       if (currentByte<0) {
         state = 1;
         return ERROR_NOT_READY;
+      } else {
+        //uint8_t charBuf = (uint8_t)currentByte;
+        //postPacket(&charBuf, 1, false);
       }
-      // else {
-      //  uint8_t charBuf = (uint8_t)currentByte;
-      //  postPacket(&charBuf, 1, false); // TODO signal end-of-scan
-      //}
 
       switch (recvPos) {
         case 0: // 0xAA 1st byte of package header
@@ -270,29 +267,32 @@ state1:
       }     
       packageBuffer[recvPos++] = currentByte;
 
-      if (recvPos  == PACKAGE_PAID_BYTES ){
+      if (recvPos == PACKAGE_PAID_BYTES ) {
         package_recvPos = recvPos;
         break;
       }
     }
 
+    // Check buffer overflow
+    if (package_Sample_Num > PACKAGE_SAMPLE_MAX_LENGTH)
+      return ERROR_INVALID_PACKET;
+
     if (PACKAGE_PAID_BYTES == recvPos) {
       // Packet header looks valid size-wise
       recvPos = 0;
-      package_sample_sum = package_Sample_Num<<1; // 2 bytes per sample
+      package_sample_sum = package_Sample_Num<<1;
 
-      // Read in the rest of the packet, i.e. samples
+      // Read in samples, 2 bytes each
       while (true) {
 state2:
         currentByte = readSerial();
         if (currentByte < 0){
           state = 2;
           return ERROR_NOT_READY;
+        } else {
+          //uint8_t charBuf = (uint8_t)currentByte;
+          //postPacket(&charBuf, 1, false);
         }
-        // else {
-        //  uint8_t charBuf = (uint8_t)currentByte;
-        //  postPacket(&charBuf, 1, false); // TODO signal end-of-scan
-        //}
         if ((recvPos & 1) == 1) {
           Valu8Tou16 += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
           CheckSumCal ^= Valu8Tou16;
@@ -313,6 +313,7 @@ state2:
         return ERROR_INVALID_PACKET;
       }
     } else {
+      // Packet length is off
       state = 0;
       return ERROR_INVALID_PACKET;
     }
@@ -326,10 +327,9 @@ state2:
     }
   }
 
-  if (CheckSumResult) {
-    // Packet seems valid
-    postPacket(packageBuffer, recvPos, package.package_CT == CT_RING_START);
-  }
+  if (CheckSumResult)
+    postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum,
+      package.package_CT == CT_RING_START);
 
   // Process the buffered packet
   while(true) {
