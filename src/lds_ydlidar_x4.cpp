@@ -328,19 +328,7 @@ state2:
 
   if (CheckSumResult) {
     // Packet seems valid
-    packet_pos_t packet_position = UNKNOWN_POS;
-    switch (package.package_CT) {
-      case CT_NORMAL:
-        packet_position = MID_POS;
-        break;
-      case CT_RING_START:
-        packet_position = START_POS;
-        break;
-      case CT_TAIL:
-        packet_position = END_POS;
-        break;
-    }
-    postPacket(packageBuffer, recvPos, packet_position);
+    postPacket(packageBuffer, recvPos, package.package_CT == CT_RING_START);
   }
 
   // Process the buffered packet

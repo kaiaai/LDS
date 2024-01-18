@@ -207,7 +207,7 @@ LDS::result_t LDS_LDSRR02::processByte(int inByte) {
         // get the starting angle of this group (of 4), e.g., 0, 4, 8, 12, ...
         uint16_t startingAngle = processIndex();
 
-        postPacket(Packet, PACKET_LENGTH, UNKNOWN_POS); // TODO
+        postPacket(Packet, PACKET_LENGTH, false); // TODO scan_completed
 
         processSpeed();
 

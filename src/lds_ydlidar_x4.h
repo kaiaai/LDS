@@ -107,6 +107,9 @@ class LDS_YDLidarX4 : public LDS {
     void setupPins();
 
   protected:
+    // Scan start packet: 2 bytes
+    // Samples: 16 packets, up to 80B each total
+    //   10B header, 70
     static const uint8_t LIDAR_CMD_STOP = 0x65;
     static const uint8_t LIDAR_CMD_SCAN = 0x60;
     static const uint8_t LIDAR_CMD_FORCE_SCAN = 0x61;
