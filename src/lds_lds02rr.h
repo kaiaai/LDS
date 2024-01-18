@@ -71,6 +71,7 @@ class LDS_LDSRR02 : public LDS {
     bool motor_enabled;        // to spin the laser or not.  No data when not spinning
     int eState;
 
+    // 90 packets * 22 bytes = 1,980 bytes per scan at 5Hz
     static const unsigned char COMMAND = 0xFA;        // Start of new packet
     static const int INDEX_LO = 0xA0;                 // lowest index value
     static const int INDEX_HI = 0xF9;                 // highest index value

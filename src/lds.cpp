@@ -141,3 +141,33 @@ String LDS::resultCodeToString(result_t code) {
       return "Unknown result code";
   }
 }
+
+String LDS::pinIDToString(lds_pin_t pin) {
+  switch (pin) {
+    case LDS_MOTOR_EN_PIN:
+      return "MOTOR_EN_PIN";
+    case LDS_MOTOR_PWM_PIN:
+      return "MOTOR_PWM_PIN";
+    default:
+      return "Unknown pin";
+  }
+}
+
+String LDS::pinStateToString(lds_pin_state_t state) {
+  switch (state) {
+    case VALUE_PWM:
+      return "PWM";
+    case VALUE_LOW:
+      return "LOW";
+    case VALUE_HIGH:
+      return "HIGH";
+    case DIR_INPUT:
+      return "INPUT";
+    case DIR_OUTPUT_CONST:
+      return "OUTPUT CONST";
+    case DIR_OUTPUT_PWM:
+      return "OUTPUT PWM";
+    default:
+      return "Unknown state";
+  }
+}
