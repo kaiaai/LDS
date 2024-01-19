@@ -51,7 +51,7 @@ class LDS {
       INFO_OTHER,
     };
 
-    typedef void (*ScanPointCallback)(float, float);
+    typedef void (*ScanPointCallback)(float, float, float, bool);
     typedef void (*PacketCallback)(uint8_t*, uint16_t, bool);
     typedef void (*MotorPinCallback)(float, lds_pin_t);
     typedef size_t (*SerialWriteCallback)(const uint8_t *, size_t);
@@ -98,7 +98,8 @@ class LDS {
     static String pinStateToString(lds_pin_state_t state);
     
   protected:
-    void postScanPoint(float angle_deg, float dist_mm);
+    void postScanPoint(float angle_deg, float dist_mm, float quality,
+      bool scan_completed);
     void setMotorPin(float value, lds_pin_t pin);
     void postPacket(uint8_t* data, uint16_t length, bool scan_completed);
     int readSerial();

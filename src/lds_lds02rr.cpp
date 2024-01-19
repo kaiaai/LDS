@@ -223,8 +223,8 @@ LDS::result_t LDS_LDSRR02::processByte(int inByte) {
         for (int ix = 0; ix < N_DATA_QUADS; ix++) {
           byte err = aryInvalidDataFlag[ix] & BAD_DATA_MASK;
 
-          if (!err)
-            postScanPoint(startingAngle + ix, aryDist[ix]); // aryQuality[ix], err
+          int angle = startingAngle + ix;
+          postScanPoint(angle, err ? 0 : aryDist[ix], aryQuality[ix], angle == 0);
         }
 
       } else {

@@ -61,15 +61,20 @@ size_t lds_serial_write_callback(const uint8_t * buffer, size_t length) {
   return LdSerial.write(buffer, length);
 }
 
-void lds_scan_point_callback(float angle_deg, float distance_mm) {
+void lds_scan_point_callback(float angle_deg, float distance_mm, float quality,
+  bool scan_completed) {
   static int i=0;
 
-  if (i++ % 20 == 0) {
+  if ((i++ % 20 == 0) || scan_completed) {
     Serial.print(i);
     Serial.print(' ');
     Serial.print(distance_mm);
     Serial.print(' ');
-    Serial.println(angle_deg);
+    Serial.print(angle_deg);
+    if (scan_completed)
+      Serial.println('*');
+    else
+      Serial.println();
   }
 }
 

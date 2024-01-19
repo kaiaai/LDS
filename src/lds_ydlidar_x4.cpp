@@ -382,10 +382,10 @@ state2:
     // Dump out processed data
     float point_distance_mm = node.distance_q2*0.25f;
     float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f;
-    // uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+    uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
     bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
-    postScanPoint(point_angle, point_distance_mm);
+    postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
 
     // Dump finished?
     package_Sample_Index++;

@@ -52,10 +52,11 @@ void LDS::setErrorCallback(ErrorCallback error_callback) {
   this->error_callback = error_callback; 
 }
 
-void LDS::postScanPoint(float angle_deg, float dist_mm) {
+void LDS::postScanPoint(float angle_deg, float dist_mm, float quality,
+  bool scan_completed) {
   // dist_mm <=0 indicates invalid point
   if (scan_point_callback)
-    scan_point_callback(angle_deg, dist_mm);
+    scan_point_callback(angle_deg, dist_mm, quality, scan_completed);
 }
 
 void LDS::postPacket(uint8_t* data, uint16_t length, bool scan_completed) {
