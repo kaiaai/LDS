@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "lds.h"
+#include "LDS.h"
 
 LDS::LDS() {
   scan_point_callback = NULL;

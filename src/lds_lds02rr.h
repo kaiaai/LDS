@@ -17,7 +17,7 @@
 // limitations under the License.
 
 #pragma once
-#include "lds.h"
+#include "LDS.h"
 #include "PID_v1_0_0.h"
 
 class LDS_LDSRR02 : public LDS {

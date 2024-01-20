@@ -17,11 +17,11 @@
 //   https://github.com/EAIBOT/ydlidar_arduino
 
 #pragma once
-#include "lds.h"
+#include "LDS.h"
 
-class LDS_YDLidarX4 : public LDS {
+class LDS_YDLIDAR_X4 : public LDS {
   public:
-    LDS_YDLidarX4();
+    LDS_YDLIDAR_X4();
 
     result_t start();
     void stop();

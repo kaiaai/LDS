@@ -16,7 +16,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "lds_lds02rr.h"
+#include "LDS_LDS02RR.h"
 
 LDS_LDSRR02::LDS_LDSRR02() : LDS() {
   motor_enabled = false;

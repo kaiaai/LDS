@@ -16,7 +16,7 @@
   #error This example runs on ESP32
 #endif
 
-#include <lds_ydlidar_x4.h>
+#include <LDS_YDLIDAR_X4.h>
 
 const uint8_t LDS_MOTOR_EN_PIN = 19; // ESP32 Dev Kit LDS enable pin
 const uint8_t LDS_MOTOR_PWM_PIN = 15; // LDS motor speed control using PWM
