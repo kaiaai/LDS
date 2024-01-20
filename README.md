@@ -1,4 +1,4 @@
-# LDS
+# LDS/LiDAR Library for Arduino
 Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) platform. The library supports
 - YDLIDAR X4
 - Xiaomi LDS02RR
