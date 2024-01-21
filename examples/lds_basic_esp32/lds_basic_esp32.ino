@@ -25,7 +25,7 @@ const uint8_t LDS_MOTOR_PWM_PIN = 15; // LDS motor speed control using PWM
 #define LDS_MOTOR_PWM_CHANNEL    2 // ESP32 PWM channel for LDS motor speed control
 
 HardwareSerial LdSerial(2); // TX 17, RX 16
-LDS_YDLIDAR_X4 lds;
+LDS_YDLIDARX4 lds;
 
 void setup() {
   lds.setScanPointCallback(lds_scan_point_callback);
