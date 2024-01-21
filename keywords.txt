@@ -7,8 +7,8 @@
 #######################################
 
 LDS	KEYWORD1
-LDS_YDLIDARX4	KEYWORD1
-LDS_LDSRR02	KEYWORD1
+LDS_YDLIDAR_X4	KEYWORD1
+LDS_LDS02RR	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

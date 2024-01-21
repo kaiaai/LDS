@@ -18,7 +18,7 @@
 
 #include "LDS_LDS02RR.h"
 
-LDS_LDSRR02::LDS_LDSRR02() : LDS() {
+LDS_LDS02RR::LDS_LDS02RR() : LDS() {
   motor_enabled = false;
   clearVars();
 
@@ -33,23 +33,23 @@ LDS_LDSRR02::LDS_LDSRR02() : LDS() {
   scan_rpm = 0;
 }
 
-uint32_t LDS_LDSRR02::getSerialBaudRate() {
+uint32_t LDS_LDS02RR::getSerialBaudRate() {
   return 115200;
 }
 
-int LDS_LDSRR02::getSamplingRateHz() {
+int LDS_LDS02RR::getSamplingRateHz() {
   return 1800;
 }
-LDS::result_t LDS_LDSRR02::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
+LDS::result_t LDS_LDS02RR::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
   scanFreqPID.SetTunings(Kp, Ki, Kd);
 }
 
-LDS::result_t LDS_LDSRR02::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
+LDS::result_t LDS_LDS02RR::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   scanFreqPID.SetSampleTime(sample_period_ms);
   return LDS::RESULT_OK;
 }
 
-void LDS_LDSRR02::loop() {
+void LDS_LDS02RR::loop() {
   LDS::result_t result = LDS::RESULT_OK;
   
   while (true) {
@@ -73,15 +73,15 @@ void LDS_LDSRR02::loop() {
   }
 }
 
-bool LDS_LDSRR02::isActive() {
+bool LDS_LDS02RR::isActive() {
   return motor_enabled;
 }
 
-float LDS_LDSRR02::getCurrentScanFreqHz() {
+float LDS_LDS02RR::getCurrentScanFreqHz() {
   return scan_rpm/60.0f;
 }
 
-void LDS_LDSRR02::clearVars() {
+void LDS_LDS02RR::clearVars() {
   for (int ix = 0; ix < N_DATA_QUADS; ix++) {
     aryDist[ix] = 0;
     aryQuality[ix] = 0;
@@ -93,7 +93,7 @@ void LDS_LDSRR02::clearVars() {
   eState = eState_Find_COMMAND; // This packet is done -- loLDS::RESULT_OK for next COMMAND byte
 }
 
-bool LDS_LDSRR02::isValidPacket() {
+bool LDS_LDS02RR::isValidPacket() {
   unsigned long chk32;
   unsigned long checksum;
   const int bytesToCheck = PACKET_LENGTH - 2;
@@ -123,7 +123,7 @@ bool LDS_LDSRR02::isValidPacket() {
   return ((b1a == b1b) && (b2a == b2b));
 }
 
-void LDS_LDSRR02::enableMotor(bool enable) {
+void LDS_LDS02RR::enableMotor(bool enable) {
   motor_enabled = enable;
 
   if (enable) {
@@ -136,7 +136,7 @@ void LDS_LDSRR02::enableMotor(bool enable) {
 }
 
 // TODO uint8 iQuad?
-void LDS_LDSRR02::processSignalStrength(int iQuad) {
+void LDS_LDS02RR::processSignalStrength(int iQuad) {
   uint8_t dataL, dataM;
   aryQuality[iQuad] = 0;                        // initialize
   int iOffset = OFFSET_TO_4_DATA_READINGS + (iQuad * N_DATA_QUADS) + OFFSET_DATA_SIGNAL_LSB;
@@ -145,7 +145,7 @@ void LDS_LDSRR02::processSignalStrength(int iQuad) {
   aryQuality[iQuad] = dataL | (dataM << 8);
 }
 
-byte LDS_LDSRR02::processDistance(int iQuad) {
+byte LDS_LDS02RR::processDistance(int iQuad) {
   // Data 0 to Data 3 are the 4 readings. Each one is 4 bytes long, and organized as follows :
   //   byte 0 : <distance 7:0>
   //   byte 1 : <"invalid data" flag> <"strength warning" flag> <distance 13:8>
@@ -166,14 +166,14 @@ byte LDS_LDSRR02::processDistance(int iQuad) {
   return 0;                              // LDS::RESULT_OKay
 }
 
-void LDS_LDSRR02::processSpeed() {
+void LDS_LDS02RR::processSpeed() {
   // Extract motor speed from packet - two bytes little-endian, equals RPM/64
   uint8_t scan_rph_low_byte = Packet[OFFSET_TO_SPEED_LSB];
   uint8_t scan_rph_high_byte = Packet[OFFSET_TO_SPEED_MSB];
   scan_rpm = float( (scan_rph_high_byte << 8) | scan_rph_low_byte ) / 64.0;
 }
 
-uint16_t LDS_LDSRR02::processIndex() {
+uint16_t LDS_LDS02RR::processIndex() {
   // processIndex - Process the packet element 'index'
   // index is the index byte in the 90 packets, going from A0 (packet 0, readings 0 to 3) to F9
   //    (packet 89, readings 356 to 359).
@@ -185,7 +185,7 @@ uint16_t LDS_LDSRR02::processIndex() {
   return angle;
 }
 
-LDS::result_t LDS_LDSRR02::processByte(int inByte) {
+LDS::result_t LDS_LDS02RR::processByte(int inByte) {
   // Switch, based on 'eState':
   // State 1: We're scanning for 0xFA (COMMAND) in the input stream
   // State 2: Build a complete data packet
@@ -238,7 +238,7 @@ LDS::result_t LDS_LDSRR02::processByte(int inByte) {
   return result;
 }
 
-LDS::result_t LDS_LDSRR02::setScanTargetFreqHz(float freq) {
+LDS::result_t LDS_LDS02RR::setScanTargetFreqHz(float freq) {
   float rpm = freq * 60.0f;
   if (rpm <= 0) {
     scan_rpm_setpoint = DEFAULT_SCAN_RPM;
@@ -252,15 +252,15 @@ LDS::result_t LDS_LDSRR02::setScanTargetFreqHz(float freq) {
   return LDS::RESULT_OK;
 }
 
-float LDS_LDSRR02::getTargetScanFreqHz() {
+float LDS_LDS02RR::getTargetScanFreqHz() {
   return scan_rpm_setpoint / 60.0f;
 }
 
-void LDS_LDSRR02::stop() {
+void LDS_LDS02RR::stop() {
   enableMotor(false);
 }
 
-LDS::result_t LDS_LDSRR02::start() {
+LDS::result_t LDS_LDS02RR::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, "LDS02RR");
   postInfo(INFO_SAMPLING_RATE, String(getSamplingRateHz()));

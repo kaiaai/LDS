@@ -20,9 +20,9 @@
 #include "LDS.h"
 #include "PID_v1_0_0.h"
 
-class LDS_LDSRR02 : public LDS {
+class LDS_LDS02RR : public LDS {
   public:
-    LDS_LDSRR02();
+    LDS_LDS02RR();
 
     result_t start();
     void stop();

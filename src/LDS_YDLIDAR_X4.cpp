@@ -18,12 +18,12 @@
 
 #include "LDS_YDLIDAR_X4.h"
 
-LDS_YDLIDARX4::LDS_YDLIDARX4() : LDS() {
+LDS_YDLIDAR_X4::LDS_YDLIDAR_X4() : LDS() {
   motor_enabled = false;
   target_scan_freq = sampling_rate = ERROR_UNKNOWN;
 }
 
-LDS::result_t LDS_YDLIDARX4::start() {
+LDS::result_t LDS_YDLIDAR_X4::start() {
   // Initialize
   enableMotor(false);
 
@@ -93,29 +93,29 @@ LDS::result_t LDS_YDLIDARX4::start() {
   return LDS::RESULT_OK;
 }
 
-uint32_t LDS_YDLIDARX4::getSerialBaudRate() {
+uint32_t LDS_YDLIDAR_X4::getSerialBaudRate() {
   return 128000;
 }
 
-float LDS_YDLIDARX4::getCurrentScanFreqHz() {
+float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
   return ERROR_NOT_IMPLEMENTED;
 }
 
-float LDS_YDLIDARX4::getTargetScanFreqHz() {
+float LDS_YDLIDAR_X4::getTargetScanFreqHz() {
   return target_scan_freq;
 }
 
-int LDS_YDLIDARX4::getSamplingRateHz() {
+int LDS_YDLIDAR_X4::getSamplingRateHz() {
   return sampling_rate;
 }
 
-void LDS_YDLIDARX4::stop() {
+void LDS_YDLIDAR_X4::stop() {
   if (isActive())
     abort();
   enableMotor(false);
 }
 
-void LDS_YDLIDARX4::enableMotor(bool enable) {
+void LDS_YDLIDAR_X4::enableMotor(bool enable) {
   motor_enabled = enable;
 
   setMotorPin(DIR_INPUT, LDS_MOTOR_PWM_PIN);
@@ -125,23 +125,23 @@ void LDS_YDLIDARX4::enableMotor(bool enable) {
   setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_EN_PIN);
 }
 
-bool LDS_YDLIDARX4::isActive() {
+bool LDS_YDLIDAR_X4::isActive() {
   return motor_enabled;
 }
 
-LDS::result_t LDS_YDLIDARX4::setScanTargetFreqHz(float freq) {
+LDS::result_t LDS_YDLIDAR_X4::setScanTargetFreqHz(float freq) {
   return ERROR_NOT_IMPLEMENTED;
 }
 
-LDS::result_t LDS_YDLIDARX4::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
+LDS::result_t LDS_YDLIDAR_X4::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   return ERROR_NOT_IMPLEMENTED;
 }
 
-LDS::result_t LDS_YDLIDARX4::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
+LDS::result_t LDS_YDLIDAR_X4::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
   return ERROR_NOT_IMPLEMENTED;
 }
 
-LDS::result_t LDS_YDLIDARX4::waitScanDot() {
+LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
   static int recvPos = 0;
   static uint8_t package_Sample_Num = 0;
   static int package_recvPos = 0;
@@ -399,18 +399,18 @@ state2:
   return LDS::RESULT_OK;
 }
 
-void LDS_YDLIDARX4::loop() {
+void LDS_YDLIDAR_X4::loop() {
   result_t result = waitScanDot();
   if (result < 0)
     postError(result, "waitScanDot()");
 }
 
-LDS::result_t LDS_YDLIDARX4::abort() {
+LDS::result_t LDS_YDLIDAR_X4::abort() {
   // stop the scanPoint operation
   return sendCommand(LIDAR_CMD_FORCE_STOP, NULL, 0);
 }
 
-LDS::result_t LDS_YDLIDARX4::sendCommand(uint8_t cmd, const void * payload, size_t payloadsize) {
+LDS::result_t LDS_YDLIDAR_X4::sendCommand(uint8_t cmd, const void * payload, size_t payloadsize) {
   //send data to serial
   cmd_packet pkt_header;
   cmd_packet * header = &pkt_header;
@@ -439,7 +439,7 @@ LDS::result_t LDS_YDLIDARX4::sendCommand(uint8_t cmd, const void * payload, size
   return LDS::RESULT_OK;
 }
 
-LDS::result_t LDS_YDLIDARX4::getDeviceInfo(device_info & info, uint32_t timeout) {
+LDS::result_t LDS_YDLIDAR_X4::getDeviceInfo(device_info & info, uint32_t timeout) {
   LDS::result_t ans;
   uint8_t  recvPos = 0;
   uint32_t currentTs = millis();
@@ -473,7 +473,7 @@ LDS::result_t LDS_YDLIDARX4::getDeviceInfo(device_info & info, uint32_t timeout)
   return ERROR_TIMEOUT;
 }
 
-LDS::result_t LDS_YDLIDARX4::waitResponseHeader(lidar_ans_header * header, uint32_t timeout) {
+LDS::result_t LDS_YDLIDAR_X4::waitResponseHeader(lidar_ans_header * header, uint32_t timeout) {
   // wait response header
   int recvPos = 0;
   uint32_t startTs = millis();
@@ -506,7 +506,7 @@ LDS::result_t LDS_YDLIDARX4::waitResponseHeader(lidar_ans_header * header, uint3
 }
 
 // ask the YDLIDAR for its device health
-LDS::result_t LDS_YDLIDARX4::getHealth(device_health & health, uint32_t timeout) {
+LDS::result_t LDS_YDLIDAR_X4::getHealth(device_health & health, uint32_t timeout) {
   LDS::result_t ans;
   uint8_t recvPos = 0;
   uint32_t currentTs = millis();
@@ -540,7 +540,7 @@ LDS::result_t LDS_YDLIDARX4::getHealth(device_health & health, uint32_t timeout)
   return ERROR_TIMEOUT;
 }
 
-LDS::result_t LDS_YDLIDARX4::startScan(bool force, uint32_t timeout ) {
+LDS::result_t LDS_YDLIDAR_X4::startScan(bool force, uint32_t timeout ) {
   // start the scanPoint operation
   LDS::result_t ans;
 

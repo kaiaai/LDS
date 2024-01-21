@@ -14,7 +14,8 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 ## Release notes
 
 ### v0.2.0
-- YDLIDAR X4 class name bugfix
+- example bugfix
+- renamed classes
 
 ### v0.1.0
 - initial release
