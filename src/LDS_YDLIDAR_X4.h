@@ -19,9 +19,9 @@
 #pragma once
 #include "LDS.h"
 
-class LDS_YDLIDAR_X4 : public LDS {
+class LDS_YDLIDARX4 : public LDS {
   public:
-    LDS_YDLIDAR_X4();
+    LDS_YDLIDARX4();
 
     result_t start();
     void stop();
