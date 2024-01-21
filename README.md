@@ -10,3 +10,11 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=gaDnZ4Msw0E" target="_blank">
  <img src="http://img.youtube.com/vi/gaDnZ4Msw0E/maxresdefault.jpg" alt="LDS02RR laser distance scan sensor operating" width="720" height="405" border="10" />
 </a>
+
+## Release notes
+
+### v0.2.0
+- YDLIDAR X4 class name bugfix
+
+### v0.1.0
+- initial release

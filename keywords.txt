@@ -7,7 +7,7 @@
 #######################################
 
 LDS	KEYWORD1
-LDS_YDLidarX4	KEYWORD1
+LDS_YDLIDARX4	KEYWORD1
 LDS_LDSRR02	KEYWORD1
 
 #######################################
