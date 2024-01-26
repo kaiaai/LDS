@@ -18,9 +18,10 @@
 
 #include "LDS_YDLIDAR_X4.h"
 
-LDS_YDLIDAR_X4::LDS_YDLIDAR_X4() : LDS() {
+void LDS_YDLIDAR_X4::init() {
   motor_enabled = false;
   target_scan_freq = sampling_rate = ERROR_UNKNOWN;
+  enableMotor(false);
 }
 
 LDS::result_t LDS_YDLIDAR_X4::start() {

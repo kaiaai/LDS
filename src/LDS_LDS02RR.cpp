@@ -18,7 +18,7 @@
 
 #include "LDS_LDS02RR.h"
 
-LDS_LDS02RR::LDS_LDS02RR() : LDS() {
+void LDS_LDS02RR::init() {
   motor_enabled = false;
   clearVars();
   pwm_val = 0.5;
@@ -29,6 +29,7 @@ LDS_LDS02RR::LDS_LDS02RR() : LDS() {
   scanFreqPID.SetOutputLimits(0, 1.0);
   scanFreqPID.SetSampleTime(20);
   scanFreqPID.SetMode(PID_v1::AUTOMATIC);
+  enableMotor(false);
 }
 
 uint32_t LDS_LDS02RR::getSerialBaudRate() {

@@ -33,6 +33,7 @@ void setup() {
   lds.setSerialWriteCallback(lds_serial_write_callback);
   lds.setSerialReadCallback(lds_serial_read_callback);
   lds.setMotorPinCallback(lds_motor_pin_callback);
+  lds.init();
 
   Serial.println(LdSerial.setRxBufferSize(1024)); // must be before .begin()
   Serial.print("LDS RX buffer size "); // default 128 hw + 256 sw
@@ -49,8 +50,6 @@ void setup() {
 
   if (result < 0)
     Serial.println("WARNING: is LDS connected to ESP32?");
-
-  lds.start();
 }
 
 int lds_serial_read_callback() {

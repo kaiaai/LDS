@@ -59,7 +59,8 @@ class LDS {
     typedef void (*InfoCallback)(info_t, String);
     typedef void (*ErrorCallback)(result_t, String);
 
-    static const int8_t DEFAULT_VALUE = -1;
+    //static
+     const int8_t DEFAULT_VALUE = -1;
     enum lds_pin_state_t {
       VALUE_PWM = 0,
       VALUE_LOW = -1,
@@ -70,6 +71,7 @@ class LDS {
     };
   public:
     LDS();
+    virtual void init() = 0;
     virtual result_t start() = 0; // Initialize and start; call from Arduino setup()
     virtual void stop() = 0; // Stop the motor and scanning
     virtual void loop() = 0; // Call frequently from Arduino loop()
@@ -98,8 +100,7 @@ class LDS {
     static String pinStateToString(lds_pin_state_t state);
     
   protected:
-    void postScanPoint(float angle_deg, float dist_mm, float quality,
-      bool scan_completed);
+    void postScanPoint(float angle_deg, float dist_mm, float quality, bool scan_completed);
     void setMotorPin(float value, lds_pin_t pin);
     void postPacket(uint8_t* data, uint16_t length, bool scan_completed);
     int readSerial();
