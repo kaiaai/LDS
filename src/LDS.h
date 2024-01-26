@@ -70,27 +70,27 @@ class LDS {
     };
   public:
     LDS();
-    result_t start(); // Initialize and start; call from Arduino setup()
-    void stop(); // Stop the motor and scanning
-    void loop(); // Call frequently from Arduino loop()
+    virtual result_t start() = 0; // Initialize and start; call from Arduino setup()
+    virtual void stop() = 0; // Stop the motor and scanning
+    virtual void loop() = 0; // Call frequently from Arduino loop()
 
-    uint32_t getSerialBaudRate();
-    float getCurrentScanFreq();
-    float getTargetScanFreqHz();
-    int getSamplingRateHz();
-    bool isActive();
+    virtual uint32_t getSerialBaudRate() = 0;
+    virtual float getCurrentScanFreqHz() = 0;
+    virtual float getTargetScanFreqHz() = 0;
+    virtual int getSamplingRateHz() = 0;
+    virtual bool isActive() = 0;
 
-    result_t setScanTargetFreqHz(float freq);
-    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd);
-    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms);
+    virtual result_t setScanTargetFreqHz(float freq) = 0;
+    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) = 0;
+    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) = 0;
 
-    void setScanPointCallback(ScanPointCallback scan_callback);
-    void setMotorPinCallback(MotorPinCallback motor_pin_callback);
-    void setPacketCallback(PacketCallback packet_callback);
-    void setSerialReadCallback(SerialReadCallback serial_read_callback);
-    void setSerialWriteCallback(SerialWriteCallback serial_write_callback);
-    void setInfoCallback(InfoCallback info_callback);
-    void setErrorCallback(ErrorCallback error_callback);
+    virtual void setScanPointCallback(ScanPointCallback scan_callback);
+    virtual void setMotorPinCallback(MotorPinCallback motor_pin_callback);
+    virtual void setPacketCallback(PacketCallback packet_callback);
+    virtual void setSerialReadCallback(SerialReadCallback serial_read_callback);
+    virtual void setSerialWriteCallback(SerialWriteCallback serial_write_callback);
+    virtual void setInfoCallback(InfoCallback info_callback);
+    virtual void setErrorCallback(ErrorCallback error_callback);
 
     static String resultCodeToString(result_t code);
     static String infoCodeToString(info_t code);

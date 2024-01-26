@@ -42,6 +42,7 @@ int LDS_LDS02RR::getSamplingRateHz() {
 }
 LDS::result_t LDS_LDS02RR::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
   scanFreqPID.SetTunings(Kp, Ki, Kd);
+  return RESULT_OK;
 }
 
 LDS::result_t LDS_LDS02RR::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
@@ -50,8 +51,6 @@ LDS::result_t LDS_LDS02RR::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
 }
 
 void LDS_LDS02RR::loop() {
-  LDS::result_t result = LDS::RESULT_OK;
-  
   while (true) {
     int c = readSerial();
     if (c < 0)
@@ -128,7 +127,7 @@ void LDS_LDS02RR::enableMotor(bool enable) {
 
   if (enable) {
     setMotorPin(DIR_OUTPUT_PWM, LDS_MOTOR_PWM_PIN);
-    setMotorPin(enable ? pwm_val : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+    setMotorPin(enable ? pwm_val : float(VALUE_LOW), LDS_MOTOR_PWM_PIN);
   } else {
     setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
     setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
