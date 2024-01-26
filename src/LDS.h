@@ -84,13 +84,13 @@ class LDS {
     virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) = 0;
     virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) = 0;
 
-    virtual void setScanPointCallback(ScanPointCallback scan_callback);
-    virtual void setMotorPinCallback(MotorPinCallback motor_pin_callback);
-    virtual void setPacketCallback(PacketCallback packet_callback);
-    virtual void setSerialReadCallback(SerialReadCallback serial_read_callback);
-    virtual void setSerialWriteCallback(SerialWriteCallback serial_write_callback);
-    virtual void setInfoCallback(InfoCallback info_callback);
-    virtual void setErrorCallback(ErrorCallback error_callback);
+    void setScanPointCallback(ScanPointCallback scan_callback);
+    void setMotorPinCallback(MotorPinCallback motor_pin_callback);
+    void setPacketCallback(PacketCallback packet_callback);
+    void setSerialReadCallback(SerialReadCallback serial_read_callback);
+    void setSerialWriteCallback(SerialWriteCallback serial_write_callback);
+    void setInfoCallback(InfoCallback info_callback);
+    void setErrorCallback(ErrorCallback error_callback);
 
     static String resultCodeToString(result_t code);
     static String infoCodeToString(info_t code);

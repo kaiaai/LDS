@@ -19,23 +19,24 @@
 #pragma once
 #include "LDS.h"
 
+
 class LDS_YDLIDAR_X4 : public LDS {
   public:
     LDS_YDLIDAR_X4();
 
-    result_t start() override;
-    void stop() override;
-    void loop() override; // Call loop() frequently from Arduino loop()
+    virtual result_t start() override;
+    virtual void stop() override;
+    virtual void loop() override; // Call loop() frequently from Arduino loop()
 
-    uint32_t getSerialBaudRate() override;
-    float getCurrentScanFreqHz() override;
-    float getTargetScanFreqHz() override;
-    int getSamplingRateHz() override;
-    bool isActive() override;
+    virtual uint32_t getSerialBaudRate() override;
+    virtual float getCurrentScanFreqHz() override;
+    virtual float getTargetScanFreqHz() override;
+    virtual int getSamplingRateHz() override;
+    virtual bool isActive() override;
 
-    result_t setScanTargetFreqHz(float freq) override;
-    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
-    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
+    virtual result_t setScanTargetFreqHz(float freq) override;
+    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
+    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
     bool motor_enabled;

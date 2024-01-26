@@ -21,7 +21,6 @@
 LDS_LDS02RR::LDS_LDS02RR() : LDS() {
   motor_enabled = false;
   clearVars();
-
   pwm_val = 0.5;
   scan_rpm = 0;
   scan_rpm_setpoint = DEFAULT_SCAN_RPM;  // desired RPM 1.8KHz/5FPS/360 = 1 deg resolution
