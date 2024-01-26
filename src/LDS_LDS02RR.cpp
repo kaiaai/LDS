@@ -23,14 +23,13 @@ LDS_LDS02RR::LDS_LDS02RR() : LDS() {
   clearVars();
 
   pwm_val = 0.5;
-
+  scan_rpm = 0;
   scan_rpm_setpoint = DEFAULT_SCAN_RPM;  // desired RPM 1.8KHz/5FPS/360 = 1 deg resolution
+
   scanFreqPID.init(&scan_rpm, &pwm_val, &scan_rpm_setpoint, 3.0e-3, 1.0e-3, 0.0, PID_v1::DIRECT);
   scanFreqPID.SetOutputLimits(0, 1.0);
   scanFreqPID.SetSampleTime(20);
   scanFreqPID.SetMode(PID_v1::AUTOMATIC);
-
-  scan_rpm = 0;
 }
 
 uint32_t LDS_LDS02RR::getSerialBaudRate() {

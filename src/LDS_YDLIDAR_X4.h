@@ -23,19 +23,19 @@ class LDS_YDLIDAR_X4 : public LDS {
   public:
     LDS_YDLIDAR_X4();
 
-    result_t start();
-    void stop();
-    void loop(); // Call loop() frequently from Arduino loop()
+    result_t start() override;
+    void stop() override;
+    void loop() override; // Call loop() frequently from Arduino loop()
 
-    uint32_t getSerialBaudRate();
-    float getCurrentScanFreqHz();
-    float getTargetScanFreqHz();
-    int getSamplingRateHz();
-    bool isActive();
+    uint32_t getSerialBaudRate() override;
+    float getCurrentScanFreqHz() override;
+    float getTargetScanFreqHz() override;
+    int getSamplingRateHz() override;
+    bool isActive() override;
 
-    result_t setScanTargetFreqHz(float freq);
-    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd);
-    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms);
+    result_t setScanTargetFreqHz(float freq) override;
+    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
+    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
     bool motor_enabled;
