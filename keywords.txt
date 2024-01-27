@@ -26,6 +26,7 @@ setSerialReadCallback	KEYWORD2
 setSerialWriteCallback	KEYWORD2
 setInfoCallback	KEYWORD2
 setErrorCallback	KEYWORD2
+init	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

@@ -15,7 +15,7 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 
 ### v0.3.0
 - virtual class methods
-- ESP32 crash workaround
+- ESP32 crash workaround by moving init code from constructor out to init()
 
 ### v0.2.0
 - example bugfix
