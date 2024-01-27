@@ -94,10 +94,10 @@ class LDS {
     void setInfoCallback(InfoCallback info_callback);
     void setErrorCallback(ErrorCallback error_callback);
 
-    static String resultCodeToString(result_t code);
-    static String infoCodeToString(info_t code);
-    static String pinIDToString(lds_pin_t pin);
-    static String pinStateToString(lds_pin_state_t state);
+    virtual String resultCodeToString(result_t code);
+    virtual String infoCodeToString(info_t code);
+    virtual String pinIDToString(lds_pin_t pin);
+    virtual String pinStateToString(lds_pin_state_t state);
     
   protected:
     void postScanPoint(float angle_deg, float dist_mm, float quality, bool scan_completed);

@@ -13,6 +13,10 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 
 ## Release notes
 
+### v0.3.0
+- virtual class methods
+- ESP32 crash workaround
+
 ### v0.2.0
 - example bugfix
 - renamed classes
