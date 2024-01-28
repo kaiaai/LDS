@@ -13,14 +13,15 @@
 // limitations under the License.
 //
 // Based on
-//   Copyright 2015 - 2018 EAI TEAM http://www.eaibot.com
-//   https://github.com/EAIBOT/ydlidar_arduino
+//   https://github.com/YDLIDAR/lidarCar/
+//   https://github.com/YDLIDAR/ydlidar_ros2_driver
+//   https://github.com/YDLIDAR/YDLidar-SDK
 
 #pragma once
 #include "LDS.h"
 
 
-class LDS_YDLIDAR_X4 : public LDS {
+class LDS_YDLIDAR_X2 : public LDS {
   public:
     void init() override;
 
@@ -40,8 +41,6 @@ class LDS_YDLIDAR_X4 : public LDS {
 
   protected:
     bool motor_enabled;
-    float target_scan_freq;
-    int sampling_rate;
     unsigned long int ring_start_ms[2];
 
   protected:
@@ -99,13 +98,7 @@ class LDS_YDLIDAR_X4 : public LDS {
 
   protected:
     void enableMotor(bool enable);
-    LDS::result_t getHealth(device_health & health, uint32_t timeout = DEFAULT_TIMEOUT_MS);
-    LDS::result_t getDeviceInfo(device_info & info, uint32_t timeout = DEFAULT_TIMEOUT_MS);
-    LDS::result_t abort(); // stop scanPoint op
-    LDS::result_t startScan(bool force = false, uint32_t timeout = DEFAULT_TIMEOUT_MS*2); // start scanPoint op
     LDS::result_t waitScanDot(); // wait for one sample package to arrive
-    LDS::result_t sendCommand(uint8_t cmd, const void * payload = NULL, size_t payloadsize = 0);
-    LDS::result_t waitResponseHeader(lidar_ans_header * header, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     void setupPins();
     void markScanTime();
 

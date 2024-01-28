@@ -1,8 +1,9 @@
 # LDS/LiDAR Library for Arduino
 Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) platform. The library supports
 - YDLIDAR X4
-- Xiaomi LDS02RR
-- Neato XV/Botvac
+- YDLIDAR X2
+- Xiaomi Mi LDS02RR
+- TODO Neato XV/Botvac
 
 Note: LDS02RR, Neato LDS require an additional motor control board to operate.
 You can find the board schematics at [Makerspet repo](https://github.com/makerspet/makerspet_snoopy/) under `kicad` or purchase it at [makerspet.com](https://makerspet.com) when it becomes available.
@@ -12,6 +13,10 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 </a>
 
 ## Release notes
+
+### v0.3.1
+- added YDLIDAR X2
+- measure RPM for YDLIDAR X4, YDLIDAR X2
 
 ### v0.3.0
 - virtual class methods

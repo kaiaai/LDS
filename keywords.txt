@@ -8,6 +8,7 @@
 
 LDS	KEYWORD1
 LDS_YDLIDAR_X4	KEYWORD1
+LDS_YDLIDAR_X2	KEYWORD1
 LDS_LDS02RR	KEYWORD1
 
 #######################################
