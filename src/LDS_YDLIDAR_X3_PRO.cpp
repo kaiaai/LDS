@@ -46,6 +46,15 @@ void LDS_YDLIDAR_X3_PRO::stop() {
   enableMotor(false);
 }
 
+void LDS_YDLIDAR_X3_PRO::enableMotor(bool enable) {
+  motor_enabled = enable;
+
+  setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+
+  // Entire LDS on/off
+  setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+}
+
 LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
   static int recvPos = 0;
   static uint8_t package_Sample_Num = 0;
@@ -60,6 +69,7 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
   static float IntervalSampleAngle = 0;
   static float IntervalSampleAngle_LastPackage = 0;
   static uint16_t FirstSampleAngle = 0;
+  static uint16_t LastSampleAnglePrev = 0;
   static uint16_t LastSampleAngle = 0;
   static uint16_t CheckSum = 0;
 
@@ -70,6 +80,7 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
   static uint16_t Valu8Tou16 = 0;
 
   static uint8_t state = 0;
+  static bool scan_completed = false;
 
   switch(state) {
     case 1:
@@ -107,8 +118,6 @@ state1:
           break;
         case 2:
           SampleNumlAndCTCal = currentByte;
-          if (currentByte == CT_RING_START)
-            markScanTime();
           if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
             recvPos = 0;
             continue;
@@ -227,9 +236,13 @@ state2:
     }
   }
 
-  if (CheckSumResult)
-    postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum,
-      package.package_CT == CT_RING_START);
+  if (CheckSumResult) {
+    scan_completed = FirstSampleAngle <= LastSampleAnglePrev;
+    LastSampleAnglePrev = LastSampleAngle;
+    if (scan_completed)
+      markScanTime();
+    postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
+  }
 
   // Process the buffered packet
   while(true) {
@@ -285,9 +298,10 @@ state2:
     float point_distance_mm = node.distance_q2*0.25f;
     float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f;
     uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
-    bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
+    //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
-    postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
+    postScanPoint(point_angle, point_distance_mm, point_quality, scan_completed);
+    scan_completed = false;
 
     // Dump finished?
     package_Sample_Index++;

@@ -98,7 +98,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     } __attribute__((packed)) ;
 
   protected:
-    void enableMotor(bool enable);
+    virtual void enableMotor(bool enable);
     LDS::result_t getHealth(device_health & health, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     LDS::result_t getDeviceInfo(device_info & info, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     LDS::result_t abort(); // stop scanPoint op

@@ -30,4 +30,5 @@ class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X4 {
     int getSamplingRateHz() override;
   protected:
     LDS::result_t waitScanDot() override;
+    void enableMotor(bool enable) override;
 };
