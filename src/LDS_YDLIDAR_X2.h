@@ -14,140 +14,18 @@
 //
 // Based on
 //   https://github.com/YDLIDAR/lidarCar/
-//   https://github.com/YDLIDAR/ydlidar_ros2_driver
-//   https://github.com/YDLIDAR/YDLidar-SDK
 
 #pragma once
-#include "LDS.h"
+#include "LDS_YDLIDAR_X4.h"
 
-
-class LDS_YDLIDAR_X2 : public LDS {
+class LDS_YDLIDAR_X2 : public LDS_YDLIDAR_X4 {
   public:
     void init() override;
 
     result_t start() override;
     void stop() override;
-    void loop() override; // Call loop() frequently from Arduino loop()
 
     uint32_t getSerialBaudRate() override;
-    float getCurrentScanFreqHz() override;
     float getTargetScanFreqHz() override;
     int getSamplingRateHz() override;
-    bool isActive() override;
-
-    result_t setScanTargetFreqHz(float freq) override;
-    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
-    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
-
-  protected:
-    bool motor_enabled;
-    unsigned long int ring_start_ms[2];
-
-  protected:
-    static const uint32_t DEFAULT_TIMEOUT_MS = 500;
-    static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 40; // 0x80
-
-    typedef enum {
-      CT_NORMAL = 0,
-      CT_RING_START = 1,
-      CT_TAIL,
-    } CT;
-    
-    struct node_info {
-      uint8_t    sync_quality;
-      uint16_t   angle_q6_checkbit;
-      uint16_t   distance_q2;
-    } __attribute__((packed)) ;
-    
-    struct device_info{
-      uint8_t   model;
-      uint16_t  firmware_version;
-      uint8_t   hardware_version;
-      uint8_t   serialnum[16];
-    } __attribute__((packed)) ;
-    
-    struct device_health {
-      uint8_t   status;
-      uint16_t  error_code;
-    } __attribute__((packed))  ;
-    
-    struct cmd_packet {
-      uint8_t syncByte;
-      uint8_t cmd_flag;
-      uint8_t size;
-      uint8_t data;
-    } __attribute__((packed)) ;
-    
-    struct lidar_ans_header {
-      uint8_t  syncByte1;
-      uint8_t  syncByte2;
-      uint32_t size:30;
-      uint32_t subType:2;
-      uint8_t  type;
-    } __attribute__((packed));
-    
-    struct node_package {
-      uint16_t  package_Head;
-      uint8_t   package_CT;
-      uint8_t   nowPackageNum;
-      uint16_t  packageFirstSampleAngle;
-      uint16_t  packageLastSampleAngle;
-      uint16_t  checkSum;
-      uint16_t  packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH];
-    } __attribute__((packed)) ;
-
-  protected:
-    void enableMotor(bool enable);
-    LDS::result_t waitScanDot(); // wait for one sample package to arrive
-    void setupPins();
-    void markScanTime();
-
-  protected:
-    // Scan start packet: 2 bytes
-    // Samples: 16 packets, up to 90B each total
-    //   10 bytes header + 40*2=70 bytes samples
-    // At 7Hz max total 1,442 bytes per scan
-    static const uint8_t LIDAR_CMD_STOP = 0x65;
-    static const uint8_t LIDAR_CMD_SCAN = 0x60;
-    static const uint8_t LIDAR_CMD_FORCE_SCAN = 0x61;
-    static const uint8_t LIDAR_CMD_RESET = 0x80;
-    static const uint8_t LIDAR_CMD_FORCE_STOP = 0x00;
-    static const uint8_t LIDAR_CMD_GET_EAI = 0x55;
-    static const uint8_t LIDAR_CMD_GET_DEVICE_INFO = 0x90;
-    static const uint8_t LIDAR_CMD_GET_DEVICE_HEALTH = 0x92;
-    static const uint8_t LIDAR_CMD_SYNC_BYTE = 0xA5;
-    static const uint16_t LIDAR_CMDFLAG_HAS_PAYLOAD = 0x8000;
-
-    static const uint8_t LIDAR_ANS_TYPE_DEVINFO = 0x4;
-    static const uint8_t LIDAR_ANS_TYPE_DEVHEALTH = 0x6;
-    static const uint8_t LIDAR_ANS_SYNC_BYTE1 = 0xA5;
-    static const uint8_t LIDAR_ANS_SYNC_BYTE2 = 0x5A;
-    static const uint8_t LIDAR_ANS_TYPE_MEASUREMENT = 0x81;
-
-    static const uint8_t LIDAR_RESP_MEASUREMENT_SYNCBIT = (0x1<<0);
-    static const uint8_t LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT = 2;
-    static const uint8_t LIDAR_RESP_MEASUREMENT_CHECKBIT = (0x1<<0);
-    static const uint8_t LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT = 1;
-    static const uint8_t LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT = 8;
-    
-    static const uint8_t LIDAR_CMD_RUN_POSITIVE = 0x06;
-    static const uint8_t LIDAR_CMD_RUN_INVERSION = 0x07;
-    static const uint8_t LIDAR_CMD_SET_AIMSPEED_ADDMIC = 0x09;
-    static const uint8_t LIDAR_CMD_SET_AIMSPEED_DISMIC = 0x0A;
-    static const uint8_t LIDAR_CMD_SET_AIMSPEED_ADD = 0x0B;
-    static const uint8_t LIDAR_CMD_SET_AIMSPEED_DIS = 0x0C;
-    static const uint8_t LIDAR_CMD_GET_AIMSPEED = 0x0D;
-    static const uint8_t LIDAR_CMD_SET_SAMPLING_RATE = 0xD0;
-    static const uint8_t LIDAR_CMD_GET_SAMPLING_RATE = 0xD1;
-    
-    static const uint8_t LIDAR_STATUS_OK = 0x0;
-    static const uint8_t LIDAR_STATUS_WARNING = 0x1;
-    static const uint8_t LIDAR_STATUS_ERROR = 0x2;
-    
-    static const uint8_t PACKAGE_SAMPLE_BYTES = 2;
-    static const uint16_t NODE_DEFAULT_QUALITY = (10<<2);
-    static const uint8_t NODE_SYNC = 1;
-    static const uint8_t NODE_NOT_SYNC = 2;
-    static const uint8_t PACKAGE_PAID_BYTES = 10;
-    static const uint16_t PH = 0x55AA; // Packet Header
 };

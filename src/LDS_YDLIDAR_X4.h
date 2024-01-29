@@ -22,21 +22,21 @@
 
 class LDS_YDLIDAR_X4 : public LDS {
   public:
-    void init() override;
+    virtual void init() override;
 
-    result_t start() override;
-    void stop() override;
-    void loop() override; // Call loop() frequently from Arduino loop()
+    virtual result_t start() override;
+    virtual void stop() override;
+    virtual void loop() override; // Call loop() frequently from Arduino loop()
 
-    uint32_t getSerialBaudRate() override;
-    float getCurrentScanFreqHz() override;
-    float getTargetScanFreqHz() override;
-    int getSamplingRateHz() override;
-    bool isActive() override;
+    virtual uint32_t getSerialBaudRate() override;
+    virtual float getCurrentScanFreqHz() override;
+    virtual float getTargetScanFreqHz() override;
+    virtual int getSamplingRateHz() override;
+    virtual bool isActive() override;
 
-    result_t setScanTargetFreqHz(float freq) override;
-    result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
-    result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
+    virtual result_t setScanTargetFreqHz(float freq) override;
+    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
+    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
     bool motor_enabled;
@@ -46,7 +46,7 @@ class LDS_YDLIDAR_X4 : public LDS {
 
   protected:
     static const uint32_t DEFAULT_TIMEOUT_MS = 500;
-    static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 40; // 0x80
+    static const uint8_t PACKAGE_SAMPLE_MAX_LENGTH = 40;
 
     typedef enum {
       CT_NORMAL = 0,
@@ -103,10 +103,9 @@ class LDS_YDLIDAR_X4 : public LDS {
     LDS::result_t getDeviceInfo(device_info & info, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     LDS::result_t abort(); // stop scanPoint op
     LDS::result_t startScan(bool force = false, uint32_t timeout = DEFAULT_TIMEOUT_MS*2); // start scanPoint op
-    LDS::result_t waitScanDot(); // wait for one sample package to arrive
+    virtual LDS::result_t waitScanDot(); // wait for one sample package to arrive
     LDS::result_t sendCommand(uint8_t cmd, const void * payload = NULL, size_t payloadsize = 0);
     LDS::result_t waitResponseHeader(lidar_ans_header * header, uint32_t timeout = DEFAULT_TIMEOUT_MS);
-    void setupPins();
     void markScanTime();
 
   protected:

@@ -14,6 +14,9 @@ You can find the board schematics at [Makerspet repo](https://github.com/makersp
 
 ## Release notes
 
+### v0.3.2
+- added YDLIDAR X3 PRO
+
 ### v0.3.1
 - added YDLIDAR X2
 - measure RPM for YDLIDAR X4, YDLIDAR X2
