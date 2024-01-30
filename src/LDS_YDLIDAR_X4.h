@@ -89,8 +89,8 @@ class LDS_YDLIDAR_X4 : public LDS {
     
     struct node_package {
       uint16_t  package_Head;
-      uint8_t   package_CT;
-      uint8_t   nowPackageNum;
+      uint8_t   package_CT; // package type
+      uint8_t   nowPackageNum; // distance sample count
       uint16_t  packageFirstSampleAngle;
       uint16_t  packageLastSampleAngle;
       uint16_t  checkSum;
@@ -152,7 +152,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     
     static const uint8_t PACKAGE_SAMPLE_BYTES = 2;
     static const uint16_t NODE_DEFAULT_QUALITY = (10<<2);
-    static const uint8_t NODE_SYNC = 1;
+    static const uint8_t NODE_SYNC = 0x01;
     static const uint8_t NODE_NOT_SYNC = 2;
     static const uint8_t PACKAGE_PAID_BYTES = 10;
     static const uint16_t PH = 0x55AA; // Packet Header

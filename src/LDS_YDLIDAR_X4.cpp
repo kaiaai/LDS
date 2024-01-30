@@ -407,7 +407,7 @@ state2:
 
 void LDS_YDLIDAR_X4::loop() {
   result_t result = waitScanDot();
-  if (result < 0)
+  if (result < RESULT_OK)
     postError(result, "waitScanDot()");
 }
 

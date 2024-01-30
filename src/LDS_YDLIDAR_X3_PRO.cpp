@@ -19,6 +19,7 @@
 
 void LDS_YDLIDAR_X3_PRO::init() {
   ring_start_ms[0] = ring_start_ms[1] = 0;
+  scan_freq = 0;
   enableMotor(false);
 }
 
@@ -28,6 +29,10 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::start() {
   postInfo(INFO_SAMPLING_RATE, String(getSamplingRateHz()));
   postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(getTargetScanFreqHz()));
   return LDS::RESULT_OK;
+}
+
+float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
+  return motor_enabled ? scan_freq/10 : 0;
 }
 
 uint32_t LDS_YDLIDAR_X3_PRO::getSerialBaudRate() {
@@ -49,10 +54,15 @@ void LDS_YDLIDAR_X3_PRO::stop() {
 void LDS_YDLIDAR_X3_PRO::enableMotor(bool enable) {
   motor_enabled = enable;
 
-  setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+  if (enable) {
+    setMotorPin(DIR_INPUT, LDS_MOTOR_PWM_PIN);
+  } else {
+    setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  }
 
   // Entire LDS on/off
-  setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  //setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
 }
 
 LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
@@ -69,7 +79,6 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
   static float IntervalSampleAngle = 0;
   static float IntervalSampleAngle_LastPackage = 0;
   static uint16_t FirstSampleAngle = 0;
-  static uint16_t LastSampleAnglePrev = 0;
   static uint16_t LastSampleAngle = 0;
   static uint16_t CheckSum = 0;
 
@@ -81,6 +90,8 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
 
   static uint8_t state = 0;
   static bool scan_completed = false;
+  //static uint8_t curr_byte = 0;
+  //static uint8_t prev_byte = 0;
 
   switch(state) {
     case 1:
@@ -106,8 +117,9 @@ state1:
 
       switch (recvPos) {
         case 0: // 0xAA 1st byte of package header
-          if (currentByte != (PH&0xFF))
+          if (currentByte != (PH&0xFF)) {
             continue;
+          }
           break;
         case 1: // 0x55 2nd byte of package header
           CheckSumCal = PH;
@@ -118,10 +130,10 @@ state1:
           break;
         case 2:
           SampleNumlAndCTCal = currentByte;
-          if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
-            recvPos = 0;
-            continue;
-          }
+          //if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
+          //  recvPos = 0;
+          //  continue;
+          //}
           break;
         case 3:
           SampleNumlAndCTCal += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
@@ -236,11 +248,11 @@ state2:
     }
   }
 
+  scan_completed = false;
   if (CheckSumResult) {
-    scan_completed = FirstSampleAngle <= LastSampleAnglePrev;
-    LastSampleAnglePrev = LastSampleAngle;
+    scan_completed = package.package_CT & 0x01;
     if (scan_completed)
-      markScanTime();
+      scan_freq = package.package_CT >> 1;
     postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
   }
 
@@ -249,7 +261,7 @@ state2:
     uint8_t package_CT;
     node_info node;
   
-    package_CT = package.package_CT;    
+    package_CT = package.package_CT & 0x01;
     if (package_CT == CT_NORMAL) {
       node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
     } else {
@@ -300,6 +312,7 @@ state2:
     uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
     //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
+    //postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
     postScanPoint(point_angle, point_distance_mm, point_quality, scan_completed);
     scan_completed = false;
 

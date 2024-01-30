@@ -28,7 +28,10 @@ class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X4 {
     uint32_t getSerialBaudRate() override;
     float getTargetScanFreqHz() override;
     int getSamplingRateHz() override;
+    float getCurrentScanFreqHz() override;
   protected:
     LDS::result_t waitScanDot() override;
     void enableMotor(bool enable) override;
+
+  static uint8_t scan_freq;
 };
