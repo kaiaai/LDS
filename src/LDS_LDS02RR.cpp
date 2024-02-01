@@ -60,14 +60,13 @@ void LDS_LDS02RR::loop() {
       postError(result, "processByte()");
   }
 
-  if (!motor_enabled)
-    return;
+  if (motor_enabled) {
+    scanFreqPID.Compute();
 
-  scanFreqPID.Compute();
-
-  if (pwm_val != pwm_last) {
-    setMotorPin(pwm_val, LDS_MOTOR_PWM_PIN);
-    pwm_last = pwm_val;
+    if (pwm_val != pwm_last) {
+      setMotorPin(pwm_val, LDS_MOTOR_PWM_PIN);
+      pwm_last = pwm_val;
+    }
   }
 }
 

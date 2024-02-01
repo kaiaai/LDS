@@ -21,6 +21,8 @@
 void LDS_YDLIDAR_X4::init() {
   target_scan_freq = sampling_rate = ERROR_UNKNOWN;
   ring_start_ms[0] = ring_start_ms[1] = 0;
+  scan_freq = 0;
+  scan_completed = false;
   enableMotor(false);
 }
 
@@ -102,7 +104,7 @@ uint32_t LDS_YDLIDAR_X4::getSerialBaudRate() {
 
 float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
   unsigned long int scan_period_ms = ring_start_ms[0] - ring_start_ms[1];
-  return (scan_period_ms == 0) ? 0 : 1000.0f/float(scan_period_ms);
+  return (!motor_enabled || scan_period_ms == 0) ? 0 : 1000.0f/float(scan_period_ms);
 }
 
 float LDS_YDLIDAR_X4::getTargetScanFreqHz() {
@@ -151,29 +153,6 @@ void LDS_YDLIDAR_X4::markScanTime() {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
-  static int recvPos = 0;
-  static uint8_t package_Sample_Num = 0;
-  static int package_recvPos = 0;
-  static int package_sample_sum = 0;
-  static int currentByte = 0;
-
-  static node_package package;
-  static uint8_t *packageBuffer = (uint8_t*)&package.package_Head;
-
-  static uint16_t package_Sample_Index = 0;
-  static float IntervalSampleAngle = 0;
-  static float IntervalSampleAngle_LastPackage = 0;
-  static uint16_t FirstSampleAngle = 0;
-  static uint16_t LastSampleAngle = 0;
-  static uint16_t CheckSum = 0;
-
-  static uint16_t CheckSumCal = 0;
-  static uint16_t SampleNumlAndCTCal = 0;
-  static uint16_t LastSampleAngleCal = 0;
-  static bool CheckSumResult = true;
-  static uint16_t Valu8Tou16 = 0;
-
-  static uint8_t state = 0;
 
   switch(state) {
     case 1:
@@ -209,14 +188,19 @@ state1:
             continue;
           }
           break;
-        case 2:
-          SampleNumlAndCTCal = currentByte;
-          if (currentByte == CT_RING_START)
-            markScanTime();
           if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
             recvPos = 0;
             continue;
           }
+          break;
+        case 2:
+          SampleNumlAndCTCal = currentByte;
+          if ((currentByte & 0x01) == CT_RING_START)
+            markScanTime();
+          //if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
+          //  recvPos = 0;
+          //  continue;
+          //}
           break;
         case 3:
           SampleNumlAndCTCal += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
@@ -324,16 +308,25 @@ state2:
     CheckSumCal ^= SampleNumlAndCTCal;
     CheckSumCal ^= LastSampleAngleCal;
 
-    if (CheckSumCal != CheckSum){  
-      CheckSumResult = false;
-    } else {
-      CheckSumResult = true;
-    }
+    CheckSumResult = CheckSumCal == CheckSum;
+    //if (CheckSumCal != CheckSum){  
+    //  CheckSumResult = false;
+    //} else {
+    //  CheckSumResult = true;
+    //}
   }
 
-  if (CheckSumResult)
-    postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum,
-      package.package_CT == CT_RING_START);
+  //if (CheckSumResult)
+  //  postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum,
+  //    package.package_CT == CT_RING_START);
+
+  scan_completed = false;
+  if (CheckSumResult) {
+    scan_completed = (package.package_CT & 0x01) == CT_RING_START;
+    if (scan_completed)
+      scan_freq = package.package_CT >> 1;
+    postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
+  }
 
   // Process the buffered packet
   while(true) {
@@ -389,9 +382,11 @@ state2:
     float point_distance_mm = node.distance_q2*0.25f;
     float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f;
     uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
-    bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
+    //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
-    postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
+    //postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
+    postScanPoint(point_angle, point_distance_mm, point_quality, scan_completed);
+    scan_completed = false;
 
     // Dump finished?
     package_Sample_Index++;

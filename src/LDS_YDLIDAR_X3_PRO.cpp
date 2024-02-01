@@ -17,12 +17,6 @@
 
 #include "LDS_YDLIDAR_X3_PRO.h"
 
-void LDS_YDLIDAR_X3_PRO::init() {
-  ring_start_ms[0] = ring_start_ms[1] = 0;
-  scan_freq = 0;
-  enableMotor(false);
-}
-
 LDS::result_t LDS_YDLIDAR_X3_PRO::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, "YDLIDAR X3 PRO");
@@ -31,8 +25,8 @@ LDS::result_t LDS_YDLIDAR_X3_PRO::start() {
   return LDS::RESULT_OK;
 }
 
-float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
-  return motor_enabled ? scan_freq/10 : 0;
+float LDS_YDLIDAR_X3_PRO::getCurrentScanFreqHz() {
+  return motor_enabled ? float(scan_freq)/10 : 0;
 }
 
 uint32_t LDS_YDLIDAR_X3_PRO::getSerialBaudRate() {
@@ -65,34 +59,8 @@ void LDS_YDLIDAR_X3_PRO::enableMotor(bool enable) {
   //setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
 }
 
+/*
 LDS::result_t LDS_YDLIDAR_X3_PRO::waitScanDot() {
-  static int recvPos = 0;
-  static uint8_t package_Sample_Num = 0;
-  static int package_recvPos = 0;
-  static int package_sample_sum = 0;
-  static int currentByte = 0;
-
-  static node_package package;
-  static uint8_t *packageBuffer = (uint8_t*)&package.package_Head;
-
-  static uint16_t package_Sample_Index = 0;
-  static float IntervalSampleAngle = 0;
-  static float IntervalSampleAngle_LastPackage = 0;
-  static uint16_t FirstSampleAngle = 0;
-  static uint16_t LastSampleAngle = 0;
-  static uint16_t CheckSum = 0;
-
-  static uint16_t CheckSumCal = 0;
-  static uint16_t SampleNumlAndCTCal = 0;
-  static uint16_t LastSampleAngleCal = 0;
-  static bool CheckSumResult = true;
-  static uint16_t Valu8Tou16 = 0;
-
-  static uint8_t state = 0;
-  static bool scan_completed = false;
-  //static uint8_t curr_byte = 0;
-  //static uint8_t prev_byte = 0;
-
   switch(state) {
     case 1:
       goto state1;
@@ -241,11 +209,12 @@ state2:
     CheckSumCal ^= SampleNumlAndCTCal;
     CheckSumCal ^= LastSampleAngleCal;
 
-    if (CheckSumCal != CheckSum){  
-      CheckSumResult = false;
-    } else {
-      CheckSumResult = true;
-    }
+    CheckSumResult = CheckSumCal == CheckSum;
+    //if (CheckSumCal != CheckSum){  
+    //  CheckSumResult = false;
+    //} else {
+    //  CheckSumResult = true;
+    //}
   }
 
   scan_completed = false;
@@ -327,3 +296,4 @@ state2:
   state = 0;
   return LDS::RESULT_OK;
 }
+*/

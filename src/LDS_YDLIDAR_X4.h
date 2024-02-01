@@ -156,4 +156,31 @@ class LDS_YDLIDAR_X4 : public LDS {
     static const uint8_t NODE_NOT_SYNC = 2;
     static const uint8_t PACKAGE_PAID_BYTES = 10;
     static const uint16_t PH = 0x55AA; // Packet Header
+
+    int recvPos = 0;
+    uint8_t package_Sample_Num = 0;
+    int package_recvPos = 0;
+    int package_sample_sum = 0;
+    int currentByte = 0;
+
+    node_package package;
+    uint8_t *packageBuffer = (uint8_t*)&package.package_Head;
+
+    uint16_t package_Sample_Index = 0;
+    float IntervalSampleAngle = 0;
+    float IntervalSampleAngle_LastPackage = 0;
+    uint16_t FirstSampleAngle = 0;
+    uint16_t LastSampleAngle = 0;
+    uint16_t CheckSum = 0;
+
+    uint16_t CheckSumCal = 0;
+    uint16_t SampleNumlAndCTCal = 0;
+    uint16_t LastSampleAngleCal = 0;
+    bool CheckSumResult = true;
+    uint16_t Valu8Tou16 = 0;
+
+    uint8_t state = 0;
+
+    uint8_t scan_freq = 0;
+    bool scan_completed = false;
 };

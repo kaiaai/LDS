@@ -20,18 +20,14 @@
 
 class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X4 {
   public:
-    void init() override;
+    virtual result_t start() override;
+    virtual void stop() override;
 
-    result_t start() override;
-    void stop() override;
-
-    uint32_t getSerialBaudRate() override;
-    float getTargetScanFreqHz() override;
-    int getSamplingRateHz() override;
-    float getCurrentScanFreqHz() override;
+    virtual uint32_t getSerialBaudRate() override;
+    virtual float getTargetScanFreqHz() override;
+    virtual int getSamplingRateHz() override;
+    virtual float getCurrentScanFreqHz() override;
   protected:
-    LDS::result_t waitScanDot() override;
-    void enableMotor(bool enable) override;
-
-  static uint8_t scan_freq;
+    //LDS::result_t waitScanDot() override;
+    virtual void enableMotor(bool enable) override;
 };

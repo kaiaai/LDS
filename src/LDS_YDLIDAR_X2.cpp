@@ -17,11 +17,6 @@
 
 #include "LDS_YDLIDAR_X2.h"
 
-void LDS_YDLIDAR_X2::init() {
-  ring_start_ms[0] = ring_start_ms[1] = 0;
-  enableMotor(false);
-}
-
 LDS::result_t LDS_YDLIDAR_X2::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, "YDLIDAR X2");
@@ -30,18 +25,6 @@ LDS::result_t LDS_YDLIDAR_X2::start() {
   return LDS::RESULT_OK;
 }
 
-uint32_t LDS_YDLIDAR_X2::getSerialBaudRate() {
-  return 115200;
-}
-
-float LDS_YDLIDAR_X2::getTargetScanFreqHz() {
-  return 7;
-}
-
 int LDS_YDLIDAR_X2::getSamplingRateHz() {
   return 3000;
-}
-
-void LDS_YDLIDAR_X2::stop() {
-  enableMotor(false);
 }

@@ -16,16 +16,11 @@
 //   https://github.com/YDLIDAR/lidarCar/
 
 #pragma once
-#include "LDS_YDLIDAR_X4.h"
+#include "LDS_YDLIDAR_X3_PRO.h"
 
-class LDS_YDLIDAR_X2 : public LDS_YDLIDAR_X4 {
+class LDS_YDLIDAR_X2 : public LDS_YDLIDAR_X3_PRO {
   public:
-    void init() override;
+    virtual result_t start() override;
 
-    result_t start() override;
-    void stop() override;
-
-    uint32_t getSerialBaudRate() override;
-    float getTargetScanFreqHz() override;
     int getSamplingRateHz() override;
 };
