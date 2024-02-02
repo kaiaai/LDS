@@ -18,3 +18,4 @@
 #include <LDS_YDLIDAR_X2.h>
 #include <LDS_NEATO_XV11.h>
 #include <LDS_LDS02RR.h>
+#include <LDS_RPLIDAR_A1.h>

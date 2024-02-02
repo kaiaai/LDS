@@ -38,6 +38,7 @@ class LDS {
       ERROR_START_SCAN = -11,
       ERROR_INVALID_VALUE = -12,
       ERROR_UNKNOWN = -13,
+      ERROR_INVALID_DATA = -14,
     };
 
     enum info_t {

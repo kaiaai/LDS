@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Based on
-//   Copyright 2015 - 2018 EAI TEAM http://www.eaibot.com
-//   https://github.com/EAIBOT/ydlidar_arduino
+// Based on https://github.com/EAIBOT/ydlidar_arduino
 
 #include "LDS_YDLIDAR_X4.h"
 
@@ -27,13 +25,12 @@ void LDS_YDLIDAR_X4::init() {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::start() {
-  // Initialize
   enableMotor(false);
 
   abort();
 
-  device_info deviceinfo;
-  if (getDeviceInfo(deviceinfo, 500) != LDS::RESULT_OK)
+  device_info_t deviceinfo;
+  if (getDeviceInfo(deviceinfo, 500) != RESULT_OK)
     return ERROR_DEVICE_INFO;
 
   String model = "YDLIDAR ";
@@ -84,18 +81,18 @@ LDS::result_t LDS_YDLIDAR_X4::start() {
   postInfo(INFO_SERIAL_NUMBER, serial_num);
   delay(100);
 
-  device_health healthinfo;
-  if (getHealth(healthinfo, 100) != LDS::RESULT_OK)    
+  device_health_t healthinfo;
+  if (getHealth(healthinfo, 100) != RESULT_OK)    
     return ERROR_DEVICE_HEALTH;
   postInfo(INFO_DEVICE_HEALTH, healthinfo.status == 0 ? "OK" : "bad");
 
   // Start
-  if (startScan() != LDS::RESULT_OK)
+  if (startScan() != RESULT_OK)
     return ERROR_START_SCAN;
   enableMotor(true);
   delay(1000);
 
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
 
 uint32_t LDS_YDLIDAR_X4::getSerialBaudRate() {
@@ -153,7 +150,6 @@ void LDS_YDLIDAR_X4::markScanTime() {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
-
   switch(state) {
     case 1:
       goto state1;
@@ -170,8 +166,8 @@ LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
     // Read in 10-byte packet header
     while (true) {
 state1:
-      currentByte = readSerial();
-      if (currentByte<0) {
+      int currentByte = readSerial();
+      if (currentByte < 0) {
         state = 1;
         return ERROR_NOT_READY;
       }
@@ -198,11 +194,11 @@ state1:
           //}
           break;
         case 3:
-          SampleNumlAndCTCal += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          SampleNumlAndCTCal += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
           package_Sample_Num = currentByte;
           break;
         case 4:
-          if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
+          if (currentByte & RESP_MEAS_CHECKBIT) {
             FirstSampleAngle = currentByte;
           } else {
             recvPos = 0;
@@ -210,12 +206,12 @@ state1:
           }
           break;
         case 5:
-          FirstSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          FirstSampleAngle += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
           CheckSumCal ^= FirstSampleAngle;
           FirstSampleAngle = FirstSampleAngle>>1;
           break;
         case 6:
-          if (currentByte & LIDAR_RESP_MEASUREMENT_CHECKBIT) {
+          if (currentByte & RESP_MEAS_CHECKBIT) {
             LastSampleAngle = currentByte;
           } else {
             recvPos = 0;
@@ -223,7 +219,7 @@ state1:
           }
           break;
         case 7:
-          LastSampleAngle += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          LastSampleAngle += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
           LastSampleAngleCal = LastSampleAngle;
           LastSampleAngle = LastSampleAngle>>1;
           if (package_Sample_Num == 1) {
@@ -247,7 +243,7 @@ state1:
           CheckSum = currentByte; 
           break;
         case 9:
-          CheckSum += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          CheckSum += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
           break;
       }     
       packageBuffer[recvPos++] = currentByte;
@@ -270,14 +266,14 @@ state1:
       // Read in samples, 2 bytes each
       while (true) {
 state2:
-        currentByte = readSerial();
+        int currentByte = readSerial();
         if (currentByte < 0){
           state = 2;
           return ERROR_NOT_READY;
         }
 
         if ((recvPos & 1) == 1) {
-          Valu8Tou16 += (currentByte<<LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT);
+          Valu8Tou16 += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
           CheckSumCal ^= Valu8Tou16;
         } else {
           Valu8Tou16 = currentByte; 
@@ -326,7 +322,7 @@ state2:
   // Process the buffered packet
   while(true) {
 //    uint8_t package_CT;
-    node_info node;
+    node_info_t node;
   
     //package_CT = package.package_CT;    
     //if ((package_CT & 0x01) == CT_NORMAL) {
@@ -351,23 +347,23 @@ state2:
 
       if ((FirstSampleAngle + sampleAngle + AngleCorrectForDistance) < 0) {
         node.angle_q6_checkbit = (((uint16_t)(FirstSampleAngle + sampleAngle
-          + AngleCorrectForDistance + 23040))<<LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)
-          + LIDAR_RESP_MEASUREMENT_CHECKBIT;
+          + AngleCorrectForDistance + 23040))<<RESP_MEAS_ANGLE_SHIFT)
+          + RESP_MEAS_CHECKBIT;
       } else {
         if ((FirstSampleAngle + sampleAngle + AngleCorrectForDistance) > 23040) {
           node.angle_q6_checkbit = ((uint16_t)((FirstSampleAngle + sampleAngle
-            + AngleCorrectForDistance - 23040))<<LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)
-            + LIDAR_RESP_MEASUREMENT_CHECKBIT;
+            + AngleCorrectForDistance - 23040))<<RESP_MEAS_ANGLE_SHIFT)
+            + RESP_MEAS_CHECKBIT;
         } else {
           node.angle_q6_checkbit = ((uint16_t)((FirstSampleAngle + sampleAngle
-            + AngleCorrectForDistance))<<LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)
-            + LIDAR_RESP_MEASUREMENT_CHECKBIT;
+            + AngleCorrectForDistance))<<RESP_MEAS_ANGLE_SHIFT)
+            + RESP_MEAS_CHECKBIT;
         } 
       }
     } else {
       // Invalid checksum
       //node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
-      node.angle_q6_checkbit = LIDAR_RESP_MEASUREMENT_CHECKBIT;
+      node.angle_q6_checkbit = RESP_MEAS_CHECKBIT;
       node.distance_q2 = 0;
       package_Sample_Index = 0;
       state = 0;
@@ -376,10 +372,10 @@ state2:
   
     // Dump out processed data
     float point_distance_mm = node.distance_q2*0.25f;
-    float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*0.015625f; // /64.0f
-    //uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+    float point_angle = (node.angle_q6_checkbit >> RESP_MEAS_ANGLE_SHIFT)*0.015625f; // /64.0f
+    //uint8_t point_quality = (node.sync_quality>>RESP_MEAS_QUALITY_SHIFT);
     uint8_t point_quality = node.sync_quality;
-    //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
+    //bool point_startBit = (node.sync_quality & RESP_MEAS_SYNCBIT);
 
     //postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
     postScanPoint(point_angle, point_distance_mm, point_quality, scan_completed);
@@ -404,26 +400,24 @@ void LDS_YDLIDAR_X4::loop() {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::abort() {
-  // stop the scanPoint operation
-  return sendCommand(LIDAR_CMD_FORCE_STOP, NULL, 0);
+  return sendCommand(CMD_FORCE_STOP, NULL, 0);
 }
 
 LDS::result_t LDS_YDLIDAR_X4::sendCommand(uint8_t cmd, const void * payload, size_t payloadsize) {
-  //send data to serial
-  cmd_packet pkt_header;
-  cmd_packet * header = &pkt_header;
+  cmd_packet_t pkt_header;
+  cmd_packet_t * header = &pkt_header;
   uint8_t checksum = 0;
 
   if (payloadsize && payload)
-    cmd |= LIDAR_CMDFLAG_HAS_PAYLOAD;
+    cmd |= CMDFLAG_HAS_PAYLOAD;
 
-  header->syncByte = LIDAR_CMD_SYNC_BYTE;
-  header->cmd_flag = cmd&0xff;
+  header->syncByte = CMD_SYNC_BYTE;
+  header->cmd_flag = cmd & 0xff;
 
   writeSerial((uint8_t *)header, 2) ;
-  if ((cmd & LIDAR_CMDFLAG_HAS_PAYLOAD)) {
-    checksum ^= LIDAR_CMD_SYNC_BYTE;
-    checksum ^= (cmd&0xff);
+  if (cmd & CMDFLAG_HAS_PAYLOAD) {
+    checksum ^= CMD_SYNC_BYTE;
+    checksum ^= (cmd & 0xff);
     checksum ^= (payloadsize & 0xFF);
 
     for (size_t pos = 0; pos < payloadsize; ++pos)
@@ -434,128 +428,122 @@ LDS::result_t LDS_YDLIDAR_X4::sendCommand(uint8_t cmd, const void * payload, siz
     writeSerial((const uint8_t *)payload, sizebyte);
     writeSerial(&checksum, 1);
   }
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
 
-LDS::result_t LDS_YDLIDAR_X4::getDeviceInfo(device_info & info, uint32_t timeout) {
-  LDS::result_t ans;
-  uint8_t  recvPos = 0;
+LDS::result_t LDS_YDLIDAR_X4::getDeviceInfo(device_info_t & info, uint32_t timeout) {
+  uint8_t recvPos = 0;
   uint32_t currentTs = millis();
-  uint32_t remainingtime;
   uint8_t *infobuf = (uint8_t*)&info;
-  lidar_ans_header response_header;
 
-  ans = sendCommand(LIDAR_CMD_GET_DEVICE_INFO, NULL, 0);
-  if (ans != LDS::RESULT_OK)
+  LDS::result_t ans = sendCommand(CMD_GET_DEV_INFO, NULL, 0);
+  if (ans != RESULT_OK)
     return ans;
 
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
+  ans_header_t response_header;
+  ans = waitResponseHeader(&response_header, timeout);
+  if (ans != RESULT_OK)
     return ans;
 
-  if (response_header.type != LIDAR_ANS_TYPE_DEVINFO)
+  if (response_header.type != ANS_TYPE_DEV_INFO)
     return ERROR_INVALID_PACKET;
 
-  if (response_header.size < sizeof(lidar_ans_header))
+  if (response_header.size < sizeof(ans_header_t))
     return ERROR_INVALID_PACKET;
 
-  while ((remainingtime=millis() - currentTs) <= timeout) {
-    int currentbyte = readSerial();
-    if (currentbyte<0)
+  while ((millis() - currentTs) <= timeout) {
+    int current_byte = readSerial();
+    if (current_byte < 0)
       continue;    
-    infobuf[recvPos++] = currentbyte;
+    infobuf[recvPos++] = current_byte;
 
-    if (recvPos == sizeof(device_info))
-      return LDS::RESULT_OK;
+    if (recvPos == sizeof(device_info_t))
+      return RESULT_OK;
   }
 
   return ERROR_TIMEOUT;
 }
 
-LDS::result_t LDS_YDLIDAR_X4::waitResponseHeader(lidar_ans_header * header, uint32_t timeout) {
-  // wait response header
+LDS::result_t LDS_YDLIDAR_X4::waitResponseHeader(ans_header_t * header, uint32_t timeout) {
   int recvPos = 0;
   uint32_t startTs = millis();
-  uint8_t *headerBuffer = (uint8_t *)(header);
-  uint32_t waitTime;
+  uint8_t *headerBuffer = (uint8_t *)header;
 
-  while ((waitTime=millis() - startTs) <= timeout) {
-    int currentbyte = readSerial();
-    if (currentbyte<0)
+  while ((millis() - startTs) <= timeout) {
+    int current_byte = readSerial();
+    if (current_byte < 0)
       continue;
 
     switch (recvPos) {
       case 0:
-        if (currentbyte != LIDAR_ANS_SYNC_BYTE1)
+        if (current_byte != ANS_SYNC_BYTE1)
           continue;
         break;
       case 1:
-        if (currentbyte != LIDAR_ANS_SYNC_BYTE2) {
+        if (current_byte != ANS_SYNC_BYTE2) {
             recvPos = 0;
             continue;
         }
         break;
     }
-    headerBuffer[recvPos++] = currentbyte;
+    headerBuffer[recvPos++] = current_byte;
 
-    if (recvPos == sizeof(lidar_ans_header))
-      return LDS::RESULT_OK;
+    if (recvPos == sizeof(ans_header_t))
+      return RESULT_OK;
   }
   return ERROR_TIMEOUT;
 }
 
-// ask the YDLIDAR for its device health
-LDS::result_t LDS_YDLIDAR_X4::getHealth(device_health & health, uint32_t timeout) {
-  LDS::result_t ans;
+LDS::result_t LDS_YDLIDAR_X4::getHealth(device_health_t & health, uint32_t timeout) {
   uint8_t recvPos = 0;
   uint32_t currentTs = millis();
-  uint32_t remainingtime;
   uint8_t *infobuf = (uint8_t*)&health;
-  lidar_ans_header response_header;
 
-  ans = sendCommand(LIDAR_CMD_GET_DEVICE_HEALTH, NULL, 0);
+  LDS::result_t ans = sendCommand(CMD_GET_DEV_HEALTH, NULL, 0);
+  if (ans != RESULT_OK)
+    return ans;
+
+  ans_header_t response_header;
+  ans = waitResponseHeader(&response_header, timeout);
   if (ans != LDS::RESULT_OK)
     return ans;
 
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
-    return ans;
-
-  if (response_header.type != LIDAR_ANS_TYPE_DEVHEALTH)
+  if (response_header.type != ANS_TYPE_DEV_HEALTH)
     return ERROR_INVALID_PACKET;
 
-  if (response_header.size < sizeof(device_health))
+  if (response_header.size < sizeof(device_health_t))
     return ERROR_INVALID_PACKET;
 
-  while ((remainingtime=millis() - currentTs) <= timeout) {
+  while ((millis() - currentTs) <= timeout) {
     int currentbyte = readSerial();
 
     if (currentbyte < 0)
       continue;
     infobuf[recvPos++] = currentbyte;
 
-    if (recvPos == sizeof(device_health))
-      return LDS::RESULT_OK;
+    if (recvPos == sizeof(device_health_t))
+      return RESULT_OK;
   }
   return ERROR_TIMEOUT;
 }
 
 LDS::result_t LDS_YDLIDAR_X4::startScan(bool force, uint32_t timeout ) {
-  // start the scanPoint operation
-  LDS::result_t ans;
+  abort();
 
-  abort(); //force the previous operation to stop
-
-  if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : LIDAR_CMD_SCAN, NULL, 0)) != LDS::RESULT_OK)
+  LDS::result_t ans = sendCommand(force ? CMD_FORCE_SCAN : CMD_SCAN, NULL, 0);
+  if (ans != RESULT_OK)
     return ans;
 
-  lidar_ans_header response_header;
-  if ((ans = waitResponseHeader(&response_header, timeout)) != LDS::RESULT_OK)
+  ans_header_t response_header;
+  ans = waitResponseHeader(&response_header, timeout);
+  if (ans != RESULT_OK)
     return ans;
 
-  if (response_header.type != LIDAR_ANS_TYPE_MEASUREMENT)
+  if (response_header.type != ANS_TYPE_MEAS)
     return ERROR_INVALID_PACKET;
 
-  if (response_header.size < sizeof(node_info))
+  if (response_header.size < sizeof(node_info_t))
     return ERROR_INVALID_PACKET;
 
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
