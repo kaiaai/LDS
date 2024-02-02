@@ -131,7 +131,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     static const uint8_t LIDAR_ANS_TYPE_MEASUREMENT = 0x81;
 
     static const uint8_t LIDAR_RESP_MEASUREMENT_SYNCBIT = (0x1<<0);
-    static const uint8_t LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT = 2;
+    //static const uint8_t LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT = 2;
     static const uint8_t LIDAR_RESP_MEASUREMENT_CHECKBIT = (0x1<<0);
     static const uint8_t LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT = 1;
     static const uint8_t LIDAR_RESP_MEASUREMENT_ANGLE_SAMPLE_SHIFT = 8;
@@ -151,7 +151,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     static const uint8_t LIDAR_STATUS_ERROR = 0x2;
     
     static const uint8_t PACKAGE_SAMPLE_BYTES = 2;
-    static const uint16_t NODE_DEFAULT_QUALITY = (10<<2);
+    static const uint16_t NODE_DEFAULT_QUALITY = 10; // (10<<2)
     static const uint8_t NODE_SYNC = 0x01;
     static const uint8_t NODE_NOT_SYNC = 2;
     static const uint8_t PACKAGE_PAID_BYTES = 10;

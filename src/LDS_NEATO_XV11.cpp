@@ -223,7 +223,7 @@ LDS::result_t LDS_NEATO_XV11::processByte(int inByte) {
 
           int angle = startingAngle + ix;
           bool scan_completed = angle == 0;
-          if (!cw))
+          if (!cw)
             angle = (360 - angle) % 360;
           postScanPoint(angle, err ? 0 : aryDist[ix], aryQuality[ix], scan_completed);
         }

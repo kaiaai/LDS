@@ -325,15 +325,16 @@ state2:
 
   // Process the buffered packet
   while(true) {
-    uint8_t package_CT;
+//    uint8_t package_CT;
     node_info node;
   
-    package_CT = package.package_CT;    
-    if (package_CT == CT_NORMAL) {
-      node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
-    } else {
-      node.sync_quality = NODE_DEFAULT_QUALITY + NODE_SYNC;
-    }
+    //package_CT = package.package_CT;    
+    //if ((package_CT & 0x01) == CT_NORMAL) {
+    //  node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
+    //} else {
+    //  node.sync_quality = NODE_DEFAULT_QUALITY + NODE_SYNC;
+    //}
+    node.sync_quality = NODE_DEFAULT_QUALITY;
   
     if (CheckSumResult == true) {
       int32_t AngleCorrectForDistance;
@@ -365,7 +366,7 @@ state2:
       }
     } else {
       // Invalid checksum
-      node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
+      //node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
       node.angle_q6_checkbit = LIDAR_RESP_MEASUREMENT_CHECKBIT;
       node.distance_q2 = 0;
       package_Sample_Index = 0;
@@ -375,8 +376,9 @@ state2:
   
     // Dump out processed data
     float point_distance_mm = node.distance_q2*0.25f;
-    float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f;
-    uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+    float point_angle = (node.angle_q6_checkbit >> LIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)*0.015625f; // /64.0f
+    //uint8_t point_quality = (node.sync_quality>>LIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+    uint8_t point_quality = node.sync_quality;
     //bool point_startBit = (node.sync_quality & LIDAR_RESP_MEASUREMENT_SYNCBIT);
 
     //postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
