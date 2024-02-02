@@ -188,11 +188,6 @@ state1:
             continue;
           }
           break;
-          if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
-            recvPos = 0;
-            continue;
-          }
-          break;
         case 2:
           SampleNumlAndCTCal = currentByte;
           if ((currentByte & 0x01) == CT_RING_START)

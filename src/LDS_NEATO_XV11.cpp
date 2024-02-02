@@ -222,9 +222,10 @@ LDS::result_t LDS_NEATO_XV11::processByte(int inByte) {
           byte err = aryInvalidDataFlag[ix] & BAD_DATA_MASK;
 
           int angle = startingAngle + ix;
-          if (!cw)
-            angle = 359 - angle;
-          postScanPoint(angle, err ? 0 : aryDist[ix], aryQuality[ix], angle == 0);
+          bool scan_completed = angle == 0;
+          if (!cw))
+            angle = (360 - angle) % 360;
+          postScanPoint(angle, err ? 0 : aryDist[ix], aryQuality[ix], scan_completed);
         }
 
       } else {
