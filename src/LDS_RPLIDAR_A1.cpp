@@ -121,15 +121,8 @@ void LDS_RPLIDAR_A1::stop() {
 void LDS_RPLIDAR_A1::enableMotor(bool enable) {
   motor_enabled = enable;
 
-  if (enable) {
-    setMotorPin(DIR_INPUT, LDS_MOTOR_PWM_PIN);
-  } else {
-    setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
-    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
-  }
-
-  // Entire LDS on/off
-  //setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+  setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
 }
 
 bool LDS_RPLIDAR_A1::isActive() {
