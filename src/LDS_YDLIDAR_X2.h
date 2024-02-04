@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Based on
-//   https://github.com/YDLIDAR/lidarCar/
+// Based on https://github.com/YDLIDAR/lidarCar/
 
 #pragma once
 #include "LDS_YDLIDAR_X3_PRO.h"

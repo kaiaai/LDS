@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-// Based on
-//   Copyright 2014-2021 James LeRoy getSurreal.com
-//   https://github.com/getSurreal/XV_Lidar_Controller
+// Based on https://github.com/getSurreal/XV_Lidar_Controller
 
 #include "LDS_NEATO_XV11.h"
 

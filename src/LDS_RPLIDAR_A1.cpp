@@ -163,7 +163,7 @@ LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
         test = current_byte >> 1;
         test = (test ^ current_byte) & 0x01;
         if (!test)
-            continue;
+          continue;
         break;
       case 1:
         test = current_byte & RESP_MEAS_CHECKBIT;
