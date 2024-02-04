@@ -17,7 +17,6 @@
 #include "LDS_YDLIDAR_X4.h"
 
 void LDS_YDLIDAR_X4::init() {
-  target_scan_freq = sampling_rate = ERROR_UNKNOWN;
   ring_start_ms[0] = ring_start_ms[1] = 0;
   scan_freq = 0;
   scan_completed = false;
@@ -33,36 +32,11 @@ LDS::result_t LDS_YDLIDAR_X4::start() {
   if (getDeviceInfo(deviceinfo, 500) != RESULT_OK)
     return ERROR_DEVICE_INFO;
 
-  String model = "YDLIDAR ";
-  switch (deviceinfo.model) {
-    case 1:
-      model += "F4";
-      sampling_rate = 4000;
-      target_scan_freq = 7;
-      break;
-    case 4:
-      model += "S4";
-      sampling_rate = 4000;
-      target_scan_freq = 7;
-      break;
-    case 5:
-      model += "G4";
-      sampling_rate = 9000;
-      target_scan_freq = 7;
-      break;
-    case 6:
-      model += "X4";
-      sampling_rate = 5000;
-      target_scan_freq = 7;
-      break;
-    default:
-      model = "Unknown";
-      sampling_rate = ERROR_UNKNOWN;
-      target_scan_freq = ERROR_UNKNOWN;
+  if (deviceinfo.model == 6) {
+    postInfo(INFO_MODEL, getModelName());
+  } else {
+    postError(ERROR_INVALID_MODEL, String(deviceinfo.model));
   }
-  postInfo(INFO_MODEL, model);
-  postInfo(INFO_SAMPLING_RATE, String(sampling_rate));
-  postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(target_scan_freq));
 
   uint16_t maxv = (uint16_t)(deviceinfo.firmware_version >> 8);
   uint16_t midv = (uint16_t)(deviceinfo.firmware_version & 0xff) / 10;
@@ -105,11 +79,11 @@ float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
 }
 
 float LDS_YDLIDAR_X4::getTargetScanFreqHz() {
-  return target_scan_freq;
+  return 7;
 }
 
 int LDS_YDLIDAR_X4::getSamplingRateHz() {
-  return sampling_rate;
+  return 5000;
 }
 
 void LDS_YDLIDAR_X4::stop() {
@@ -547,3 +521,5 @@ LDS::result_t LDS_YDLIDAR_X4::startScan(bool force, uint32_t timeout ) {
 
   return RESULT_OK;
 }
+
+const char* LDS_YDLIDAR_X4::getModelName() { return "YDLIDAR X4"; }

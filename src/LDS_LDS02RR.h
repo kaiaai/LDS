@@ -21,5 +21,5 @@
 class LDS_LDS02RR : public LDS_NEATO_XV11 {
   public:
     void init() override;
-    result_t start() override;
+    const char* getModelName() override;
 };

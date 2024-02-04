@@ -31,6 +31,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     virtual float getTargetScanFreqHz() override;
     virtual int getSamplingRateHz() override;
     virtual bool isActive() override;
+    virtual const char* getModelName() override;
 
     virtual result_t setScanTargetFreqHz(float freq) override;
     virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
@@ -38,8 +39,6 @@ class LDS_YDLIDAR_X4 : public LDS {
 
   protected:
     bool motor_enabled;
-    float target_scan_freq;
-    int sampling_rate;
     unsigned long int ring_start_ms[2];
 
   protected:

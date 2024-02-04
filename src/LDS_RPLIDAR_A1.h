@@ -30,6 +30,7 @@ class LDS_RPLIDAR_A1 : public LDS {
     virtual float getTargetScanFreqHz() override;
     virtual int getSamplingRateHz() override;
     virtual bool isActive() override;
+    virtual const char* getModelName() override;
 
     virtual result_t setScanTargetFreqHz(float freq) override;
     virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;

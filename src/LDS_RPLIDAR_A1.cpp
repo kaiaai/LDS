@@ -31,38 +31,7 @@ LDS::result_t LDS_RPLIDAR_A1::start() {
   if (getDeviceInfo(deviceinfo, 500) != RESULT_OK)
     return ERROR_DEVICE_INFO;
 
-  /*
-  String model = "RPLIDAR ";
-  switch (deviceinfo.model) {
-    case 1:
-      model += "F4";
-      sampling_rate = 4000;
-      target_scan_freq = 7;
-      break;
-    case 4:
-      model += "S4";
-      sampling_rate = 4000;
-      target_scan_freq = 7;
-      break;
-    case 5:
-      model += "G4";
-      sampling_rate = 9000;
-      target_scan_freq = 7;
-      break;
-    case 6:
-      model += "X4";
-      sampling_rate = 5000;
-      target_scan_freq = 7;
-      break;
-    default:
-      model = "Unknown";
-      sampling_rate = ERROR_UNKNOWN;
-      target_scan_freq = ERROR_UNKNOWN;
-  }
-  */
   postInfo(INFO_MODEL, "RPLIDAR " + String(deviceinfo.model));
-//  postInfo(INFO_SAMPLING_RATE, String(sampling_rate));
-//  postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(target_scan_freq));
 
   uint16_t maxv = (uint16_t)(deviceinfo.firmware_version >> 8);
   uint16_t midv = (uint16_t)(deviceinfo.firmware_version & 0xff) / 10;
@@ -347,3 +316,5 @@ LDS::result_t LDS_RPLIDAR_A1::startScan(bool force, uint32_t timeout ) {
 
   return RESULT_OK;
 }
+
+const char* LDS_RPLIDAR_A1::getModelName() { return "RPLIDAR A1"; }

@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#pragma once
+#include "LDS_YDLIDAR_X3.h"
 
-#include <LDS_YDLIDAR_X4.h>
-#include <LDS_YDLIDAR_X3_PRO.h>
-#include <LDS_YDLIDAR_X3.h>
-#include <LDS_YDLIDAR_X2_X2L.h>
-#include <LDS_NEATO_XV11.h>
-#include <LDS_LDS02RR.h>
-#include <LDS_RPLIDAR_A1.h>
+const char* LDS_YDLIDAR_X3::getModelName() { return "YDLIDAR X3"; }
+
+int LDS_YDLIDAR_X3::getSamplingRateHz() {
+  return 3000;
+}

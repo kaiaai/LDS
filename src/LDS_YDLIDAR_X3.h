@@ -11,15 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// Based on https://github.com/YDLIDAR/lidarCar/
 
 #pragma once
 #include "LDS_YDLIDAR_X3_PRO.h"
 
-class LDS_YDLIDAR_X2 : public LDS_YDLIDAR_X3_PRO {
+class LDS_YDLIDAR_X3 : public LDS_YDLIDAR_X3_PRO {
   public:
-    virtual result_t start() override;
-
-    int getSamplingRateHz() override;
+    const char* getModelName() override;
+    virtual int getSamplingRateHz() override;
 };

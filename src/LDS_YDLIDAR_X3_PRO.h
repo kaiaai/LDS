@@ -21,6 +21,7 @@ class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X4 {
   public:
     virtual result_t start() override;
     virtual void stop() override;
+    virtual const char* getModelName() override;
 
     virtual uint32_t getSerialBaudRate() override;
     virtual float getTargetScanFreqHz() override;

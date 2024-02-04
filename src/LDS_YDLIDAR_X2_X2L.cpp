@@ -11,19 +11,11 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// Based on https://github.com/YDLIDAR/lidarCar/
 
-#include "LDS_YDLIDAR_X2.h"
+#include "LDS_YDLIDAR_X2_X2L.h"
 
-LDS::result_t LDS_YDLIDAR_X2::start() {
-  enableMotor(true);
-  postInfo(INFO_MODEL, "YDLIDAR X2");
-  postInfo(INFO_SAMPLING_RATE, String(getSamplingRateHz()));
-  postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(getTargetScanFreqHz()));
-  return LDS::RESULT_OK;
-}
+const char* LDS_YDLIDAR_X2_X2L::getModelName() { return "YDLIDAR X2/X2L"; }
 
-int LDS_YDLIDAR_X2::getSamplingRateHz() {
+int LDS_YDLIDAR_X2_X2L::getSamplingRateHz() {
   return 3000;
 }

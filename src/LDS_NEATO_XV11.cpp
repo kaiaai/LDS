@@ -261,8 +261,8 @@ void LDS_NEATO_XV11::stop() {
 
 LDS::result_t LDS_NEATO_XV11::start() {
   enableMotor(true);
-  postInfo(INFO_MODEL, "NEATO-XV11");
-  postInfo(INFO_SAMPLING_RATE, String(getSamplingRateHz()));
-  postInfo(INFO_DEFAULT_TARGET_SCAN_FREQ_HZ, String(DEFAULT_SCAN_RPM/60.0f));
+  postInfo(INFO_MODEL, getModelName());
   return LDS::RESULT_OK;
 }
+
+const char* LDS_NEATO_XV11::getModelName() { return "NEATO XV11"; }

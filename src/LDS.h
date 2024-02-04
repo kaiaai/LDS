@@ -82,6 +82,7 @@ class LDS {
     virtual float getTargetScanFreqHz() = 0;
     virtual int getSamplingRateHz() = 0;
     virtual bool isActive() = 0;
+    virtual const char* getModelName() = 0;
 
     virtual result_t setScanTargetFreqHz(float freq) = 0;
     virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) = 0;
