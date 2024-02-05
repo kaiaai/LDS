@@ -22,6 +22,11 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/gaDnZ4Msw0E/maxresdefault.jpg" alt="LDS02RR laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
 
+### Video: RPLIDAR A1 runs on Arduino
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=f8IYjfiXsMk" target="_blank">
+ <img src="http://img.youtube.com/vi/f8IYjfiXsMk/maxresdefault.jpg" alt="RPLIDAR A1 laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
+</a>
+
 Note: LDS02RR, Neato XV11 LDS require an additional motor control board to operate.
 You can find the board schematics [here](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter) or purchase it at [makerspet.com](https://makerspet.com) when it becomes available.
 
