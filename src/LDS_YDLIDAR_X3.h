@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #pragma once
-#include "LDS_YDLIDAR_X3_PRO.h"
+#include "LDS_YDLIDAR_X2_X2L.h"
 
-class LDS_YDLIDAR_X3 : public LDS_YDLIDAR_X3_PRO {
+class LDS_YDLIDAR_X3 : public LDS_YDLIDAR_X2_X2L {
   public:
-    const char* getModelName() override;
-    virtual int getSamplingRateHz() override;
+    virtual const char* getModelName() override;
+    virtual float getCurrentScanFreqHz() override;
 };

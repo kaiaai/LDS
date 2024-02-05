@@ -11,23 +11,12 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//
-// Based on https://github.com/YDLIDAR/lidarCar/
 
 #pragma once
-#include "LDS_YDLIDAR_X4.h"
+#include "LDS_YDLIDAR_X3.h"
 
-class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X4 {
+class LDS_YDLIDAR_X3_PRO : public LDS_YDLIDAR_X3 {
   public:
-    virtual result_t start() override;
-    virtual void stop() override;
     virtual const char* getModelName() override;
-
-    virtual uint32_t getSerialBaudRate() override;
-    virtual float getTargetScanFreqHz() override;
     virtual int getSamplingRateHz() override;
-    virtual float getCurrentScanFreqHz() override;
-  protected:
-    //LDS::result_t waitScanDot() override;
-    virtual void enableMotor(bool enable) override;
 };

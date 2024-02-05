@@ -79,7 +79,7 @@ float LDS_YDLIDAR_X4::getCurrentScanFreqHz() {
 }
 
 float LDS_YDLIDAR_X4::getTargetScanFreqHz() {
-  return 7;
+  return DEFAULT_VALUE;
 }
 
 int LDS_YDLIDAR_X4::getSamplingRateHz() {

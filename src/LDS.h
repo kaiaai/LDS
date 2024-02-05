@@ -60,8 +60,8 @@ class LDS {
     typedef void (*InfoCallback)(info_t, String);
     typedef void (*ErrorCallback)(result_t, String);
 
-    //static
-     const int8_t DEFAULT_VALUE = -1;
+    const int8_t DEFAULT_VALUE = -1;
+
     enum lds_pin_state_t {
       VALUE_PWM = 0,
       VALUE_LOW = -1,

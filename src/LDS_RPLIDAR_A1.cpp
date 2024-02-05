@@ -74,11 +74,11 @@ float LDS_RPLIDAR_A1::getCurrentScanFreqHz() {
 }
 
 float LDS_RPLIDAR_A1::getTargetScanFreqHz() {
-  return 5.5; // TODO 1..10Hz
+  return DEFAULT_VALUE;
 }
 
 int LDS_RPLIDAR_A1::getSamplingRateHz() {
-  return 8000; // TODO check
+  return 4000; // TODO high speed mode 8000
 }
 
 void LDS_RPLIDAR_A1::stop() {

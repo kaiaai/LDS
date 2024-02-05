@@ -16,6 +16,6 @@
 
 const char* LDS_YDLIDAR_X3::getModelName() { return "YDLIDAR X3"; }
 
-int LDS_YDLIDAR_X3::getSamplingRateHz() {
-  return 3000;
+float LDS_YDLIDAR_X3::getCurrentScanFreqHz() {
+  return motor_enabled ? float(scan_freq)*0.1f : 0;
 }
