@@ -118,7 +118,6 @@ void LDS_RPLIDAR_A1::markScanTime() {
 LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
 
   while (true) {
-
     if (recvPos >= sizeof(node_info_t))
       recvPos = 0;
 
@@ -126,29 +125,18 @@ LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
     if (current_byte < 0)
       return ERROR_NOT_READY;
 
-    uint8_t test;
     switch (recvPos) {
     case 0:
-      test = ((current_byte >> 1) ^ current_byte) & 0x01;
-      if (!test) {
-        Serial.print(current_byte < 16 ? ".0" : ".");
-        Serial.print(current_byte, HEX);
-        continue;
-      }
-      break;
-    case 1:
-      test = current_byte & RESP_MEAS_CHECKBIT;
-      if (!test) {
-        recvPos = 0;
-        test = ((current_byte >> 1) ^ current_byte) & 0x01;
-        if (!test) {
-          Serial.print(current_byte < 16 ? ".0" : ".");
-          Serial.print(current_byte, HEX);
-          continue;
-        }
+      if (((current_byte >> 1) ^ current_byte) & 0x01)
         break;
-      }
-      break;
+      continue;
+    case 1:
+      if (current_byte & RESP_MEAS_CHECKBIT)
+        break;
+      recvPos = 0;
+      if (((current_byte >> 1) ^ current_byte) & 0x01)
+        break;
+      continue;
     }
 
     uint8_t *nodebuf = (uint8_t*)&node;
