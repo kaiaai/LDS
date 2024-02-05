@@ -32,14 +32,11 @@ You can find the board schematics [here](https://github.com/makerspet/pcb/tree/m
 
 ## Release notes
 
-## v0.3.3
+## v0.3.2
 - added Neato XV11
 - added RPLIDAR A1
-- added YDLIDAR X3
+- added YDLIDAR X3, X3 PRO
 - report scan RPM for all sensor models
-
-### v0.3.2
-- added YDLIDAR X3 PRO
 
 ### v0.3.1
 - added YDLIDAR X2/X2L
