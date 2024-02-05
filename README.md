@@ -1,12 +1,16 @@
 # LDS/LiDAR Library for Arduino
-Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) platform. The library supports
+Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) platform.
+Please read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more details.
+
+This library supports:
 - YDLIDAR X4, X3, X3-PRO, X2/X2L models
 - RPLIDAR A1
 - Neato XV11/Botvac
 - Xiaomi Mi 1st gen LDS02RR
 
-Note: LDS02RR, Neato XV11 LDS require an additional motor control board to operate.
-You can find the board schematics [here](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter) or purchase it at [makerspet.com](https://makerspet.com) when it becomes available.
+Other models are in the works.
+
+![lidar_sensors](https://github.com/kaiaai/LDS/assets/33589365/c38af37b-a9b1-44d1-b256-94d72e7562c6)
 
 ### Video: Neato XV11 runs on Arduino
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=kfk1Q0RSJpI" target="_blank">
@@ -17,6 +21,9 @@ You can find the board schematics [here](https://github.com/makerspet/pcb/tree/m
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=gaDnZ4Msw0E" target="_blank">
  <img src="http://img.youtube.com/vi/gaDnZ4Msw0E/maxresdefault.jpg" alt="LDS02RR laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
+
+Note: LDS02RR, Neato XV11 LDS require an additional motor control board to operate.
+You can find the board schematics [here](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter) or purchase it at [makerspet.com](https://makerspet.com) when it becomes available.
 
 ## Release notes
 
