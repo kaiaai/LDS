@@ -32,7 +32,7 @@ You can find the board schematics [here](https://github.com/makerspet/pcb/tree/m
 
 ## Release notes
 
-## v0.3.2
+## v0.4.0
 - added Neato XV11
 - added RPLIDAR A1
 - added YDLIDAR X3, X3 PRO
