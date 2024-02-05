@@ -128,19 +128,27 @@ LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
 
     uint8_t test;
     switch (recvPos) {
-      case 0:
-        test = current_byte >> 1;
-        test = (test ^ current_byte) & 0x01;
-        if (!test)
-          continue;
-        break;
-      case 1:
-        test = current_byte & RESP_MEAS_CHECKBIT;
+    case 0:
+      test = ((current_byte >> 1) ^ current_byte) & 0x01;
+      if (!test) {
+        Serial.print(current_byte < 16 ? ".0" : ".");
+        Serial.print(current_byte, HEX);
+        continue;
+      }
+      break;
+    case 1:
+      test = current_byte & RESP_MEAS_CHECKBIT;
+      if (!test) {
+        recvPos = 0;
+        test = ((current_byte >> 1) ^ current_byte) & 0x01;
         if (!test) {
-          recvPos = 0;
+          Serial.print(current_byte < 16 ? ".0" : ".");
+          Serial.print(current_byte, HEX);
           continue;
         }
         break;
+      }
+      break;
     }
 
     uint8_t *nodebuf = (uint8_t*)&node;
@@ -152,6 +160,8 @@ LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
       uint8_t quality = (node.sync_quality >> RESP_MEAS_QUALITY_SHIFT);
       bool scan_completed = (node.sync_quality & RESP_MEAS_SYNCBIT);
 
+      if (scan_completed)
+        markScanTime();
       postPacket(nodebuf, sizeof(node_info_t), scan_completed);
       postScanPoint(angle_deg, distance_mm, quality, scan_completed);
 
@@ -162,9 +172,13 @@ LDS::result_t LDS_RPLIDAR_A1::waitScanDot() {
 }
 
 void LDS_RPLIDAR_A1::loop() {
-  result_t result = waitScanDot();
-  if (result < RESULT_OK)
-    postError(result, "waitScanDot()");
+  while (true) {
+    result_t result = waitScanDot();
+    if (result == ERROR_NOT_READY)
+      return;
+    if (result < RESULT_OK)
+      postError(result, "waitScanDot()");
+  }
 }
 
 LDS::result_t LDS_RPLIDAR_A1::abort() {
