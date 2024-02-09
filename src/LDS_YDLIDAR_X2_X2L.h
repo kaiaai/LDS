@@ -28,6 +28,5 @@ class LDS_YDLIDAR_X2_X2L : public LDS_YDLIDAR_X4 {
     virtual float getTargetScanFreqHz() override;
     virtual int getSamplingRateHz() override;
   protected:
-    //LDS::result_t waitScanDot() override;
     virtual void enableMotor(bool enable) override;
 };

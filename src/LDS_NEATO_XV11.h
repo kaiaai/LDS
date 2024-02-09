@@ -38,7 +38,6 @@ class LDS_NEATO_XV11 : public LDS {
 
   protected:
     static constexpr float DEFAULT_SCAN_RPM = 300.0f;
-    static const uint32_t SAMPLE_RATE_HZ = 1800;
 
     // REF: https://github.com/Xevel/NXV11/wiki
     // The bit 7 of byte 1 seems to indicate that the distance could not be calculated.
@@ -59,14 +58,13 @@ class LDS_NEATO_XV11 : public LDS {
     LDS::result_t processByte(int inByte);
     uint16_t processIndex();
     void processSpeed();
-    byte processDistance(int iQuad);
+    uint8_t processDistance(int iQuad);
     void processSignalStrength(int iQuad);
     bool isValidPacket();
     void clearVars();
 
-    float scan_rpm_setpoint; // desired scan RPM
-  
-    bool motor_enabled;        // to spin the laser or not.  No data when not spinning
+    float scan_rpm_setpoint; // desired scan RPM  
+    bool motor_enabled;
     int eState;
 
     // 90 packets * 22 bytes = 1,980 bytes per scan at 5Hz

@@ -38,6 +38,7 @@ uint32_t LDS_NEATO_XV11::getSerialBaudRate() {
 int LDS_NEATO_XV11::getSamplingRateHz() {
   return 1800;
 }
+
 LDS::result_t LDS_NEATO_XV11::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
   scanFreqPID.SetTunings(Kp, Ki, Kd);
   return RESULT_OK;
@@ -45,7 +46,7 @@ LDS::result_t LDS_NEATO_XV11::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
 
 LDS::result_t LDS_NEATO_XV11::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   scanFreqPID.SetSampleTime(sample_period_ms);
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
 
 void LDS_NEATO_XV11::loop() {
@@ -141,7 +142,7 @@ void LDS_NEATO_XV11::processSignalStrength(int iQuad) {
   aryQuality[iQuad] = dataL | (dataM << 8);
 }
 
-byte LDS_NEATO_XV11::processDistance(int iQuad) {
+uint8_t LDS_NEATO_XV11::processDistance(int iQuad) {
   // Data 0 to Data 3 are the 4 readings. Each one is 4 bytes long, and organized as follows :
   //   byte 0 : <distance 7:0>
   //   byte 1 : <"invalid data" flag> <"strength warning" flag> <distance 13:8>
@@ -241,14 +242,14 @@ LDS::result_t LDS_NEATO_XV11::setScanTargetFreqHz(float freq) {
   float rpm = freq * 60.0f;
   if (rpm <= 0) {
     scan_rpm_setpoint = DEFAULT_SCAN_RPM;
-    return LDS::RESULT_OK;
+    return RESULT_OK;
   }
   
   if (rpm <= DEFAULT_SCAN_RPM*0.9f || rpm >= DEFAULT_SCAN_RPM*1.1f)
     return ERROR_INVALID_VALUE;
 
   scan_rpm_setpoint = rpm;
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
 
 float LDS_NEATO_XV11::getTargetScanFreqHz() {
@@ -262,7 +263,7 @@ void LDS_NEATO_XV11::stop() {
 LDS::result_t LDS_NEATO_XV11::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, getModelName());
-  return LDS::RESULT_OK;
+  return RESULT_OK;
 }
 
 const char* LDS_NEATO_XV11::getModelName() { return "NEATO XV11"; }

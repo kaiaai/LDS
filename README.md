@@ -27,10 +27,15 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/f8IYjfiXsMk/maxresdefault.jpg" alt="RPLIDAR A1 laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
 
-Note: LDS02RR, Neato XV11 LDS require an additional motor control board to operate.
-You can find the board schematics [here](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter) or purchase it at [makerspet.com](https://makerspet.com) when it becomes available.
+Some LiDAR/LDS models do not have built-in motor control and therefore require an additional board to operate:
+- for Xiaomi Roborock 1st gen LDS02RR use [this board](https://github.com/makerspet/pcb/tree/main/lds02rr_adapter)
+- for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
+- for 3irobotix Delta-2A, -2B, -2C PRO, -2D, -2G use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 
 ## Release notes
+
+## v0.5.0 (in debug)
+- added Delta-2G
 
 ## v0.4.0
 - added Neato XV11
@@ -52,3 +57,11 @@ You can find the board schematics [here](https://github.com/makerspet/pcb/tree/m
 
 ### v0.1.0
 - initial release
+
+## TODO
+- add Xiaomi Roborock LDS01RR
+- add LDROBOT LD14P, LD20
+- add Hitachi-LG HLS-LFCD2
+- add Dreame TBD
+- reduce raw data volume
+  - omit measurement quality since it usually does not get used
