@@ -40,11 +40,11 @@ class LDS_DELTA_2G : public LDS {
     static const uint8_t START_BYTE = 0xAA;
     static const uint8_t PROTOCOL_VERSION = 0x01;
     static const uint8_t PACKET_TYPE = 0x61;
-    static const uint8_t DATA_TYPE_RPM_AND_MEAS = 0xAE;
-    static const uint8_t DATA_TYPE_RPM_ONLY = 0xAD;
-    static const uint8_t PACKETS_PER_SCAN = 15;
-    static constexpr float DEG_PER_PACKET = 1.0f / (float)PACKETS_PER_SCAN;
-    static const uint8_t MAX_DATA_SAMPLES = 28; //360/PACKETS_PER_SCAN;
+    static const uint8_t DATA_TYPE_RPM_AND_MEAS = 0xAD;
+    static const uint8_t DATA_TYPE_RPM_ONLY = 0xAE;
+    static const uint8_t PACKETS_PER_SCAN = 16;
+    static constexpr float DEG_PER_PACKET = 360.0f / (float)PACKETS_PER_SCAN; // 22.5 deg
+    static const uint8_t MAX_DATA_SAMPLES = 28;
     static const uint8_t PACKET_HEADER_BYTE_LEN = 10;
 
     struct meas_sample_t {
@@ -55,7 +55,7 @@ class LDS_DELTA_2G : public LDS {
 
     struct scan_packet_t {
       uint8_t    start_byte; // 0xAA
-      uint16_t   packet_length;
+      uint16_t   packet_length; // excludes checksum
       uint8_t    protocol_version; // 0x01
       uint8_t    packet_type; // 0x61
       uint8_t    data_type; // 0xAE -> data_length -> scan_freq_x20 -> no data
@@ -69,9 +69,6 @@ class LDS_DELTA_2G : public LDS {
 
       uint16_t   checksum;
     } __attribute__((packed)); // 8 + 5 + 84 + 2 = 97
-    // 15 scan steps per revolution
-    // float angle = start_angle + 22.5 * sample_idx / n_samples;
-    // float angle = start_angle + 24 * sample_idx / n_samples;
 
     virtual void enableMotor(bool enable);
     LDS::result_t processByte(uint8_t c);

@@ -102,7 +102,7 @@ void LDS_DELTA_2G::loop() {
 
     result_t result = processByte((uint8_t)c);
     if (result < 0)
-      postError(result, "processByte()");
+      postError(result, "");
   }
 
   if (motor_enabled) {
@@ -189,23 +189,21 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
     if (scan_packet.data_type == DATA_TYPE_RPM_AND_MEAS) {
       uint16_t start_angle_x100 = decodeUInt16(scan_packet.start_angle_x100);
-      unsigned int packet_index = (start_angle_x100 * PACKETS_PER_SCAN) % 36000;
-      bool scan_completed = packet_index == 0;
+      bool scan_completed = start_angle_x100 == 0;
 
       postPacket(rx_buffer, parser_idx, scan_completed);
 
+      data_length = decodeUInt16(scan_packet.data_length);
       if (data_length < 8) {
-        if (scan_completed)
-          postScanPoint(0, 0, 0, scan_completed);
-        parser_idx = 0;
+        result = ERROR_INVALID_PACKET;
         break;
       }
+
       uint16_t sample_count = (data_length - 5) / 3;
       if (sample_count > MAX_DATA_SAMPLES) {
         result = ERROR_INVALID_PACKET;
         break;
       }
-
       float start_angle = start_angle_x100 * 0.01;
       float coeff = DEG_PER_PACKET / (float)sample_count;
       for (uint16_t idx = 0; idx < sample_count; idx++) {
@@ -215,6 +213,7 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
         float distance_mm = distance_mm_x4 * 0.25;
         float quality = scan_packet.sample[idx].quality;
         postScanPoint(angle_deg, distance_mm, quality, scan_completed);
+        scan_completed = false;
       }
     }
     parser_idx = 0;

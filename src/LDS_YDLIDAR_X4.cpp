@@ -373,7 +373,7 @@ void LDS_YDLIDAR_X4::loop() {
     if (result == ERROR_NOT_READY)
       break;
     if (result < RESULT_OK)
-      postError(result, "waitScanDot()");
+      postError(result, "");
   }
 }
 

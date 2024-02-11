@@ -165,7 +165,7 @@ void LDS_RPLIDAR_A1::loop() {
     if (result == ERROR_NOT_READY)
       return;
     if (result < RESULT_OK)
-      postError(result, "waitScanDot()");
+      postError(result, "");
   }
 }
 

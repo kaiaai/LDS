@@ -57,7 +57,7 @@ void LDS_NEATO_XV11::loop() {
 
     result_t result = processByte(c);
     if (result < 0)
-      postError(result, "processByte()");
+      postError(result, "");
   }
 
   if (motor_enabled) {
