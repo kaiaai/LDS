@@ -16,7 +16,6 @@
 
 #pragma once
 #include "LDS_NEATO_XV11.h"
-#include "PID_v1_0_0.h"
 
 class LDS_LDS02RR : public LDS_NEATO_XV11 {
   public:

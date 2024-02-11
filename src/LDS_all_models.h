@@ -21,5 +21,6 @@
 #include <LDS_NEATO_XV11.h>
 #include <LDS_LDS02RR.h>
 #include <LDS_RPLIDAR_A1.h>
+#include <LDS_DELTA_2A.h>
 #include <LDS_DELTA_2G.h>
 //#include <LDS_HLS_LFCD2.h>
