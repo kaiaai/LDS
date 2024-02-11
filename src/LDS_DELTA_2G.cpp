@@ -17,12 +17,12 @@
 void LDS_DELTA_2G::init() {
   motor_enabled = false;
   pwm_val = 0.5;
-  scan_rpm = 0;
-  scan_rpm_setpoint = DEFAULT_SCAN_RPM;
+  scan_freq_hz = 0;
+  scan_freq_hz_setpoint = DEFAULT_SCAN_FREQ_HZ;
   parser_state = 0;
   checksum = 0;
 
-  scanFreqPID.init(&scan_rpm, &pwm_val, &scan_rpm_setpoint, 3.0e-3, 1.0e-3, 0.0, PID_v1::DIRECT);
+  scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_hz_setpoint, 3.0e-3, 1.0e-3, 0.0, PID_v1::DIRECT);
   scanFreqPID.SetOutputLimits(0, 1.0);
   scanFreqPID.SetSampleTime(20);
   scanFreqPID.SetMode(PID_v1::AUTOMATIC);
@@ -40,7 +40,7 @@ uint32_t LDS_DELTA_2G::getSerialBaudRate() {
 }
 
 float LDS_DELTA_2G::getTargetScanFreqHz() {
-  return scan_rpm_setpoint / 60.0f;
+  return scan_freq_hz_setpoint / 60.0f;
 }
 
 int LDS_DELTA_2G::getSamplingRateHz() {
@@ -58,7 +58,7 @@ LDS::result_t LDS_DELTA_2G::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) 
 }
 
 float LDS_DELTA_2G::getCurrentScanFreqHz() {
-  return scan_rpm/60.0f;
+  return scan_freq_hz;
 }
 
 void LDS_DELTA_2G::stop() {
@@ -82,16 +82,15 @@ bool LDS_DELTA_2G::isActive() {
 }
 
 LDS::result_t LDS_DELTA_2G::setScanTargetFreqHz(float freq) {
-  float rpm = freq * 60.0f;
-  if (rpm <= 0) {
-    scan_rpm_setpoint = DEFAULT_SCAN_RPM;
+  if (freq <= 0) {
+    scan_freq_hz_setpoint = DEFAULT_SCAN_FREQ_HZ;
     return RESULT_OK;
   }
   
-  if (rpm <= DEFAULT_SCAN_RPM*0.9f || rpm >= DEFAULT_SCAN_RPM*1.1f)
+  if (freq <= DEFAULT_SCAN_FREQ_HZ*0.9f || freq >= DEFAULT_SCAN_FREQ_HZ*1.1f)
     return ERROR_INVALID_VALUE;
 
-  scan_rpm_setpoint = rpm;
+  scan_freq_hz_setpoint = freq;
   return RESULT_OK;
 }
 
@@ -117,13 +116,10 @@ void LDS_DELTA_2G::loop() {
 }
 
 LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
+  uint16_t packet_length = 0;
+  uint16_t data_length = 0;
   LDS::result_t result = RESULT_OK;
-  // parse packet header
-  // get N samples
-  //   postPacket()
-  //   postScanPoint()
   uint8_t * rx_buffer = (uint8_t *)&scan_packet;
-  // parser_idx = parser_idx >= sizeof(scan_packet_t) ? 0 : parser_idx;
 
   if (parser_idx >= sizeof(scan_packet_t)) {
     parser_idx = 0;
@@ -132,89 +128,121 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
   rx_buffer[parser_idx++] = c;
   checksum += c;
-
+/*
+  if (c < 16)
+    Serial.print(" 0");
+  else
+    Serial.print(' ');
+  Serial.print(c, HEX);
+*/
   switch (parser_idx) {
-  case 0:
+  case 1:
     if (c != START_BYTE)
-	    result = ERROR_INVALID_VALUE;
+      result = ERROR_INVALID_VALUE;
     else
-      checksum = 0;
-	  break;
-
-  case 1: // packet length MSB
+      checksum = c;
     break;
 
-  case 2: // packet length LSB
-    if (scan_packet.packet_length >
-      sizeof(scan_packet_t) - sizeof(scan_packet.checksum))
-      result = ERROR_INVALID_PACKET;
+  case 2:
     break;
 
   case 3:
-    if (c != PROTOCOL_VERSION)
-	    result = ERROR_INVALID_VALUE;
+    packet_length = decodeUInt16(scan_packet.packet_length);
+    if (packet_length > sizeof(scan_packet_t) - sizeof(scan_packet.checksum)) {
+      result = ERROR_INVALID_PACKET;
+      Serial.println("packet_length too long");
+    }
     break;
 
   case 4:
-    if (c != PACKET_TYPE)
+    if (c != PROTOCOL_VERSION)
       result = ERROR_INVALID_VALUE;
     break;
 
   case 5:
+    if (c != PACKET_TYPE)
+      result = ERROR_INVALID_VALUE;
+    break;
+
+  case 6:
     if (c != DATA_TYPE_RPM_AND_MEAS && c != DATA_TYPE_RPM_ONLY)
       result = ERROR_INVALID_VALUE;
     break;
 
-  case 6: // data length MSB
+  case 7: // data length MSB
     break;
 
-  case 7: // data length LSB
-    if (scan_packet.data_length == 0 ||
-      scan_packet.data_length > MAX_DATA_BYTE_LEN)
+  case 8: // data length LSB
+    data_length = decodeUInt16(scan_packet.data_length);
+    if (data_length == 0 || data_length > MAX_DATA_BYTE_LEN)
 	    result = ERROR_INVALID_PACKET;
     break;
 
   default:
     // Keep reading
-    if (parser_idx >= scan_packet.packet_length + sizeof(scan_packet.checksum)) {
+    packet_length = decodeUInt16(scan_packet.packet_length);
+    if (parser_idx != packet_length + 2)
+      break;
 
-      // Got checksum
-      scan_packet.checksum += c << 8;
-      uint16_t checksum_adjusted = checksum;
-      checksum_adjusted += checksum & 0xFF;
-      checksum_adjusted += (checksum >> 8) & 0xFF;
+    //Serial.println();
+    uint16_t pkt_checksum = (rx_buffer[parser_idx-2] << 8) + rx_buffer[parser_idx-1];
+    /*
+    Serial.print("pars idx ");
+    Serial.println(parser_idx, HEX);
+    Serial.print("Pkt  len ");
+    Serial.println(packet_length, HEX);
+    Serial.print("Prot ver ");
+    Serial.println(scan_packet.protocol_version, HEX);
+    Serial.print("Pkt type ");
+    Serial.println(scan_packet.packet_type, HEX);
+    Serial.print("Data typ ");
+    Serial.println(scan_packet.data_type, HEX);
+    Serial.print("Data len ");
+    Serial.println(data_length, HEX);
+    Serial.print("Scan frq ");
+    Serial.println(scan_packet.scan_freq_x20, HEX);
+    Serial.print("Offs ang ");
+    Serial.println(decodeUInt16(scan_packet.offset_angle_x100), HEX);
+    Serial.print("Strt ang ");
+    Serial.println(decodeUInt16(scan_packet.start_angle_x100), HEX);
+    Serial.print("Checksum ");
+    Serial.println(decodeUInt16(scan_packet.checksum), HEX);
+    */
 
-      if (scan_packet.checksum != checksum_adjusted) {
-        result = ERROR_CRC;
+    pkt_checksum += rx_buffer[parser_idx-2];
+    pkt_checksum += rx_buffer[parser_idx-1];
+    if (checksum != pkt_checksum) {
+      result = ERROR_CHECKSUM;
+      break;
+    }
+
+    scan_freq_hz = scan_packet.scan_freq_x20 * 0.05;
+
+    if (scan_packet.data_type == DATA_TYPE_RPM_AND_MEAS) {
+      uint16_t start_angle_x100 = decodeUInt16(scan_packet.start_angle_x100);
+      unsigned int packet_index = (start_angle_x100 * PACKETS_PER_SCAN) % 36000;
+      bool scan_completed = packet_index == 0;
+
+      uint16_t sample_count = (data_length - 5) / 3;
+      if (sample_count > MAX_DATA_SAMPLES) {
+        result = ERROR_INVALID_PACKET;
         break;
       }
 
-      scan_rpm = scan_packet.scan_freq_x20 * 0.05;
-      if (scan_packet.data_type == DATA_TYPE_RPM_AND_MEAS) {
+      postPacket(rx_buffer, parser_idx, scan_completed);
 
-        unsigned int packet_index = (scan_packet.start_angle_x100 * PACKETS_PER_SCAN) % 36000;
-        bool scan_completed = packet_index == 0;
+      float start_angle = start_angle_x100 * 0.01;
+      float coeff = DEG_PER_PACKET / (float)sample_count;
+      for (uint16_t idx = 0; idx < sample_count; idx++) {
+        float angle_deg = start_angle + idx * coeff;
 
-        uint16_t sample_count = (scan_packet.data_length - 5) / 3;
-        if (sample_count > MAX_DATA_SAMPLES) {
-          result = ERROR_INVALID_PACKET;
-          break;
-        }
-
-        postPacket(rx_buffer, parser_idx, scan_completed);
-
-        float start_angle = scan_packet.start_angle_x100 * 0.01;
-        float coeff = DEG_PER_PACKET / (float)sample_count;
-        for (uint16_t idx = 0; idx < sample_count; idx++) {
-          float angle_deg = start_angle + idx * coeff;
-          float distance_mm = scan_packet.sample[idx].distance_mm_x4 * 0.25;
-          float quality = scan_packet.sample[idx].quality;
-          postScanPoint(angle_deg, distance_mm, quality, scan_completed);
-        }
+        uint16_t distance_mm_x4 = decodeUInt16(scan_packet.sample[idx].distance_mm_x4);
+        float distance_mm = distance_mm_x4 * 0.25;
+        float quality = scan_packet.sample[idx].quality;
+        postScanPoint(angle_deg, distance_mm, quality, scan_completed);
       }
-      parser_idx = 0;
-      break;
     }
+    parser_idx = 0;
     break;
   }
 
@@ -222,6 +250,15 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
     parser_idx = 0;
 
   return result;
+}
+
+uint16_t LDS_DELTA_2G::decodeUInt16(const uint16_t value) const {
+  union {
+      uint16_t i;
+      char c[2];
+  } bint = {0x0102};
+
+  return bint.c[0] == 0x01 ? value : (value << 8) + (value >> 8);
 }
 
 const char* LDS_DELTA_2G::getModelName() { return "3irobotics Delta-2G"; }

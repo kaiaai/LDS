@@ -118,7 +118,7 @@ String LDS::resultCodeToString(result_t code) {
       return "Timeout error";
     case ERROR_INVALID_PACKET:
       return "Invalid Packet error";
-    case ERROR_CRC:
+    case ERROR_CHECKSUM:
       return "CRC error";
     case ERROR_NOT_READY:
       return "Not ready error";

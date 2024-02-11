@@ -36,7 +36,7 @@ class LDS_DELTA_2G : public LDS {
     virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
-    static constexpr float DEFAULT_SCAN_RPM = 315.0f;
+    static constexpr float DEFAULT_SCAN_FREQ_HZ = 5.25f;
     static const uint8_t START_BYTE = 0xAA;
     static const uint8_t PROTOCOL_VERSION = 0x01;
     static const uint8_t PACKET_TYPE = 0x61;
@@ -44,7 +44,7 @@ class LDS_DELTA_2G : public LDS {
     static const uint8_t DATA_TYPE_RPM_ONLY = 0xAD;
     static const uint8_t PACKETS_PER_SCAN = 15;
     static constexpr float DEG_PER_PACKET = 1.0f / (float)PACKETS_PER_SCAN;
-    static const uint8_t MAX_DATA_SAMPLES = 360/PACKETS_PER_SCAN;
+    static const uint8_t MAX_DATA_SAMPLES = 28; //360/PACKETS_PER_SCAN;
     static const uint8_t PACKET_HEADER_BYTE_LEN = 10;
 
     struct meas_sample_t {
@@ -62,26 +62,27 @@ class LDS_DELTA_2G : public LDS {
                             // 0xAD -> data_length -> scan_freq_x20 -> data
       uint16_t   data_length; // n_samples = (data_length - 5)/3;
       uint8_t    scan_freq_x20;
-      int16_t offset_angle_x100; // signed
-      uint16_t start_angle_x100; // unsigned?
+      int16_t    offset_angle_x100; // signed
+      uint16_t   start_angle_x100; // unsigned?
 
-      meas_sample_t sample[MAX_DATA_SAMPLES];
+      meas_sample_t sample[MAX_DATA_SAMPLES]; // 3*28=84
 
       uint16_t   checksum;
-    } __attribute__((packed));
+    } __attribute__((packed)); // 8 + 5 + 84 + 2 = 97
     // 15 scan steps per revolution
     // float angle = start_angle + 22.5 * sample_idx / n_samples;
     // float angle = start_angle + 24 * sample_idx / n_samples;
 
     virtual void enableMotor(bool enable);
     LDS::result_t processByte(uint8_t c);
+    uint16_t decodeUInt16(const uint16_t value) const;
 
-    float scan_rpm_setpoint;
+    float scan_freq_hz_setpoint;
     bool motor_enabled;
     uint8_t parser_state;
     float pwm_val;
     float pwm_last;
-    float scan_rpm;    
+    float scan_freq_hz;
     PID_v1 scanFreqPID;
 
     scan_packet_t scan_packet;

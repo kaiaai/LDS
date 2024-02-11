@@ -341,7 +341,7 @@ state2:
       node.distance_q2 = 0;
       package_Sample_Index = 0;
       state = 0;
-      return ERROR_CRC;
+      return ERROR_CHECKSUM;
     }
   
     // Dump out processed data

@@ -27,7 +27,7 @@ class LDS {
       RESULT_OK = 0,
       ERROR_TIMEOUT = -1,
       ERROR_INVALID_PACKET = -2,
-      ERROR_CRC = -3,
+      ERROR_CHECKSUM = -3,
       ERROR_NOT_READY = -4,
       ERROR_NOT_IMPLEMENTED = -5,
       ERROR_NOT_CONFIGURED = -6,

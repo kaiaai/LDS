@@ -229,7 +229,7 @@ LDS::result_t LDS_NEATO_XV11::processByte(int inByte) {
 
       } else {
         // Bad packet
-        result = ERROR_CRC;
+        result = ERROR_CHECKSUM;
       }
 
       clearVars();   // initialize a bunch of stuff before we switch back to State 1
