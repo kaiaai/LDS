@@ -40,7 +40,7 @@ uint32_t LDS_DELTA_2G::getSerialBaudRate() {
 }
 
 float LDS_DELTA_2G::getTargetScanFreqHz() {
-  return scan_freq_hz_setpoint / 60.0f;
+  return scan_freq_hz_setpoint;
 }
 
 int LDS_DELTA_2G::getSamplingRateHz() {

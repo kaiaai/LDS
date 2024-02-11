@@ -45,7 +45,6 @@ class LDS_DELTA_2G : public LDS {
     static const uint8_t PACKETS_PER_SCAN = 16;
     static constexpr float DEG_PER_PACKET = 360.0f / (float)PACKETS_PER_SCAN; // 22.5 deg
     static const uint8_t MAX_DATA_SAMPLES = 28;
-    static const uint8_t PACKET_HEADER_BYTE_LEN = 10;
 
     struct meas_sample_t {
       uint8_t quality;

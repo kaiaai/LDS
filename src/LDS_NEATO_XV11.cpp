@@ -167,7 +167,7 @@ void LDS_NEATO_XV11::processSpeed() {
   // Extract motor speed from packet - two bytes little-endian, equals RPM/64
   uint8_t scan_rph_low_byte = Packet[OFFSET_TO_SPEED_LSB];
   uint8_t scan_rph_high_byte = Packet[OFFSET_TO_SPEED_MSB];
-  scan_rpm = float( (scan_rph_high_byte << 8) | scan_rph_low_byte ) / 64.0;
+  scan_rpm = float((scan_rph_high_byte << 8) | scan_rph_low_byte) / 64.0;
 }
 
 uint16_t LDS_NEATO_XV11::processIndex() {
