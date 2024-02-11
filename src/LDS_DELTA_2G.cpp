@@ -123,7 +123,7 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
   if (parser_idx >= sizeof(scan_packet_t)) {
     parser_idx = 0;
-    return ERROR_INVALID_PACKET;
+    return RESULT_OK;//ERROR_INVALID_PACKET;
   }
 
   rx_buffer[parser_idx++] = c;
@@ -131,9 +131,10 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
   switch (parser_idx) {
   case 1:
-    if (c != START_BYTE)
-      result = ERROR_INVALID_VALUE;
-    else
+    if (c != START_BYTE) {
+      result = RESULT_OK; //ERROR_INVALID_VALUE;
+      parser_idx = 0;
+    } else
       checksum = c;
     break;
 
