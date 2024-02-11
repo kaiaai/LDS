@@ -204,7 +204,10 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
         result = ERROR_INVALID_PACKET;
         break;
       }
+
+      //int16_t offset_angle_x100 = (int16_t)decodeUInt16((uint16_t)scan_packet.offset_angle_x100);
       float start_angle = start_angle_x100 * 0.01;
+      //start_angle += offset_angle_x100 * 0.01;
       float coeff = DEG_PER_PACKET / (float)sample_count;
       for (uint16_t idx = 0; idx < sample_count; idx++) {
         float angle_deg = start_angle + idx * coeff;
