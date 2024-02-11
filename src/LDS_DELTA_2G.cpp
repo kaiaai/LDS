@@ -16,13 +16,13 @@
 
 void LDS_DELTA_2G::init() {
   motor_enabled = false;
-  pwm_val = 0.5;
+  pwm_val = 0.6;
   scan_freq_hz = 0;
   scan_freq_hz_setpoint = DEFAULT_SCAN_FREQ_HZ;
   parser_state = 0;
   checksum = 0;
 
-  scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_hz_setpoint, 3.0e-3, 1.0e-3, 0.0, PID_v1::DIRECT);
+  scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_hz_setpoint, 3.0e-1, 1.0e-1, 0.0, PID_v1::DIRECT);
   scanFreqPID.SetOutputLimits(0, 1.0);
   scanFreqPID.SetSampleTime(20);
   scanFreqPID.SetMode(PID_v1::AUTOMATIC);
@@ -128,13 +128,7 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
   rx_buffer[parser_idx++] = c;
   checksum += c;
-/*
-  if (c < 16)
-    Serial.print(" 0");
-  else
-    Serial.print(' ');
-  Serial.print(c, HEX);
-*/
+
   switch (parser_idx) {
   case 1:
     if (c != START_BYTE)
@@ -148,10 +142,8 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
   case 3:
     packet_length = decodeUInt16(scan_packet.packet_length);
-    if (packet_length > sizeof(scan_packet_t) - sizeof(scan_packet.checksum)) {
+    if (packet_length > sizeof(scan_packet_t) - sizeof(scan_packet.checksum))
       result = ERROR_INVALID_PACKET;
-      Serial.println("packet_length too long");
-    }
     break;
 
   case 4:
@@ -184,30 +176,7 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
     if (parser_idx != packet_length + 2)
       break;
 
-    //Serial.println();
     uint16_t pkt_checksum = (rx_buffer[parser_idx-2] << 8) + rx_buffer[parser_idx-1];
-    /*
-    Serial.print("pars idx ");
-    Serial.println(parser_idx, HEX);
-    Serial.print("Pkt  len ");
-    Serial.println(packet_length, HEX);
-    Serial.print("Prot ver ");
-    Serial.println(scan_packet.protocol_version, HEX);
-    Serial.print("Pkt type ");
-    Serial.println(scan_packet.packet_type, HEX);
-    Serial.print("Data typ ");
-    Serial.println(scan_packet.data_type, HEX);
-    Serial.print("Data len ");
-    Serial.println(data_length, HEX);
-    Serial.print("Scan frq ");
-    Serial.println(scan_packet.scan_freq_x20, HEX);
-    Serial.print("Offs ang ");
-    Serial.println(decodeUInt16(scan_packet.offset_angle_x100), HEX);
-    Serial.print("Strt ang ");
-    Serial.println(decodeUInt16(scan_packet.start_angle_x100), HEX);
-    Serial.print("Checksum ");
-    Serial.println(decodeUInt16(scan_packet.checksum), HEX);
-    */
 
     pkt_checksum += rx_buffer[parser_idx-2];
     pkt_checksum += rx_buffer[parser_idx-1];
@@ -223,13 +192,19 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
       unsigned int packet_index = (start_angle_x100 * PACKETS_PER_SCAN) % 36000;
       bool scan_completed = packet_index == 0;
 
+      postPacket(rx_buffer, parser_idx, scan_completed);
+
+      if (data_length < 8) {
+        if (scan_completed)
+          postScanPoint(0, 0, 0, scan_completed);
+        parser_idx = 0;
+        break;
+      }
       uint16_t sample_count = (data_length - 5) / 3;
       if (sample_count > MAX_DATA_SAMPLES) {
         result = ERROR_INVALID_PACKET;
         break;
       }
-
-      postPacket(rx_buffer, parser_idx, scan_completed);
 
       float start_angle = start_angle_x100 * 0.01;
       float coeff = DEG_PER_PACKET / (float)sample_count;
