@@ -167,7 +167,7 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
   case 8: // data length LSB
     data_length = decodeUInt16(scan_packet.data_length);
     if (data_length == 0 || data_length > MAX_DATA_BYTE_LEN)
-	    result = ERROR_INVALID_PACKET;
+      result = ERROR_INVALID_PACKET;
     break;
 
   default:
@@ -228,8 +228,8 @@ LDS::result_t LDS_DELTA_2G::processByte(uint8_t c) {
 
 uint16_t LDS_DELTA_2G::decodeUInt16(const uint16_t value) const {
   union {
-      uint16_t i;
-      char c[2];
+    uint16_t i;
+    char c[2];
   } bint = {0x0102};
 
   return bint.c[0] == 0x01 ? value : (value << 8) + (value >> 8);
