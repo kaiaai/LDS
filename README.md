@@ -4,9 +4,10 @@ Please read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for mo
 
 This library supports:
 - YDLIDAR X4, X3, X3-PRO, X2/X2L models
-- RPLIDAR A1
+- SLAMTEC RPLIDAR A1
 - Neato XV11/Botvac
-- Xiaomi Mi 1st gen LDS02RR
+- Xiaomi Roborock Mi 1st gen LDS02RR
+- 3drobotix Delta-2A, Delta-2G
 
 Other models are in the works.
 
@@ -22,7 +23,7 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/gaDnZ4Msw0E/maxresdefault.jpg" alt="LDS02RR laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
 
-### Video: RPLIDAR A1 runs on Arduino
+### Video: SLAMTEC RPLIDAR A1 runs on Arduino
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=f8IYjfiXsMk" target="_blank">
  <img src="http://img.youtube.com/vi/f8IYjfiXsMk/maxresdefault.jpg" alt="RPLIDAR A1 laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
@@ -34,8 +35,8 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
-## v0.5.0 (in debug)
-- added Delta-2G
+## v0.5.0
+- added Delta-2A, Delta-2G
 
 ## v0.4.0
 - added Neato XV11
