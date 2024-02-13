@@ -35,6 +35,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
+## v0.5.1
+- bugfix `lds_all_models.h` include file
+
 ## v0.5.0
 - added Delta-2A, Delta-2G
 
