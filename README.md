@@ -28,7 +28,7 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/f8IYjfiXsMk/maxresdefault.jpg" alt="RPLIDAR A1 laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
 
-### Video: SLAMTEC RPLIDAR A1 runs on Arduino
+### Video: YDLIDAR X3 PRO runs on Arduino
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=_VuRCiO55gA" target="_blank">
  <img src="http://img.youtube.com/vi/_VuRCiO55gA/maxresdefault.jpg" alt="YDLIDAR X3 PRO laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
