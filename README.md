@@ -28,6 +28,12 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/f8IYjfiXsMk/maxresdefault.jpg" alt="RPLIDAR A1 laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
 </a>
 
+### Video: SLAMTEC RPLIDAR A1 runs on Arduino
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=_VuRCiO55gA" target="_blank">
+ <img src="http://img.youtube.com/vi/_VuRCiO55gA/maxresdefault.jpg" alt="YDLIDAR X3 PRO laser distance scan sensor runs on Arduino" width="720" height="405" border="10" />
+</a>
+
+## Adapter Boards
 Some LiDAR/LDS models do not have built-in motor control and therefore require an additional board to operate:
 - for Xiaomi Roborock 1st gen LDS02RR use [this board](https://github.com/makerspet/pcb/tree/main/lds02rr_adapter)
 - for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
