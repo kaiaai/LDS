@@ -132,7 +132,7 @@ LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
   switch (parser_idx) {
   case 1:
     if (c != START_BYTE) {
-      result = RESULT_OK; //ERROR_INVALID_VALUE;
+      //result = ERROR_INVALID_VALUE;
       parser_idx = 0;
     } else
       checksum = c;

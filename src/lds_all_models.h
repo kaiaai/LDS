@@ -23,4 +23,5 @@
 #include <LDS_RPLIDAR_A1.h>
 #include <LDS_DELTA_2A.h>
 #include <LDS_DELTA_2G.h>
+#include <LDS_LDLIDAR_LD14P.h>
 //#include <LDS_HLS_LFCD2.h>
