@@ -45,7 +45,7 @@ class LDS_LDLIDAR_LD14P : public LDS {
       uint8_t intensity;
     } __attribute__((packed));
 
-    static const uint16_t MAX_DATA_BYTE_LEN = sizeof(meas_sample_t) * POINT_PER_PACK;
+    static const uint16_t DATA_BYTE_LEN = sizeof(meas_sample_t) * POINT_PER_PACK;
 
     struct scan_packet_t {
       uint8_t start_byte;

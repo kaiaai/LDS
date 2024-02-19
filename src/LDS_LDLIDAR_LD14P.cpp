@@ -156,15 +156,17 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
   case 6: // start angle MSB
     break;
 
-  case 42: // end angle LSB
-  case 43: // end angle MSB
+  // default
+
+  case 43: // end angle LSB
+  case 44: // end angle MSB
     break;
 
-  case 44: // timestamp LSB
-  case 45: // end angle MSB
+  case 45: // timestamp LSB
+  case 46: // end angle MSB
     break;
 
-  case 46: // CRC
+  case 47: // CRC
     if (crc != scan_packet.crc8) {
       result = ERROR_CHECKSUM;
     } else {
@@ -193,8 +195,10 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
     break;
 
   default:
-    if (parser_idx >= 7 && parser_idx < (7 + MAX_DATA_BYTE_LEN)) {
+    Serial.println(parser_idx);
+    if (parser_idx > 6 && parser_idx <= (6 + DATA_BYTE_LEN)) {
     } else {
+      Serial.println("default");
       result = ERROR_INVALID_PACKET;
     }
     break;
