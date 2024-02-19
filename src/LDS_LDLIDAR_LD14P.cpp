@@ -17,7 +17,7 @@
 void LDS_LDLIDAR_LD14P::init() {
   motor_enabled = false;
   speed_deg_per_sec = 0;
-  parser_state = 0;
+  parser_idx = 0;
   crc = 0;
 
   enableMotor(false);

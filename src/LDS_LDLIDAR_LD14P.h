@@ -64,9 +64,7 @@ class LDS_LDLIDAR_LD14P : public LDS {
     void checkSum(uint8_t value);
 
     bool motor_enabled;
-    uint8_t parser_state;
     uint16_t speed_deg_per_sec;
-
     scan_packet_t scan_packet;
     uint16_t parser_idx;
     uint8_t crc;
