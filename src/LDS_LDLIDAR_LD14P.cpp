@@ -64,9 +64,9 @@ void LDS_LDLIDAR_LD14P::enableMotor(bool enable) {
   motor_enabled = enable;
 
   if (enable) {
-    writeSerial(START_CMD, sizeof(START_CMD)) ;
+    writeSerial(START_CMD, sizeof(START_CMD));
   } else {
-    writeSerial(STOP_CMD, sizeof(STOP_CMD)) ;
+    writeSerial(STOP_CMD, sizeof(STOP_CMD));
   }
   // TODO verify serial response
 }
@@ -91,9 +91,8 @@ void LDS_LDLIDAR_LD14P::loop() {
   }
 }
 
-
 void LDS_LDLIDAR_LD14P::checkSum(uint8_t value) {
-  static constexpr uint8_t CRC_TABLE[256] = {
+  static const uint8_t CRC_TABLE[256] = {
     0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
     0xae, 0xf2, 0xbf, 0x68, 0x25, 0x8b, 0xc6, 0x11, 0x5c, 0xa9, 0xe4, 0x33,
     0x7e, 0xd0, 0x9d, 0x4a, 0x07, 0x5b, 0x16, 0xc1, 0x8c, 0x22, 0x6f, 0xb8,
@@ -126,12 +125,13 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
 
   if (parser_idx >= sizeof(scan_packet_t)) {
     parser_idx = 0;
-    return RESULT_OK;//ERROR_INVALID_PACKET;
+    return RESULT_OK;
   }
 
   crc = parser_idx == 0 ? 0 : crc;
   rx_buffer[parser_idx++] = c;
-  checkSum(c);
+  if (parser_idx < 47)
+    checkSum(c);
 
   switch (parser_idx) {
   case 1:
@@ -156,7 +156,12 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
   case 6: // start angle MSB
     break;
 
-  // default
+  default:
+    if (parser_idx > 6 && parser_idx <= (6 + DATA_BYTE_LEN)) {
+    } else {
+      result = ERROR_INVALID_PACKET;
+    }
+    break;
 
   case 43: // end angle LSB
   case 44: // end angle MSB
@@ -190,17 +195,8 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
         postScanPoint(angle_deg, distance_mm, quality, scan_completed);
         scan_completed = false;
       }
-      parser_idx = 0;
     }
-    break;
-
-  default:
-    Serial.println(parser_idx);
-    if (parser_idx > 6 && parser_idx <= (6 + DATA_BYTE_LEN)) {
-    } else {
-      Serial.println("default");
-      result = ERROR_INVALID_PACKET;
-    }
+    parser_idx = 0;
     break;
   }
 
