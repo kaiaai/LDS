@@ -19,6 +19,7 @@ void LDS_LDLIDAR_LD14P::init() {
   speed_deg_per_sec = 0;
   parser_idx = 0;
   crc = 0;
+  end_angle_deg_x100_prev = 0;
 
   enableMotor(false);
 }
@@ -175,25 +176,67 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
     if (crc != scan_packet.crc8) {
       result = ERROR_CHECKSUM;
     } else {
-      static constexpr float ONE_OVER_PPP_M1 = 1.0f / (POINT_PER_PACK - 1);
 
       speed_deg_per_sec = decodeUInt16(scan_packet.speed_deg_per_sec);
-      float start_angle = decodeUInt16(scan_packet.start_angle_deg_x100)*0.01f;
-      float end_angle = decodeUInt16(scan_packet.end_angle_deg_x100)*0.01f;
-      float step_angle = (end_angle - start_angle)*ONE_OVER_PPP_M1;
+      uint16_t start_angle_deg_x100 = decodeUInt16(scan_packet.start_angle_deg_x100);
+      uint16_t end_angle_deg_x100 = decodeUInt16(scan_packet.end_angle_deg_x100);
 
-      bool scan_completed = false;
-      //bool scan_completed = start_angle_x100 == 0;
+      bool scan_completed_mid_packet = end_angle_deg_x100 < start_angle_deg_x100;
+      bool scan_completed_between_packets = start_angle_deg_x100 < end_angle_deg_x100_prev;
+      bool scan_completed = scan_completed_mid_packet || scan_completed_between_packets;
+      end_angle_deg_x100_prev = end_angle_deg_x100;
 
       postPacket(rx_buffer, parser_idx, scan_completed);
 
+      float start_angle = start_angle_deg_x100*0.01f;
+      float end_angle = end_angle_deg_x100*0.01f;
+
+      //Serial.print(start_angle);
+      //Serial.print(' ');
+      //Serial.println(end_angle);
+
+      if (end_angle < start_angle)
+        end_angle = end_angle + 360;
+
+      static constexpr float _1_OVER_PPP_M1 = 1.0f / (POINT_PER_PACK - 1);
+      float step_angle = (end_angle - start_angle)*_1_OVER_PPP_M1;
+
+      float angle_deg_prev = start_angle;
+      float last_shift_delta = 0;
       for (uint8_t i = 0; i < POINT_PER_PACK; i++) {
         float angle_deg = start_angle + step_angle*i;
         float distance_mm = decodeUInt16(scan_packet.sample[i].distance_mm);
         float quality = scan_packet.sample[i].intensity;
-        // TODO apply correction
-        postScanPoint(angle_deg, distance_mm, quality, scan_completed);
+
+        // https://github.com/ldrobotSensorTeam/ldlidar_sl_sdk.git sl_transform.cpp
+        float offset_x_ = 5.9f;
+        float offset_y_ = -18.975571f;
+        float angle_corrected;
+        if (distance_mm > 0) {
+          float x = distance_mm + offset_x_;
+          float y = distance_mm * 0.11923f + offset_y_;
+          static constexpr float _180_OVER_PI = 180.0 / PI;
+          float shift = atan(y / x) * _180_OVER_PI;
+          angle_corrected = angle_deg - shift;
+          last_shift_delta = shift;
+        } else {
+          angle_corrected = angle_deg - last_shift_delta;
+        }
+
         scan_completed = false;
+        if (scan_completed_mid_packet) {
+          scan_completed = (angle_deg >= 360 && angle_deg_prev < 360);
+        } else if (scan_completed_between_packets) {
+          scan_completed = (i == 0);
+        }
+
+        if (angle_corrected > 360)
+          angle_corrected -= 360;
+        if (angle_corrected < 0)
+          angle_corrected += 360;
+
+        postScanPoint(angle_corrected, distance_mm, quality, scan_completed);
+        angle_deg_prev = angle_deg;
       }
     }
     parser_idx = 0;

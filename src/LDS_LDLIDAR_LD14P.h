@@ -68,4 +68,5 @@ class LDS_LDLIDAR_LD14P : public LDS {
     scan_packet_t scan_packet;
     uint16_t parser_idx;
     uint8_t crc;
+    uint16_t end_angle_deg_x100_prev;
 };
