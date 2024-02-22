@@ -215,8 +215,7 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
         if (distance_mm > 0) {
           float x = distance_mm + offset_x_;
           float y = distance_mm * 0.11923f + offset_y_;
-          static constexpr float _180_OVER_PI = 180.0 / PI;
-          float shift = atan(y / x) * _180_OVER_PI;
+          float shift = atan(y / x) * RAD_TO_DEG;
           angle_corrected = angle_deg - shift;
           last_shift_delta = shift;
         } else {
