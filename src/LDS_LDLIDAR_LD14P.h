@@ -36,7 +36,7 @@ class LDS_LDLIDAR_LD14P : public LDS {
 
   protected:
     static const uint8_t START_BYTE = 0x54;
-    static const uint8_t POINT_PER_PACK = 12;
+    static const uint8_t POINTS_PER_PACK = 12;
     static const uint8_t VER_LEN = 0x2C;
 
     struct meas_sample_t {
@@ -44,14 +44,14 @@ class LDS_LDLIDAR_LD14P : public LDS {
       uint8_t intensity;
     } __attribute__((packed));
 
-    static const uint16_t DATA_BYTE_LEN = sizeof(meas_sample_t) * POINT_PER_PACK;
+    static const uint16_t DATA_BYTE_LEN = sizeof(meas_sample_t) * POINTS_PER_PACK;
 
     struct scan_packet_t {
       uint8_t start_byte;
       uint8_t ver_len;
       uint16_t speed_deg_per_sec;
       uint16_t start_angle_deg_x100;
-      meas_sample_t sample[POINT_PER_PACK];
+      meas_sample_t sample[POINTS_PER_PACK];
       uint16_t end_angle_deg_x100;
       uint16_t timestamp_ms;
       uint8_t crc8;
