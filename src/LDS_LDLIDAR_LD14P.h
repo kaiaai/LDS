@@ -14,7 +14,6 @@
 
 #pragma once
 #include "LDS.h"
-#include "PID_v1_0_0.h"
 
 class LDS_LDLIDAR_LD14P : public LDS {
   public:
