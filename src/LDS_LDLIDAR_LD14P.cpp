@@ -198,12 +198,12 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
       if (end_angle < start_angle)
         end_angle = end_angle + 360;
 
-      static constexpr float _1_OVER_PPP_M1 = 1.0f / (POINT_PER_PACK - 1);
+      static constexpr float _1_OVER_PPP_M1 = 1.0f / (POINTS_PER_PACK - 1);
       float step_angle = (end_angle - start_angle)*_1_OVER_PPP_M1;
 
       float angle_deg_prev = start_angle;
       float last_shift_delta = 0;
-      for (uint8_t i = 0; i < POINT_PER_PACK; i++) {
+      for (uint8_t i = 0; i < POINTS_PER_PACK; i++) {
         float angle_deg = start_angle + step_angle*i;
         float distance_mm = decodeUInt16(scan_packet.sample[i].distance_mm);
         float quality = scan_packet.sample[i].intensity;
