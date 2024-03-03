@@ -274,11 +274,6 @@ state2:
     CheckSumCal ^= LastSampleAngleCal;
 
     CheckSumResult = CheckSumCal == CheckSum;
-    //if (CheckSumCal != CheckSum){  
-    //  CheckSumResult = false;
-    //} else {
-    //  CheckSumResult = true;
-    //}
   }
 
   //if (CheckSumResult)

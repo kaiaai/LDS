@@ -17,7 +17,6 @@
 #pragma once
 #include "LDS.h"
 
-
 class LDS_YDLIDAR_X4 : public LDS {
   public:
     virtual void init() override;
