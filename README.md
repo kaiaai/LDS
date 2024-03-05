@@ -1,5 +1,5 @@
 # LDS/LiDAR Library for Arduino
-Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) platform.
+Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) home robot software platform.
 Please read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more details.
 
 This library supports:
@@ -8,6 +8,7 @@ This library supports:
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
 - 3drobotix Delta-2A, Delta-2G
+- LDROBOT LD14P
 
 Other models are in the works.
 
