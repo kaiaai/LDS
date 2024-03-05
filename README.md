@@ -41,6 +41,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
+## v0.5.2
+- added LDROBOT LD14P
+
 ## v0.5.1
 - bugfix `lds_all_models.h` include file
 
@@ -70,7 +73,7 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## TODO
 - add Xiaomi Roborock LDS01RR
-- add LDROBOT LD14P, LD20
+- add LDROBOT LD20
 - add Hitachi-LG HLS-LFCD2
 - add Dreame TBD
 - reduce raw data volume
