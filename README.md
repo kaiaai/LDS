@@ -12,7 +12,7 @@ This library supports:
 
 Other models are in the works.
 
-![lidar_sensors](https://github.com/kaiaai/LDS/assets/33589365/c38af37b-a9b1-44d1-b256-94d72e7562c6)
+![LDS_collection_labeled_v2](https://github.com/kaiaai/LDS/assets/33589365/d6cc36de-3c28-40e1-a0f4-56281586b361)
 
 ### Video: Neato XV11 runs on Arduino, ROS2
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=kfk1Q0RSJpI" target="_blank">
