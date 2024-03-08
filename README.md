@@ -7,7 +7,7 @@ This library supports:
 - SLAMTEC RPLIDAR A1
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
-- 3drobotix Delta-2A, Delta-2G
+- 3drobotix Delta-2A, Delta-2B, Delta-2G, Delta-2A 115000 baud
 - LDROBOT LD14P
 
 Other models are in the works.
@@ -46,6 +46,10 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - for 3irobotix Delta-2A, -2B, -2C PRO, -2D, -2G use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 
 ## Release notes
+
+## v0.5.3 - in debug
+- added Delta-2A 230400 baud
+- added Delta-2B
 
 ## v0.5.2
 - added LDROBOT LD14P
