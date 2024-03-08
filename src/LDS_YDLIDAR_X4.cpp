@@ -107,7 +107,7 @@ bool LDS_YDLIDAR_X4::isActive() {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::setScanTargetFreqHz(float freq) {
-  return ERROR_NOT_IMPLEMENTED;
+  return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
 }
 
 LDS::result_t LDS_YDLIDAR_X4::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {

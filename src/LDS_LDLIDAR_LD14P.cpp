@@ -77,7 +77,7 @@ bool LDS_LDLIDAR_LD14P::isActive() {
 }
 
 LDS::result_t LDS_LDLIDAR_LD14P::setScanTargetFreqHz(float freq) {
-  return ERROR_NOT_IMPLEMENTED;
+  return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
 }
 
 void LDS_LDLIDAR_LD14P::loop() {

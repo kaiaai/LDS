@@ -239,16 +239,7 @@ LDS::result_t LDS_NEATO_XV11::processByte(int inByte) {
 }
 
 LDS::result_t LDS_NEATO_XV11::setScanTargetFreqHz(float freq) {
-  float rpm = freq * 60.0f;
-  if (rpm <= 0) {
-    scan_rpm_setpoint = DEFAULT_SCAN_RPM;
-    return RESULT_OK;
-  }
-  
-  if (rpm <= DEFAULT_SCAN_RPM*0.9f || rpm >= DEFAULT_SCAN_RPM*1.1f)
-    return ERROR_INVALID_VALUE;
-
-  scan_rpm_setpoint = rpm;
+  scan_rpm_setpoint = freq <= 0 ? DEFAULT_SCAN_RPM : freq * 60.0f;
   return RESULT_OK;
 }
 

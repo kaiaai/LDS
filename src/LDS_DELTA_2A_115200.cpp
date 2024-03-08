@@ -94,16 +94,7 @@ bool LDS_DELTA_2A_115200::isActive() {
 }
 
 LDS::result_t LDS_DELTA_2A_115200::setScanTargetFreqHz(float freq) {
-  const float default_scan_freq_hz = get_default_scan_freq_hz();
-  if (freq <= 0) {
-    scan_freq_hz_setpoint = default_scan_freq_hz;
-    return RESULT_OK;
-  }
-  
-  if (freq <= default_scan_freq_hz*0.9f || freq >= default_scan_freq_hz*1.1f)
-    return ERROR_INVALID_VALUE;
-
-  scan_freq_hz_setpoint = freq;
+  scan_freq_hz_setpoint = freq <= 0 ? get_default_scan_freq_hz() : freq;
   return RESULT_OK;
 }
 

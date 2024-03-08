@@ -99,7 +99,7 @@ bool LDS_RPLIDAR_A1::isActive() {
 }
 
 LDS::result_t LDS_RPLIDAR_A1::setScanTargetFreqHz(float freq) {
-  return ERROR_NOT_IMPLEMENTED;
+  return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
 }
 
 LDS::result_t LDS_RPLIDAR_A1::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
