@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #pragma once
-#include "LDS_DELTA_2A.h"
+#include "LDS_DELTA_2A_115200.h"
 
-class LDS_DELTA_2G : public LDS_DELTA_2A {
+class LDS_DELTA_2G : public LDS_DELTA_2A_115200 {
   public:
     const char* getModelName() override;
 };

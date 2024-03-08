@@ -12,15 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "LDS_DELTA_2A.h"
+#include "LDS_DELTA_2A_115200.h"
 
-void LDS_DELTA_2A::init() {
+void LDS_DELTA_2A_115200::init() {
   motor_enabled = false;
   pwm_val = 0.6;
   scan_freq_hz = 0;
-  scan_freq_hz_setpoint = DEFAULT_SCAN_FREQ_HZ;
+  scan_freq_hz_setpoint = get_default_scan_freq_hz();
   parser_state = 0;
   checksum = 0;
+
+  uint16_t max_data_samples = get_max_data_sample_count();
+  uint16_t max_data_len_bytes = (uint16_t) (sizeof(meas_sample_t) * max_data_samples);
+  rx_buffer = new uint8_t[max_data_len_bytes];
 
   scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_hz_setpoint, 3.0e-1, 1.0e-1, 0.0, PID_v1::DIRECT);
   scanFreqPID.SetOutputLimits(0, 1.0);
@@ -29,43 +33,51 @@ void LDS_DELTA_2A::init() {
   enableMotor(false);
 }
 
-LDS::result_t LDS_DELTA_2A::start() {
+uint16_t LDS_DELTA_2A_115200::get_max_data_sample_count() {
+  return 28;
+}
+
+float LDS_DELTA_2A_115200::get_default_scan_freq_hz() {
+  return 5.25f; // guesstimate
+}
+
+LDS::result_t LDS_DELTA_2A_115200::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, getModelName());
   return RESULT_OK;
 }
 
-uint32_t LDS_DELTA_2A::getSerialBaudRate() {
+uint32_t LDS_DELTA_2A_115200::getSerialBaudRate() {
   return 115200;
 }
 
-float LDS_DELTA_2A::getTargetScanFreqHz() {
+float LDS_DELTA_2A_115200::getTargetScanFreqHz() {
   return scan_freq_hz_setpoint;
 }
 
-int LDS_DELTA_2A::getSamplingRateHz() {
-  return 1890;
+int LDS_DELTA_2A_115200::getSamplingRateHz() {
+  return 1890; // guesstimate
 }
 
-LDS::result_t LDS_DELTA_2A::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
+LDS::result_t LDS_DELTA_2A_115200::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
   scanFreqPID.SetTunings(Kp, Ki, Kd);
   return RESULT_OK;
 }
 
-LDS::result_t LDS_DELTA_2A::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
+LDS::result_t LDS_DELTA_2A_115200::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
   scanFreqPID.SetSampleTime(sample_period_ms);
   return RESULT_OK;
 }
 
-float LDS_DELTA_2A::getCurrentScanFreqHz() {
+float LDS_DELTA_2A_115200::getCurrentScanFreqHz() {
   return scan_freq_hz;
 }
 
-void LDS_DELTA_2A::stop() {
+void LDS_DELTA_2A_115200::stop() {
   enableMotor(false);
 }
 
-void LDS_DELTA_2A::enableMotor(bool enable) {
+void LDS_DELTA_2A_115200::enableMotor(bool enable) {
   motor_enabled = enable;
 
   if (enable) {
@@ -77,24 +89,25 @@ void LDS_DELTA_2A::enableMotor(bool enable) {
   }
 }
 
-bool LDS_DELTA_2A::isActive() {
+bool LDS_DELTA_2A_115200::isActive() {
   return motor_enabled;
 }
 
-LDS::result_t LDS_DELTA_2A::setScanTargetFreqHz(float freq) {
+LDS::result_t LDS_DELTA_2A_115200::setScanTargetFreqHz(float freq) {
+  const float default_scan_freq_hz = get_default_scan_freq_hz();
   if (freq <= 0) {
-    scan_freq_hz_setpoint = DEFAULT_SCAN_FREQ_HZ;
+    scan_freq_hz_setpoint = default_scan_freq_hz;
     return RESULT_OK;
   }
   
-  if (freq <= DEFAULT_SCAN_FREQ_HZ*0.9f || freq >= DEFAULT_SCAN_FREQ_HZ*1.1f)
+  if (freq <= default_scan_freq_hz*0.9f || freq >= default_scan_freq_hz*1.1f)
     return ERROR_INVALID_VALUE;
 
   scan_freq_hz_setpoint = freq;
   return RESULT_OK;
 }
 
-void LDS_DELTA_2A::loop() {
+void LDS_DELTA_2A_115200::loop() {
   while (true) {
     int c = readSerial();
     if (c < 0)
@@ -115,13 +128,17 @@ void LDS_DELTA_2A::loop() {
   }
 }
 
-LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
+LDS::result_t LDS_DELTA_2A_115200::processByte(uint8_t c) {
   uint16_t packet_length = 0;
   uint16_t data_length = 0;
   LDS::result_t result = RESULT_OK;
-  uint8_t * rx_buffer = (uint8_t *)&scan_packet;
+  packet_header_t * packet_header = (packet_header_t *)rx_buffer;
 
-  if (parser_idx >= sizeof(scan_packet_t)) {
+  uint16_t max_data_samples = get_max_data_sample_count();
+  uint16_t max_data_len_bytes = (uint16_t) (sizeof(meas_sample_t) * max_data_samples);
+  uint16_t max_packet_len_bytes_less_crc = max_data_len_bytes + sizeof(packet_header_t);
+
+  if (parser_idx >= max_packet_len_bytes_less_crc) {
     parser_idx = 0;
     return RESULT_OK;//ERROR_INVALID_PACKET;
   }
@@ -142,8 +159,8 @@ LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
     break;
 
   case 3:
-    packet_length = decodeUInt16(scan_packet.packet_length);
-    if (packet_length > sizeof(scan_packet_t) - sizeof(scan_packet.checksum))
+    packet_length = decodeUInt16(packet_header->packet_length);
+    if (packet_length > max_packet_len_bytes_less_crc + sizeof(uint16_t))
       result = ERROR_INVALID_PACKET;
     break;
 
@@ -166,14 +183,14 @@ LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
     break;
 
   case 8: // data length LSB
-    data_length = decodeUInt16(scan_packet.data_length);
-    if (data_length == 0 || data_length > MAX_DATA_BYTE_LEN)
+    data_length = decodeUInt16(packet_header->data_length);
+    if (data_length == 0 || data_length > max_data_len_bytes)
       result = ERROR_INVALID_PACKET;
     break;
 
   default:
     // Keep reading
-    packet_length = decodeUInt16(scan_packet.packet_length);
+    packet_length = decodeUInt16(packet_header->packet_length);
     if (parser_idx != packet_length + 2)
       break;
 
@@ -186,36 +203,41 @@ LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
       break;
     }
 
-    scan_freq_hz = scan_packet.scan_freq_x20 * 0.05;
+    scan_freq_hz = packet_header->scan_freq_x20 * 0.05;
+    uint8_t packets_per_scan = get_packets_per_scan();
 
-    if (scan_packet.data_type == DATA_TYPE_RPM_AND_MEAS) {
-      uint16_t start_angle_x100 = decodeUInt16(scan_packet.start_angle_x100);
+    if (packet_header->data_type == DATA_TYPE_RPM_AND_MEAS) {
+      uint16_t start_angle_x100 = decodeUInt16(packet_header->start_angle_x100);
       bool scan_completed = start_angle_x100 == 0;
 
       postPacket(rx_buffer, parser_idx, scan_completed);
 
-      data_length = decodeUInt16(scan_packet.data_length);
+      data_length = decodeUInt16(packet_header->data_length);
       if (data_length < 8) {
         result = ERROR_INVALID_PACKET;
         break;
       }
 
       uint16_t sample_count = (data_length - 5) / 3;
-      if (sample_count > MAX_DATA_SAMPLES) {
+      if (sample_count > max_data_samples) {
         result = ERROR_INVALID_PACKET;
         break;
       }
 
-      //int16_t offset_angle_x100 = (int16_t)decodeUInt16((uint16_t)scan_packet.offset_angle_x100);
+      //int16_t offset_angle_x100 = (int16_t)decodeUInt16((uint16_t)packet_header->offset_angle_x100);
       float start_angle = start_angle_x100 * 0.01;
       //start_angle += offset_angle_x100 * 0.01;
-      float coeff = DEG_PER_PACKET / (float)sample_count;
+      //DEG_PER_PACKET = 360.0f / (float)PACKETS_PER_SCAN; // 22.5 deg
+
+      float coeff = 360.0f / (packets_per_scan * sample_count);
+//      meas_sample_t * samples = (meas_sample_t *)&packet_header[sizeof(packet_header_t)];
+      meas_sample_t * samples = (meas_sample_t *)(packet_header + sizeof(packet_header_t));
       for (uint16_t idx = 0; idx < sample_count; idx++) {
         float angle_deg = start_angle + idx * coeff;
 
-        uint16_t distance_mm_x4 = decodeUInt16(scan_packet.sample[idx].distance_mm_x4);
+        uint16_t distance_mm_x4 = decodeUInt16(samples[idx].distance_mm_x4);
         float distance_mm = distance_mm_x4 * 0.25;
-        float quality = scan_packet.sample[idx].quality;
+        float quality = samples[idx].quality;
         postScanPoint(angle_deg, distance_mm, quality, scan_completed);
         scan_completed = false;
       }
@@ -230,7 +252,7 @@ LDS::result_t LDS_DELTA_2A::processByte(uint8_t c) {
   return result;
 }
 
-uint16_t LDS_DELTA_2A::decodeUInt16(const uint16_t value) const {
+uint16_t LDS_DELTA_2A_115200::decodeUInt16(const uint16_t value) const {
   union {
     uint16_t i;
     char c[2];
@@ -239,4 +261,10 @@ uint16_t LDS_DELTA_2A::decodeUInt16(const uint16_t value) const {
   return bint.c[0] == 0x01 ? value : (value << 8) + (value >> 8);
 }
 
-const char* LDS_DELTA_2A::getModelName() { return "3irobotics Delta-2A"; }
+const char* LDS_DELTA_2A_115200::getModelName() {
+  return "3irobotics Delta-2A 115200 baud";
+}
+
+uint8_t LDS_DELTA_2A_115200::get_packets_per_scan(){
+  return 16;
+}

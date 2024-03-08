@@ -12,8 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "LDS_DELTA_2G.h"
+#include "LDS_DELTA_2A_230400.h"
 
-const char* LDS_DELTA_2G::getModelName() {
-  return "3irobotics Delta-2G";
+const char* LDS_DELTA_2A_230400::getModelName() {
+  return "3irobotics Delta-2A";
+}
+
+uint32_t LDS_DELTA_2A_230400::getSerialBaudRate() {
+  return 230400;
+}
+
+uint16_t LDS_DELTA_2A_230400::get_max_data_sample_count() {
+  return 61;
+}
+
+float LDS_DELTA_2A_230400::get_default_scan_freq_hz() {
+  return 6.0f;
 }

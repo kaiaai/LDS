@@ -16,7 +16,7 @@
 #include "LDS.h"
 #include "PID_v1_0_0.h"
 
-class LDS_DELTA_2A : public LDS {
+class LDS_DELTA_2A_115200 : public LDS {
   public:
     virtual void init() override;
 
@@ -36,23 +36,18 @@ class LDS_DELTA_2A : public LDS {
     virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
-    static constexpr float DEFAULT_SCAN_FREQ_HZ = 5.25f;
     static const uint8_t START_BYTE = 0xAA;
     static const uint8_t PROTOCOL_VERSION = 0x01;
     static const uint8_t PACKET_TYPE = 0x61;
     static const uint8_t DATA_TYPE_RPM_AND_MEAS = 0xAD;
     static const uint8_t DATA_TYPE_RPM_ONLY = 0xAE;
-    static const uint8_t PACKETS_PER_SCAN = 16;
-    static constexpr float DEG_PER_PACKET = 360.0f / (float)PACKETS_PER_SCAN; // 22.5 deg
-    static const uint8_t MAX_DATA_SAMPLES = 28;
 
     struct meas_sample_t {
       uint8_t quality;
       uint16_t distance_mm_x4;
     };
-    static const uint16_t MAX_DATA_BYTE_LEN = sizeof(meas_sample_t) * MAX_DATA_SAMPLES;
 
-    struct scan_packet_t {
+    struct packet_header_t {
       uint8_t    start_byte; // 0xAA
       uint16_t   packet_length; // excludes checksum
       uint8_t    protocol_version; // 0x01
@@ -64,13 +59,16 @@ class LDS_DELTA_2A : public LDS {
       int16_t    offset_angle_x100; // signed
       uint16_t   start_angle_x100; // unsigned?
 
-      meas_sample_t sample[MAX_DATA_SAMPLES]; // 3*28=84
-
-      uint16_t   checksum;
+      // meas_sample_t sample[MAX_DATA_SAMPLES]; // 3*28=84
+      // uint16_t   checksum;
     } __attribute__((packed)); // 8 + 5 + 84 + 2 = 97
 
     virtual void enableMotor(bool enable);
-    LDS::result_t processByte(uint8_t c);
+    virtual LDS::result_t processByte(uint8_t c);
+    virtual uint16_t get_max_data_sample_count();
+    virtual float get_default_scan_freq_hz();
+    virtual uint8_t get_packets_per_scan();
+
     uint16_t decodeUInt16(const uint16_t value) const;
 
     float scan_freq_hz_setpoint;
@@ -81,7 +79,7 @@ class LDS_DELTA_2A : public LDS {
     float scan_freq_hz;
     PID_v1 scanFreqPID;
 
-    scan_packet_t scan_packet;
     uint16_t parser_idx;
     uint16_t checksum;
+    uint8_t * rx_buffer;
 };
