@@ -38,7 +38,7 @@ uint16_t LDS_DELTA_2A_115200::get_max_data_sample_count() {
 }
 
 float LDS_DELTA_2A_115200::get_default_scan_freq_hz() {
-  return 5.25f; // guesstimate
+  return 6; // 5.25f; // guesstimate
 }
 
 LDS::result_t LDS_DELTA_2A_115200::start() {
