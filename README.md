@@ -45,6 +45,10 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 - for 3irobotix Delta-2A, -2B, -2C PRO, -2D, -2G use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 
+## Performance Notes
+- currently Delta-2A, -2B, -2G exhibit mysterioius fixed pattern noise
+  - I'm sure it can be fixed, but so far I haven't heard back from 3irobotix support.
+
 ## Release notes
 
 ## v0.5.3 - in debug
