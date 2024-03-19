@@ -39,7 +39,10 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/ebbHqs4lW0U/maxresdefault.jpg" alt="LDROBOT LD14P LiDAR connected to Arduino, ROS2" width="720" height="405" border="10" />
 </a>
 
-## Adapter Boards
+## Connecting to Arduino
+Please follow [this tutorial](https://kaia.ai/blog/tutorial-connect-ld14p-lidar/) to connect LDROBOT LD14P to Arduino ESP32.
+
+### Adapter Boards
 Some LiDAR/LDS models do not have built-in motor control and therefore require an additional board to operate:
 - for Xiaomi Roborock 1st gen LDS02RR use [this board](https://github.com/makerspet/pcb/tree/main/lds02rr_adapter)
 - for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
