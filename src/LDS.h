@@ -74,7 +74,7 @@ class LDS {
     LDS();
     virtual void init() = 0;
     virtual result_t start() = 0; // Initialize and start; call from Arduino setup()
-    virtual void stop() = 0; // Stop the motor and scanning
+    virtual result_t stop() = 0; // Stop the motor and scanning
     virtual void loop() = 0; // Call frequently from Arduino loop()
 
     virtual uint32_t getSerialBaudRate() = 0;
@@ -85,8 +85,8 @@ class LDS {
     virtual const char* getModelName() = 0;
 
     virtual result_t setScanTargetFreqHz(float freq) = 0;
-    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) = 0;
-    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) = 0;
+    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd);
+    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms);
 
     void setScanPointCallback(ScanPointCallback scan_callback);
     void setMotorPinCallback(MotorPinCallback motor_pin_callback);

@@ -15,7 +15,7 @@
 #pragma once
 #include "LDS.h"
 
-class LDS_LDLIDAR_LD14P : public LDS {
+class LDS_CAMSENSE_X1 : public LDS {
   public:
     virtual void init() override;
 
@@ -33,37 +33,33 @@ class LDS_LDLIDAR_LD14P : public LDS {
     virtual result_t setScanTargetFreqHz(float freq) override;
 
   protected:
-    static const uint8_t START_BYTE = 0x54;
-    static const uint8_t POINTS_PER_PACK = 12;
-    static const uint8_t VER_LEN = 0x2C;
+    static const uint8_t START_BYTE0 = 0x55;
+    static const uint8_t START_BYTE1 = 0xAA;
+    static const uint8_t START_BYTE2 = 0x03;
+    static const uint8_t SAMPLES_PER_PACKET = 0x08;
 
     struct meas_sample_t {
       uint16_t distance_mm;
-      uint8_t intensity;
+      uint8_t quality;
     } __attribute__((packed));
-
-    static const uint16_t DATA_BYTE_LEN = sizeof(meas_sample_t) * POINTS_PER_PACK;
 
     struct scan_packet_t {
-      uint8_t start_byte;
-      uint8_t ver_len;
-      uint16_t speed_deg_per_sec;
-      uint16_t start_angle_deg_x100;
-      meas_sample_t sample[POINTS_PER_PACK];
-      uint16_t end_angle_deg_x100;
-      uint16_t timestamp_ms;
-      uint8_t crc8;
+      uint8_t start_byte0; // 0x55
+      uint8_t start_byte1; // 0xAA
+      uint8_t start_byte2; // 0x03
+      uint8_t samples_per_packet; // 0x08
+      uint16_t rotation_speed; // Hz*64*60
+      uint16_t start_angle;
+      meas_sample_t sample[SAMPLES_PER_PACKET];
+      uint16_t end_angle;
+      uint16_t crc16;
     } __attribute__((packed));
 
-    virtual void enableMotor(bool enable);
     LDS::result_t processByte(uint8_t c);
     uint16_t decodeUInt16(const uint16_t value) const;
-    void checkSum(uint8_t value);
 
-    bool motor_enabled;
-    uint16_t speed_deg_per_sec;
+    uint16_t rotation_speed;
     scan_packet_t scan_packet;
     uint16_t parser_idx;
-    uint8_t crc;
-    uint16_t end_angle_deg_x100_prev;
+    uint16_t start_angle_prev;
 };

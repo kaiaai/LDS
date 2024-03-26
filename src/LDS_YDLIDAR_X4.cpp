@@ -86,10 +86,11 @@ int LDS_YDLIDAR_X4::getSamplingRateHz() {
   return 5000;
 }
 
-void LDS_YDLIDAR_X4::stop() {
+LDS::result_t LDS_YDLIDAR_X4::stop() {
   if (isActive())
     abort();
   enableMotor(false);
+  return RESULT_OK;
 }
 
 void LDS_YDLIDAR_X4::enableMotor(bool enable) {
@@ -108,14 +109,6 @@ bool LDS_YDLIDAR_X4::isActive() {
 
 LDS::result_t LDS_YDLIDAR_X4::setScanTargetFreqHz(float freq) {
   return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
-}
-
-LDS::result_t LDS_YDLIDAR_X4::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
-  return ERROR_NOT_IMPLEMENTED;
-}
-
-LDS::result_t LDS_YDLIDAR_X4::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
-  return ERROR_NOT_IMPLEMENTED;
 }
 
 void LDS_YDLIDAR_X4::markScanTime() {

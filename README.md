@@ -51,6 +51,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - added Delta-2A 230400 baud
 - added Delta-2B
 
+## v0.5.3
+- Camsense X1
+
 ## v0.5.2
 - added LDROBOT LD14P
 

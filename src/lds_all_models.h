@@ -26,4 +26,5 @@
 #include "LDS_DELTA_2B.h"
 #include "LDS_DELTA_2G.h"
 #include "LDS_LDLIDAR_LD14P.h"
+#include "LDS_CAMSENSE_X1.h"
 //#include "LDS_HLS_LFCD2.h"

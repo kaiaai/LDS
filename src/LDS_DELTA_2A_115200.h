@@ -21,7 +21,7 @@ class LDS_DELTA_2A_115200 : public LDS {
     virtual void init() override;
 
     virtual result_t start() override;
-    virtual void stop() override;
+    virtual result_t stop() override;
     virtual void loop() override; // Call loop() frequently from Arduino loop()
 
     virtual uint32_t getSerialBaudRate() override;

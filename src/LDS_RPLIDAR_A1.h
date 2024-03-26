@@ -22,7 +22,7 @@ class LDS_RPLIDAR_A1 : public LDS {
     virtual void init() override;
 
     virtual result_t start() override;
-    virtual void stop() override;
+    virtual result_t stop() override;
     virtual void loop() override; // Call loop() frequently from Arduino loop()
 
     virtual uint32_t getSerialBaudRate() override;
@@ -33,8 +33,6 @@ class LDS_RPLIDAR_A1 : public LDS {
     virtual const char* getModelName() override;
 
     virtual result_t setScanTargetFreqHz(float freq) override;
-    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
-    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
     static uint16_t const DEFAULT_TIMEOUT_MS = 500;

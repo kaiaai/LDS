@@ -20,7 +20,7 @@
 class LDS_YDLIDAR_X2_X2L : public LDS_YDLIDAR_X4 {
   public:
     virtual result_t start() override;
-    virtual void stop() override;
+    virtual result_t stop() override;
     virtual const char* getModelName() override;
 
     virtual float getCurrentScanFreqHz() override;

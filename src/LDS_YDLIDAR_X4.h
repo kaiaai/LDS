@@ -22,7 +22,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     virtual void init() override;
 
     virtual result_t start() override;
-    virtual void stop() override;
+    virtual result_t stop() override;
     virtual void loop() override; // Call loop() frequently from Arduino loop()
 
     virtual uint32_t getSerialBaudRate() override;
@@ -33,8 +33,6 @@ class LDS_YDLIDAR_X4 : public LDS {
     virtual const char* getModelName() override;
 
     virtual result_t setScanTargetFreqHz(float freq) override;
-    virtual result_t setScanPIDCoeffs(float Kp, float Ki, float Kd) override;
-    virtual result_t setScanPIDSamplePeriodMs(uint32_t sample_period_ms) override;
 
   protected:
     bool motor_enabled;
@@ -131,20 +129,6 @@ class LDS_YDLIDAR_X4 : public LDS {
     static const uint8_t RESP_MEAS_CHECKBIT = (0x1<<0);
     static const uint8_t RESP_MEAS_ANGLE_SHIFT = 1;
     static const uint8_t RESP_MEAS_ANGLE_SAMPLE_SHIFT = 8;
-    
-    //static const uint8_t CMD_RUN_POSITIVE = 0x06;
-    //static const uint8_t CMD_RUN_INVERSION = 0x07;
-    //static const uint8_t CMD_SET_AIMSPEED_ADDMIC = 0x09;
-    //static const uint8_t CMD_SET_AIMSPEED_DISMIC = 0x0A;
-    //static const uint8_t CMD_SET_AIMSPEED_ADD = 0x0B;
-    //static const uint8_t CMD_SET_AIMSPEED_DIS = 0x0C;
-    //static const uint8_t CMD_GET_AIMSPEED = 0x0D;
-    //static const uint8_t CMD_SET_SAMPLING_RATE = 0xD0;
-    //static const uint8_t CMD_GET_SAMPLING_RATE = 0xD1;
-    
-    //static const uint8_t STATUS_OK = 0x0;
-    //static const uint8_t STATUS_WARNING = 0x1;
-    //static const uint8_t STATUS_ERROR = 0x2;
     
     static const uint8_t PACKAGE_SAMPLE_BYTES = 2;
     static const uint16_t NODE_DEFAULT_QUALITY = 10; // (10<<2)

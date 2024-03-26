@@ -22,7 +22,7 @@ class LDS_NEATO_XV11 : public LDS {
   public:
     void init() override;
     virtual result_t start() override;
-    virtual void stop() override;
+    virtual result_t stop() override;
     virtual void loop() override; // Call loop() frequently from Arduino loop()
 
     virtual uint32_t getSerialBaudRate() override;

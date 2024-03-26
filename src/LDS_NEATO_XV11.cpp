@@ -247,8 +247,9 @@ float LDS_NEATO_XV11::getTargetScanFreqHz() {
   return scan_rpm_setpoint / 60.0f;
 }
 
-void LDS_NEATO_XV11::stop() {
+LDS::result_t LDS_NEATO_XV11::stop() {
   enableMotor(false);
+  return RESULT_OK;
 }
 
 LDS::result_t LDS_NEATO_XV11::start() {

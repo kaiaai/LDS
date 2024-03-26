@@ -81,10 +81,11 @@ int LDS_RPLIDAR_A1::getSamplingRateHz() {
   return 4000; // TODO high speed mode 8000
 }
 
-void LDS_RPLIDAR_A1::stop() {
+LDS::result_t LDS_RPLIDAR_A1::stop() {
   if (isActive())
     abort();
   enableMotor(false);
+  return RESULT_OK;
 }
 
 void LDS_RPLIDAR_A1::enableMotor(bool enable) {
@@ -100,14 +101,6 @@ bool LDS_RPLIDAR_A1::isActive() {
 
 LDS::result_t LDS_RPLIDAR_A1::setScanTargetFreqHz(float freq) {
   return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
-}
-
-LDS::result_t LDS_RPLIDAR_A1::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
-  return ERROR_NOT_IMPLEMENTED;
-}
-
-LDS::result_t LDS_RPLIDAR_A1::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
-  return ERROR_NOT_IMPLEMENTED;
 }
 
 void LDS_RPLIDAR_A1::markScanTime() {

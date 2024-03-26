@@ -40,8 +40,9 @@ float LDS_YDLIDAR_X2_X2L::getCurrentScanFreqHz() {
   return LDS_YDLIDAR_X4::getCurrentScanFreqHz();
 }
 
-void LDS_YDLIDAR_X2_X2L::stop() {
+LDS::result_t LDS_YDLIDAR_X2_X2L::stop() {
   enableMotor(false);
+  return RESULT_OK;
 }
 
 void LDS_YDLIDAR_X2_X2L::enableMotor(bool enable) {

@@ -73,8 +73,9 @@ float LDS_DELTA_2A_115200::getCurrentScanFreqHz() {
   return scan_freq_hz;
 }
 
-void LDS_DELTA_2A_115200::stop() {
+LDS::result_t LDS_DELTA_2A_115200::stop() {
   enableMotor(false);
+  return RESULT_OK;
 }
 
 void LDS_DELTA_2A_115200::enableMotor(bool enable) {

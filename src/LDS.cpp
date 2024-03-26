@@ -87,6 +87,14 @@ void LDS::postError(result_t code, String aux_info) {
     error_callback(code, aux_info);
 }
 
+LDS::result_t LDS::setScanPIDSamplePeriodMs(uint32_t sample_period_ms) {
+  return ERROR_NOT_IMPLEMENTED;
+}
+
+LDS::result_t LDS::setScanPIDCoeffs(float Kp, float Ki, float Kd) {
+  return ERROR_NOT_IMPLEMENTED;
+}
+
 String LDS::infoCodeToString(info_t code) {
   switch (code) {
     case INFO_MODEL:
