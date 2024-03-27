@@ -155,14 +155,7 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
     static float constexpr ONE_OVER_7 = 1.0 / (SAMPLES_PER_PACKET - 1);
     float step_deg = end_angle_deg - start_angle_deg;
     step_deg *= ONE_OVER_7;
-/*
-    Serial.print("start end step_deg ");
-    Serial.print(start_angle);
-    Serial.print(" ");
-    Serial.print(end_angle);
-    Serial.print(" ");
-    Serial.println(step_deg);
-*/
+
     float angle_deg_prev = start_angle_deg;
     for (uint8_t i = 0; i < SAMPLES_PER_PACKET; i++) {
       float distance_mm = (int16_t) decodeUInt16(scan_packet.sample[i].distance_mm);
@@ -176,11 +169,12 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
       } else if (scan_completed_between_packets) {
         scan_completed = (i == 0);
       }
+      angle_deg_prev = angle_deg;
 
       angle_deg = angle_deg > 360 ? angle_deg - 360 : angle_deg;
+      //distance_mm = distance_mm < 0 ? 0 : distance_mm;
 
       postScanPoint(angle_deg, distance_mm, quality, scan_completed);
-      angle_deg_prev = angle_deg;
       //scan_completed = false;
     }
     parser_idx = 0;
