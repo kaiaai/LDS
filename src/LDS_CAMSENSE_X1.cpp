@@ -17,9 +17,8 @@
 void LDS_CAMSENSE_X1::init() {
   rotation_speed = 0;
   parser_idx = 0;
-  start_angle_prev = 0;
-
-  //enableMotor(false);
+  //start_angle_prev = 0;
+  end_angle_prev = 0;
 }
 
 LDS::result_t LDS_CAMSENSE_X1::start() {
@@ -40,7 +39,7 @@ int LDS_CAMSENSE_X1::getSamplingRateHz() {
 }
 
 float LDS_CAMSENSE_X1::getCurrentScanFreqHz() {
-  static float constexpr ONE_OVER_3840 = 1.0f / 3840.0f;
+  static float constexpr ONE_OVER_3840 = 1.0 / 3840;
   return rotation_speed * ONE_OVER_3840;
 }
 
@@ -101,7 +100,8 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
 
   case 4:
     if (c != SAMPLES_PER_PACKET) {
-      parser_idx = 0;
+      //parser_idx = 0;
+      result = ERROR_INVALID_PACKET;
     }
     break;
 
@@ -132,35 +132,63 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
     uint16_t start_angle = decodeUInt16(scan_packet.start_angle);
     uint16_t end_angle = decodeUInt16(scan_packet.end_angle);
 
-    bool scan_completed = start_angle < start_angle_prev;
-    start_angle_prev = start_angle;
+    if (start_angle < ANGLE_MIN || end_angle < ANGLE_MIN) {
+      result = ERROR_INVALID_PACKET;
+      break;
+    }
+
+    bool scan_completed_mid_packet = end_angle < start_angle;
+    bool scan_completed_between_packets = start_angle < end_angle_prev;
+    //bool scan_completed = start_angle < start_angle_prev;
+    bool scan_completed = scan_completed_mid_packet || scan_completed_between_packets;
+    //start_angle_prev = start_angle;
+    end_angle_prev = end_angle;
 
     postPacket(rx_buffer, sizeof(scan_packet_t), scan_completed);
 
-    static float constexpr ONE_OVER_64 = 1 / 64.0f;
-    float start_angle_deg = start_angle * ONE_OVER_64;
-    float end_angle_deg = end_angle * ONE_OVER_64;
-
-    static float constexpr ONE_OVER_7 = 1 / (SAMPLES_PER_PACKET - 1);
-    float step_deg = end_angle_deg - start_angle_deg;
+    static float constexpr ONE_OVER_64 = 1.0 / 64;
+    float start_angle_deg = (start_angle - ANGLE_MIN) * ONE_OVER_64;
+    float end_angle_deg = (end_angle - ANGLE_MIN) * ONE_OVER_64;
     if (start_angle > end_angle)
-      step_deg += 360;
-    step_deg *= ONE_OVER_7;
+      end_angle_deg += 360;
 
+    static float constexpr ONE_OVER_7 = 1.0 / (SAMPLES_PER_PACKET - 1);
+    float step_deg = end_angle_deg - start_angle_deg;
+    step_deg *= ONE_OVER_7;
+/*
+    Serial.print("start end step_deg ");
+    Serial.print(start_angle);
+    Serial.print(" ");
+    Serial.print(end_angle);
+    Serial.print(" ");
+    Serial.println(step_deg);
+*/
+    float angle_deg_prev = start_angle_deg;
     for (uint8_t i = 0; i < SAMPLES_PER_PACKET; i++) {
-      float distance_mm = decodeUInt16(scan_packet.sample[i].distance_mm);
+      float distance_mm = (int16_t) decodeUInt16(scan_packet.sample[i].distance_mm);
       float quality = scan_packet.sample[i].quality;
 
       float angle_deg = start_angle_deg + step_deg * i;
-      postScanPoint(angle_deg, distance_mm, quality, scan_completed);
+
       scan_completed = false;
+      if (scan_completed_mid_packet) {
+        scan_completed = (angle_deg >= 360 && angle_deg_prev < 360);
+      } else if (scan_completed_between_packets) {
+        scan_completed = (i == 0);
+      }
+
+      angle_deg = angle_deg > 360 ? angle_deg - 360 : angle_deg;
+
+      postScanPoint(angle_deg, distance_mm, quality, scan_completed);
+      angle_deg_prev = angle_deg;
+      //scan_completed = false;
     }
     parser_idx = 0;
     break;
   }
 
-  //if (result < RESULT_OK)
-  //  parser_idx = 0;
+  if (result < RESULT_OK)
+    parser_idx = 0;
 
   return result;
 }

@@ -37,9 +37,10 @@ class LDS_CAMSENSE_X1 : public LDS {
     static const uint8_t START_BYTE1 = 0xAA;
     static const uint8_t START_BYTE2 = 0x03;
     static const uint8_t SAMPLES_PER_PACKET = 0x08;
+    static const uint16_t ANGLE_MIN = 0xA000;
 
     struct meas_sample_t {
-      uint16_t distance_mm;
+      int16_t distance_mm;
       uint8_t quality;
     } __attribute__((packed));
 
@@ -61,5 +62,6 @@ class LDS_CAMSENSE_X1 : public LDS {
     uint16_t rotation_speed;
     scan_packet_t scan_packet;
     uint16_t parser_idx;
-    uint16_t start_angle_prev;
+    //uint16_t start_angle_prev;
+    uint16_t end_angle_prev;
 };

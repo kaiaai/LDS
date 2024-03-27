@@ -184,10 +184,6 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
       float start_angle = start_angle_deg_x100*0.01f;
       float end_angle = end_angle_deg_x100*0.01f;
 
-      //Serial.print(start_angle);
-      //Serial.print(' ');
-      //Serial.println(end_angle);
-
       if (end_angle < start_angle)
         end_angle = end_angle + 360;
 
