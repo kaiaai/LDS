@@ -35,6 +35,7 @@ void setup() {
   lds.setMotorPinCallback(lds_motor_pin_callback);
   lds.init();
 
+  Serial.begin(115200);
   Serial.println(LdSerial.setRxBufferSize(1024)); // must be before .begin()
   Serial.print("LDS RX buffer size "); // default 128 hw + 256 sw
   uint32_t baud_rate = lds.getSerialBaudRate();
