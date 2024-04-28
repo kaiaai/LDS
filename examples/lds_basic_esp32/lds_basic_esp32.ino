@@ -42,7 +42,11 @@ void setup() {
   Serial.print("LDS baud rate ");
   Serial.print(baud_rate);
 
-  LdSerial.begin(baud_rate);
+  LdSerial.begin(baud_rate); // Use default GPIO TX 17, RX 16
+  // Assign TX, RX pins
+  // LdSerial.begin(baud_rate, SERIAL_8N1, rxPin, txPin);
+  // Details https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/HardwareSerial.h
+  // Tutorial https://www.youtube.com/watch?v=eUPAoP7xC7A
   while (LdSerial.read() >= 0);
 
   LDS::result_t result = lds.start();
