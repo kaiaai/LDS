@@ -28,6 +28,9 @@ HardwareSerial LdSerial(2); // TX 17, RX 16
 LDS_YDLIDAR_X4 lds;
 
 void setup() {
+  Serial.begin(115200);
+  Serial.println("LiDAR library example");
+
   lds.setScanPointCallback(lds_scan_point_callback);
   lds.setPacketCallback(lds_packet_callback);
   lds.setSerialWriteCallback(lds_serial_write_callback);
@@ -35,7 +38,6 @@ void setup() {
   lds.setMotorPinCallback(lds_motor_pin_callback);
   lds.init();
 
-  Serial.begin(115200);
   Serial.println(LdSerial.setRxBufferSize(1024)); // must be before .begin()
   Serial.print("LDS RX buffer size "); // default 128 hw + 256 sw
   uint32_t baud_rate = lds.getSerialBaudRate();
