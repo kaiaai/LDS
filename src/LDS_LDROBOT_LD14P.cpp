@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "LDS_LDLIDAR_LD14P.h"
+#include "LDS_LDROBOT_LD14P.h"
 
-void LDS_LDLIDAR_LD14P::init() {
+void LDS_LDROBOT_LD14P::init() {
   motor_enabled = false;
   speed_deg_per_sec = 0;
   parser_idx = 0;
@@ -24,35 +24,35 @@ void LDS_LDLIDAR_LD14P::init() {
   enableMotor(false);
 }
 
-LDS::result_t LDS_LDLIDAR_LD14P::start() {
+LDS::result_t LDS_LDROBOT_LD14P::start() {
   enableMotor(true);
   postInfo(INFO_MODEL, getModelName());
   return RESULT_OK;
 }
 
-uint32_t LDS_LDLIDAR_LD14P::getSerialBaudRate() {
+uint32_t LDS_LDROBOT_LD14P::getSerialBaudRate() {
   return 230400;
 }
 
-float LDS_LDLIDAR_LD14P::getTargetScanFreqHz() {
+float LDS_LDROBOT_LD14P::getTargetScanFreqHz() {
   return DEFAULT_VALUE;
 }
 
-int LDS_LDLIDAR_LD14P::getSamplingRateHz() {
+int LDS_LDROBOT_LD14P::getSamplingRateHz() {
   return 4000;
 }
 
-float LDS_LDLIDAR_LD14P::getCurrentScanFreqHz() {
+float LDS_LDROBOT_LD14P::getCurrentScanFreqHz() {
   static constexpr float ONE_OVER_360 = 1.0f/360.0f;
   return ONE_OVER_360 * speed_deg_per_sec;
 }
 
-LDS::result_t LDS_LDLIDAR_LD14P::stop() {
+LDS::result_t LDS_LDROBOT_LD14P::stop() {
   enableMotor(false);
   return RESULT_OK;
 }
 
-void LDS_LDLIDAR_LD14P::enableMotor(bool enable) {
+void LDS_LDROBOT_LD14P::enableMotor(bool enable) {
   static constexpr uint8_t START_CMD[] = {0x54, 0xA0, 0x04, 0x00, 0x00, 0x00, 0x00, 0x5E};
   static constexpr uint8_t STOP_CMD[] = {0x54, 0xA1, 0x04, 0x00, 0x00, 0x00, 0x00, 0x4A};
   motor_enabled = enable;
@@ -65,15 +65,15 @@ void LDS_LDLIDAR_LD14P::enableMotor(bool enable) {
   // TODO verify serial response
 }
 
-bool LDS_LDLIDAR_LD14P::isActive() {
+bool LDS_LDROBOT_LD14P::isActive() {
   return motor_enabled;
 }
 
-LDS::result_t LDS_LDLIDAR_LD14P::setScanTargetFreqHz(float freq) {
+LDS::result_t LDS_LDROBOT_LD14P::setScanTargetFreqHz(float freq) {
   return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
 }
 
-void LDS_LDLIDAR_LD14P::loop() {
+void LDS_LDROBOT_LD14P::loop() {
   while (true) {
     int c = readSerial();
     if (c < 0)
@@ -85,7 +85,7 @@ void LDS_LDLIDAR_LD14P::loop() {
   }
 }
 
-void LDS_LDLIDAR_LD14P::checkSum(uint8_t value) {
+void LDS_LDROBOT_LD14P::checkSum(uint8_t value) {
   static const uint8_t CRC_TABLE[256] = {
     0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
     0xae, 0xf2, 0xbf, 0x68, 0x25, 0x8b, 0xc6, 0x11, 0x5c, 0xa9, 0xe4, 0x33,
@@ -113,7 +113,7 @@ void LDS_LDLIDAR_LD14P::checkSum(uint8_t value) {
   crc = CRC_TABLE[(crc ^ value) & 0xff];
 }
 
-LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
+LDS::result_t LDS_LDROBOT_LD14P::processByte(uint8_t c) {
   LDS::result_t result = RESULT_OK;
   uint8_t * rx_buffer = (uint8_t *)&scan_packet;
 
@@ -237,7 +237,7 @@ LDS::result_t LDS_LDLIDAR_LD14P::processByte(uint8_t c) {
   return result;
 }
 
-uint16_t LDS_LDLIDAR_LD14P::decodeUInt16(const uint16_t value) const {
+uint16_t LDS_LDROBOT_LD14P::decodeUInt16(const uint16_t value) const {
   union {
     uint16_t i;
     char c[2];
@@ -246,4 +246,4 @@ uint16_t LDS_LDLIDAR_LD14P::decodeUInt16(const uint16_t value) const {
   return bint.c[0] == 0x01 ? value : (value << 8) + (value >> 8);
 }
 
-const char* LDS_LDLIDAR_LD14P::getModelName() { return "LDLIDAR LD14P"; }
+const char* LDS_LDROBOT_LD14P::getModelName() { return "LDROBOT LD14P"; }

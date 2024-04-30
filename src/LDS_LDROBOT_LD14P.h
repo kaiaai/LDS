@@ -15,7 +15,7 @@
 #pragma once
 #include "LDS.h"
 
-class LDS_LDLIDAR_LD14P : public LDS {
+class LDS_LDROBOT_LD14P : public LDS {
   public:
     virtual void init() override;
 
