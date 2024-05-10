@@ -3,6 +3,8 @@ Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](
 Please check out the [Awesome 2D LiDARs list](https://github.com/kaiaai/awesome-2d-lidars)
 and read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more details.
 
+Please visit the [Support Forum](https://github.com/makerspet/support/discussions/)!
+
 This library supports:
 - YDLIDAR X4, X3, X3-PRO, X2/X2L models
 - SLAMTEC RPLIDAR A1
