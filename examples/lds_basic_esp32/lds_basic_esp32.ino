@@ -66,7 +66,23 @@ void setup() {
 }
 
 int lidar_serial_read_callback() {
-  return LidarSerial.read();
+  int c = LidarSerial.read();
+// Uncomment below for debug
+/*
+  if (c < 0)
+    return c;
+
+  if (c < 16)
+    Serial.print('0');
+  Serial.print(c, HEX);
+
+  static int i=0;
+  if (i++ % 16 == 0)
+    Serial.println();
+  else
+    Serial.print(' ');
+*/
+  return c;
 }
 
 size_t lidar_serial_write_callback(const uint8_t * buffer, size_t length) {
