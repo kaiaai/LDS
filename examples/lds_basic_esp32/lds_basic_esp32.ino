@@ -26,7 +26,7 @@ const uint8_t LDS_MOTOR_PWM_PIN = 15; // LiDAR motor speed control using PWM
 #define LDS_MOTOR_PWM_CHANNEL    2 // ESP32 PWM channel for LiDAR motor speed control
 
 HardwareSerial LidarSerial(2); // TX 17, RX 16
-LDS_YDLIDAR_X4 lidar;
+LDS_YDLIDAR_X4 lidar;  // Uncomment your LiDAR model
 //LDS_DELTA_2G lidar;
 
 void setup() {
@@ -143,7 +143,15 @@ void lidar_motor_pin_callback(float value, LDS::lds_pin_t lidar_pin) {
 }
 
 void lidar_packet_callback(uint8_t * packet, uint16_t length, bool scan_completed) {
-  return;
+  // Uncomment for debug
+  /*
+  Serial.print("Packet ");
+  Serial.print(length);
+  Serial.print("b");
+  float hz = lidar.getCurrentScanFreqHz();
+  Serial.print(", speed ");
+  Serial.println(hz);
+  */
 }
 
 void loop() {
