@@ -17,7 +17,7 @@ This library supports:
 
 Other models are in the works.
 
-![LDS_collection_labeled_v2](https://github.com/kaiaai/LDS/assets/33589365/d6cc36de-3c28-40e1-a0f4-56281586b361)
+![LDS_collection_labeled_v3](https://github.com/kaiaai/LDS/assets/33589365/7b6a6a6f-a27c-45de-99c9-9e60d17b4d14)
 
 ### Video: Neato XV11 runs on Arduino, ROS2
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=kfk1Q0RSJpI" target="_blank">
