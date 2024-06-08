@@ -58,8 +58,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 - for 3irobotix Delta-2A, -2B, -2C PRO, -2D, -2G use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 
-### ESP32 Module
+### ESP32 Modules
 - When using the ESP32 WROVER board, it's worth using pins 32 and 33 instead of pins 16 and 17, which are used for QSPI
+- When using the YD ESP32-S3, consider the default TX1, RX1 GPIO15 and GPIO16 pins and change the example code to `HardwareSerial LidarSerial(1);`
 
 ## Performance Notes
 - currently Delta-2A, -2B, -2G exhibit mysterioius fixed pattern noise
