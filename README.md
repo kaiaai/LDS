@@ -117,3 +117,6 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - add Dreame TBD
 - reduce raw data volume
   - omit measurement quality since it usually does not get used
+
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=kaiaai/LDS&type=Date)](https://star-history.com/#kaiaai/LDS&Date)
