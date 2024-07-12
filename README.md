@@ -1,5 +1,5 @@
-# LDS/LiDAR Library for Arduino
-Laser distance scan sensor (LDS/LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) home robot software platform.
+# LiDAR Library for Arduino
+Laser distance scan sensor (LIDAR) Arduino wrapper/controller for [kaia.ai](https://kaia.ai) home robot software platform.
 Please check out the [Awesome 2D LiDARs list](https://github.com/kaiaai/awesome-2d-lidars)
 and read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more details.
 
