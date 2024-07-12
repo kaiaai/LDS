@@ -63,7 +63,7 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - When using the YD ESP32-S3, consider the default TX1, RX1 GPIO15 and GPIO16 pins and change the example code to `HardwareSerial LidarSerial(1);`
 
 ## Performance Notes
-- currently Delta-2A, -2B, -2G exhibit mysterioius fixed pattern noise
+- currently Delta-2A, -2B, -2G exhibit mysterious fixed pattern noise
   - this noise does NOT show when using 3irobotix development kit, so it should be fix-able (somehow)
   - so far I haven't heard back from 3irobotix support.
 
@@ -113,6 +113,7 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 ## TODO
 - add Xiaomi Roborock LDS01RR
 - add LDROBOT LD20
+- add YDLIDAR SCL
 - add Hitachi-LG HLS-LFCD2
 - add Dreame TBD
 - reduce raw data volume
