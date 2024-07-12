@@ -113,6 +113,7 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 ## TODO
 - add Xiaomi Roborock LDS01RR
 - add LDROBOT LD20
+- add LDROBIT LD19P, https://github.com/Myzhar/ldrobot-lidar-ros2
 - add YDLIDAR SCL
 - add Hitachi-LG HLS-LFCD2
 - add Dreame TBD
