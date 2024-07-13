@@ -120,7 +120,7 @@ String LDS::infoCodeToString(info_t code) {
 
 String LDS::resultCodeToString(result_t code) {
   switch (code) {
-    case OK:
+    case LDS::RESULT_OK:
       return "OK";
     case ERROR_TIMEOUT:
       return "Timeout error";
