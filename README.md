@@ -69,6 +69,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
+## v0.5.5
+- compilation bugfix
+
 ## v0.5.4
 - added CAMSENSE X1
 - example sketch fix
