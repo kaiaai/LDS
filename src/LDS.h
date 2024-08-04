@@ -109,7 +109,7 @@ class LDS {
     size_t writeSerial(const uint8_t * buffer, size_t length);
     void postInfo(info_t code, String info);
     void postError(result_t code, String aux_info);
-    void enableMotor(bool enable);
+    // void enableMotor(bool enable);
 
   protected:
     ScanPointCallback scan_point_callback;
