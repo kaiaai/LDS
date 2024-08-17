@@ -11,21 +11,22 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+//
+// Based on https://github.com/YDLIDAR/lidarCar/
 
 #pragma once
-
 #include "LDS_YDLIDAR_X4.h"
-#include "LDS_YDLIDAR_X3_PRO.h"
-#include "LDS_YDLIDAR_X3.h"
-#include "LDS_YDLIDAR_X2_X2L.h"
-#include "LDS_YDLIDAR_SCL.h"
-#include "LDS_NEATO_XV11.h"
-#include "LDS_LDS02RR.h"
-#include "LDS_RPLIDAR_A1.h"
-#include "LDS_DELTA_2A_115200.h"
-#include "LDS_DELTA_2A_230400.h"
-#include "LDS_DELTA_2B.h"
-#include "LDS_DELTA_2G.h"
-#include "LDS_LDROBOT_LD14P.h"
-#include "LDS_CAMSENSE_X1.h"
-//#include "LDS_HLS_LFCD2.h"
+
+class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
+  public:
+    virtual result_t start() override;
+    virtual result_t stop() override;
+    virtual const char* getModelName() override;
+
+    virtual float getCurrentScanFreqHz() override;
+    virtual uint32_t getSerialBaudRate() override;
+    virtual float getTargetScanFreqHz() override;
+    virtual int getSamplingRateHz() override;
+  protected:
+    virtual void enableMotor(bool enable) override;
+};
