@@ -18,7 +18,7 @@
 
 void LDS_YDLIDAR_X4::init() {
   ring_start_ms[0] = ring_start_ms[1] = 0;
-  scan_freq = 0;
+  scan_freq_hz = 0;
   scan_completed = false;
   enableMotor(false);
 }
@@ -116,6 +116,61 @@ void LDS_YDLIDAR_X4::markScanTime() {
   ring_start_ms[0] = millis();
 }
 
+void LDS_YDLIDAR_X4::checkInfo(int currentByte) {
+  static String s;
+  static uint8_t state = 0;
+  const uint8_t header[] = {0xA5, 0x5A, 0x14, 0x00, 0x00, 0x00, 0x04};
+
+  switch (state) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+      if (currentByte == header[state]) {
+         state++;
+      } else {
+        state = 0;
+        s = "";
+      }
+      break;
+    case 27:
+      postInfo(INFO_MODEL, s);
+      state = 0;
+      s = "";
+      break;
+    case 7:
+      s = "Model 0x";
+      if (currentByte < 16)
+        s = s + '0';
+      s = s + String(currentByte, HEX);
+      state++;
+      break;
+    case 8:
+      s = s + ", firmware v" + String(currentByte);
+      state++;
+      break;
+    case 9:
+      s = s + '.' + String(currentByte);
+      state++;
+      break;
+    case 10:
+      s = s + ", hardware v" + String(currentByte);
+      state++;
+      break;
+    case 11:
+      s = s + ", S/N " + String(currentByte);
+      state++;
+      break;
+    default:
+      s = s + String(currentByte);
+      state++;
+      break;
+  }
+}
+
 LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
   switch(state) {
     case 1:
@@ -141,8 +196,10 @@ state1:
 
       switch (recvPos) {
         case 0: // 0xAA 1st byte of package header
-          if (currentByte != (PH&0xFF))
+          if (currentByte != (PH&0xFF)) {
+            checkInfo(currentByte);
             continue;
+          }
           break;
         case 1: // 0x55 2nd byte of package header
           CheckSumCal = PH;
@@ -277,7 +334,10 @@ state2:
   if (CheckSumResult) {
     scan_completed = (package.package_CT & 0x01) == CT_RING_START;
     if (scan_completed)
-      scan_freq = package.package_CT >> 1;
+      //scan_freq = package.package_CT >> 1;
+      //F = CT[bit(7:1)]/10 (when CT[bit(7:1)] = 1).
+      scan_freq_hz = float(package.package_CT >> 1)*0.1f;
+
     postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
   }
 

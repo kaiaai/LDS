@@ -63,7 +63,7 @@ class LDS_NEATO_XV11 : public LDS {
     bool isValidPacket();
     void clearVars();
 
-    float scan_rpm_setpoint; // desired scan RPM  
+    float scan_rpm_setpoint; // desired scan RPM
     bool motor_enabled;
     int eState;
 
@@ -100,7 +100,7 @@ class LDS_NEATO_XV11 : public LDS {
     
     float pwm_val;
     float pwm_last;
-    float scan_rpm;    
+    float scan_rpm;
     PID_v1 scanFreqPID;
     
     uint16_t aryDist[N_DATA_QUADS];    // there are (4) distances, one for each data quad

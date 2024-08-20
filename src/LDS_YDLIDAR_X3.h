@@ -19,4 +19,7 @@ class LDS_YDLIDAR_X3 : public LDS_YDLIDAR_X2_X2L {
   public:
     virtual const char* getModelName() override;
     virtual float getCurrentScanFreqHz() override;
+
+  protected:
+    virtual void enableMotor(bool enable) override;
 };

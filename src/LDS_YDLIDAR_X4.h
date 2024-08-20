@@ -101,6 +101,7 @@ class LDS_YDLIDAR_X4 : public LDS {
     LDS::result_t sendCommand(uint8_t cmd, const void * payload = NULL, size_t payloadsize = 0);
     LDS::result_t waitResponseHeader(ans_header_t * header, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     void markScanTime();
+    void checkInfo(int currentByte);
 
   protected:
     // Scan start packet: 2 bytes
@@ -160,6 +161,6 @@ class LDS_YDLIDAR_X4 : public LDS {
 
     uint8_t state = 0;
 
-    uint8_t scan_freq = 0;
+    float scan_freq_hz = 0;
     bool scan_completed = false;
 };

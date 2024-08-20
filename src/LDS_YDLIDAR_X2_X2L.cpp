@@ -51,8 +51,9 @@ void LDS_YDLIDAR_X2_X2L::enableMotor(bool enable) {
   if (enable) {
     setMotorPin(DIR_INPUT, LDS_MOTOR_PWM_PIN);
   } else {
+    // Cannot stop X2L completely
     setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
-    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
+    setMotorPin(VALUE_HIGH, LDS_MOTOR_PWM_PIN);
   }
 
   // Entire LDS on/off

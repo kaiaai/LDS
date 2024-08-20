@@ -17,5 +17,17 @@
 const char* LDS_YDLIDAR_X3::getModelName() { return "YDLIDAR X3"; }
 
 float LDS_YDLIDAR_X3::getCurrentScanFreqHz() {
-  return motor_enabled ? float(scan_freq)*0.1f : 0;
+  return motor_enabled ? scan_freq_hz : 0;
+}
+
+void LDS_YDLIDAR_X3::enableMotor(bool enable) {
+  motor_enabled = enable;
+
+  if (enable) {
+    setMotorPin(DIR_INPUT, LDS_MOTOR_PWM_PIN);
+  } else {
+    // Cannot stop X3 completely
+    setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  }
 }
