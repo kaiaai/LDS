@@ -25,6 +25,7 @@ class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
     virtual result_t stop() override;
     virtual const char* getModelName() override;
     virtual void loop() override;
+    virtual LDS::result_t waitScanDot() override;
 
     virtual float getCurrentScanFreqHz() override;
     virtual uint32_t getSerialBaudRate() override;
@@ -38,6 +39,31 @@ class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
   protected:
     static constexpr float DEFAULT_SCAN_FREQ_HZ = 5.0f;
     static constexpr float PWM_START = 0.25f;
+
+    struct node_info_scl_t {
+      //uint8_t sync_quality;
+      float angle_deg;
+      uint16_t distance_mm;
+      uint8_t intensity;
+      uint8_t quality_flag;
+    } __attribute__((packed)) ;
+
+    struct cloud_point_scl_t {
+      uint8_t intensity;
+      uint8_t distance0;
+      uint8_t distance1;      
+    } __attribute__((packed));
+
+    struct node_package_scl_t {
+      uint16_t  package_Head;
+      uint8_t   package_CT; // package type
+      uint8_t   nowPackageNum; // distance sample count
+      uint16_t  packageFirstSampleAngle;
+      uint16_t  packageLastSampleAngle;
+      uint16_t  checkSum;
+      cloud_point_scl_t  packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH];
+    } __attribute__((packed));
+
     virtual void enableMotor(bool enable) override;
     String receiveInfo(uint32_t timeout_ms);
 

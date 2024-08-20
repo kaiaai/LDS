@@ -88,7 +88,7 @@ class LDS_YDLIDAR_X4 : public LDS {
       uint16_t  packageFirstSampleAngle;
       uint16_t  packageLastSampleAngle;
       uint16_t  checkSum;
-      uint16_t  packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH];
+      uint16_t  packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH + (PACKAGE_SAMPLE_MAX_LENGTH>>1)]; // SCL hack
     } __attribute__((packed)) ;
 
   protected:
