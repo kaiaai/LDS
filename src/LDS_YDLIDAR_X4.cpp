@@ -172,6 +172,8 @@ void LDS_YDLIDAR_X4::checkInfo(int currentByte) {
 }
 
 LDS::result_t LDS_YDLIDAR_X4::waitScanDot() {
+  uint8_t *packageBuffer = (uint8_t*)&package.package_Head;
+
   switch(state) {
     case 1:
       goto state1;
@@ -326,10 +328,6 @@ state2:
     CheckSumResult = CheckSumCal == CheckSum;
   }
 
-  //if (CheckSumResult)
-  //  postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum,
-  //    package.package_CT == CT_RING_START);
-
   scan_completed = false;
   if (CheckSumResult) {
     scan_completed = (package.package_CT & 0x01) == CT_RING_START;
@@ -343,15 +341,8 @@ state2:
 
   // Process the buffered packet
   while(true) {
-//    uint8_t package_CT;
     node_info_t node;
   
-    //package_CT = package.package_CT;    
-    //if ((package_CT & 0x01) == CT_NORMAL) {
-    //  node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
-    //} else {
-    //  node.sync_quality = NODE_DEFAULT_QUALITY + NODE_SYNC;
-    //}
     node.sync_quality = NODE_DEFAULT_QUALITY;
   
     if (CheckSumResult == true) {

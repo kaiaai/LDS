@@ -24,7 +24,7 @@ void LDS_YDLIDAR_SCL::init() {
   pwm_val = PWM_START;
   scan_freq_setpoint_hz = DEFAULT_SCAN_FREQ_HZ;
 
-  scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_setpoint_hz, 3.0e-3, 1.0e-3, 0.0, PID_v1::DIRECT);
+  scanFreqPID.init(&scan_freq_hz, &pwm_val, &scan_freq_setpoint_hz, 1.0e-2, 2.5e-2, 0.0, PID_v1::DIRECT);
   scanFreqPID.SetOutputLimits(0, 1.0);
   scanFreqPID.SetSampleTime(20);
   scanFreqPID.SetMode(PID_v1::AUTOMATIC);
@@ -100,6 +100,8 @@ LDS::result_t LDS_YDLIDAR_SCL::setScanPIDSamplePeriodMs(uint32_t sample_period_m
 }
 
 LDS::result_t LDS_YDLIDAR_SCL::waitScanDot() {
+  uint8_t *packageBuffer = (uint8_t*)&package_scl.package_Head;
+
   switch(state) {
     case 1:
       goto state1;
@@ -124,26 +126,22 @@ state1:
 
       switch (recvPos) {
         case 0: // 0xAA 1st byte of package header
-          if (currentByte != (PH&0xFF)) {
+          if (currentByte != 0xAA) { // (PH&0xFF)
             checkInfo(currentByte);
             continue;
           }
           break;
         case 1: // 0x55 2nd byte of package header
-          CheckSumCal = PH;
-          if (currentByte != (PH>>8)) {
+          CheckSumCal = 0x55AA; // PH
+          if (currentByte != 0x55) { // (PH>>8)
             recvPos = 0;
             continue;
           }
           break;
         case 2:
           SampleNumlAndCTCal = currentByte;
-          if ((currentByte & 0x01) == CT_RING_START)
+          if ((currentByte & 0x01) == 0x01) // CT_RING_START
             markScanTime();
-          //if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) { 
-          //  recvPos = 0;
-          //  continue;
-          //}
           break;
         case 3:
           SampleNumlAndCTCal += (currentByte << 8);
@@ -160,7 +158,7 @@ state1:
         case 5:
           FirstSampleAngle += (currentByte << 8);
           CheckSumCal ^= FirstSampleAngle;
-          FirstSampleAngle = FirstSampleAngle>>1; // degrees x64
+          FirstSampleAngle = FirstSampleAngle>>1; // degrees*64
           break;
         case 6:
           if (currentByte & 0x01) {
@@ -199,7 +197,7 @@ state1:
       }
       packageBuffer[recvPos++] = currentByte;
 
-      if (recvPos == PACKAGE_PAID_BYTES ) {
+      if (recvPos == PACKAGE_PAID_BYTES) {
         package_recvPos = recvPos;
         break;
       }
@@ -223,11 +221,16 @@ state2:
           return ERROR_NOT_READY;
         }
 
-        if ((recvPos & 1) == 1) {
-          Valu8Tou16 += (currentByte << 8);
-          CheckSumCal ^= Valu8Tou16;
-        } else {
-          Valu8Tou16 = currentByte; 
+        switch (recvPos % 3) {
+          case 0:
+            CheckSumCal ^= currentByte;
+            break;
+          case 1:
+            Valu8Tou16 = currentByte;
+            break;
+          case 2:
+            Valu8Tou16 += (currentByte << 8);
+            CheckSumCal ^= Valu8Tou16;
         }
 
         packageBuffer[package_recvPos + recvPos] = currentByte;          
@@ -255,9 +258,9 @@ state2:
 
   scan_completed = false;
   if (CheckSumResult) {
-    scan_completed = (package.package_CT & 0x01) == 0x01;
+    scan_completed = (package_scl.package_CT & 0x01) == 0x01;
     if (scan_completed)
-      scan_freq_hz = float(package.package_CT >> 1)*0.1f;
+      scan_freq_hz = float(package_scl.package_CT >> 1)*0.1f;
 
     postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
   }
@@ -268,19 +271,17 @@ state2:
     cloud_point_scl_t point;
   
     if (CheckSumResult == true) {
-      int32_t AngleCorrectForDistance;
-      point = ((node_package_scl_t*)&package)->packageSampleDistance[package_Sample_Index];
+      int32_t AngleCorrectForDistance = 0;
+      point = package_scl.packageSampleDistance[package_Sample_Index];
       node.distance_mm = (point.distance0 >> 2) + (point.distance1 << 8);
       node.intensity = point.intensity;
       node.quality_flag = point.distance0 && 0x03;
 
       if (node.distance_mm != 0) {
-        AngleCorrectForDistance = (int32_t)(atan(17.8f/((float)node.distance_mm)) *3666.929888837269f ); // *64*360/2/pi
-      } else {
-        AngleCorrectForDistance = 0;    
+        AngleCorrectForDistance = (int32_t)(atan(17.8f/((float)node.distance_mm))*3666.929888837269f); // *64*360/2/pi
       }
 
-      float sampleAngle = IntervalSampleAngle * package_Sample_Index; // x64, before correction
+      float sampleAngle = IntervalSampleAngle * package_Sample_Index; // *64, before correction
 
       node.angle_deg = (FirstSampleAngle + sampleAngle + AngleCorrectForDistance) * 0.015625f; // /64
       if (node.angle_deg < 0) {
@@ -305,7 +306,7 @@ state2:
 
     // Dump finished?
     package_Sample_Index++;
-    uint8_t nowPackageNum = package.nowPackageNum;  
+    uint8_t nowPackageNum = package_scl.nowPackageNum;  
     if (package_Sample_Index >= nowPackageNum) {
       package_Sample_Index = 0;
       break;

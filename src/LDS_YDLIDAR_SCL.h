@@ -46,12 +46,12 @@ class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
       uint16_t distance_mm;
       uint8_t intensity;
       uint8_t quality_flag;
-    } __attribute__((packed)) ;
+    } __attribute__((packed));
 
     struct cloud_point_scl_t {
       uint8_t intensity;
       uint8_t distance0;
-      uint8_t distance1;      
+      uint8_t distance1;
     } __attribute__((packed));
 
     struct node_package_scl_t {
@@ -66,6 +66,7 @@ class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
 
     virtual void enableMotor(bool enable) override;
     String receiveInfo(uint32_t timeout_ms);
+    node_package_scl_t package_scl;
 
     float scan_freq_setpoint_hz; // desired scan frequency
     float pwm_val;
