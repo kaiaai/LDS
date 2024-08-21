@@ -6,7 +6,7 @@ and read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more 
 Please visit the [Support Forum](https://github.com/makerspet/support/discussions/)!
 
 This library supports:
-- YDLIDAR X4, X3, X3-PRO, X2/X2L models
+- YDLIDAR X4, X3, X3-PRO, X2/X2L, SCL models
 - SLAMTEC RPLIDAR A1
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
@@ -18,6 +18,11 @@ This library supports:
 Other models are in the works.
 
 ![LDS_collection_labeled_v3](https://github.com/kaiaai/LDS/assets/33589365/7b6a6a6f-a27c-45de-99c9-9e60d17b4d14)
+
+### Video: YDLIDAR SCL runs on Arduino, ROS2
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=7mj5hnlwmx4" target="_blank">
+ <img src="http://img.youtube.com/vi/7mj5hnlwmx4/maxresdefault.jpg" alt="YDLIDAR SCL laser distance scan sensor runs on Arduino, ROS2" width="720" height="405" border="10" />
+</a>
 
 ### Video: Neato XV11 runs on Arduino, ROS2
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=kfk1Q0RSJpI" target="_blank">
@@ -73,6 +78,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
   - so far I haven't heard back from 3irobotix support.
 
 ## Release notes
+
+## v0.5.6
+- added YDLIDAR SCL
 
 ## v0.5.5
 - compilation bugfix

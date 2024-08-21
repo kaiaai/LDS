@@ -273,9 +273,9 @@ state2:
     if (CheckSumResult == true) {
       int32_t AngleCorrectForDistance = 0;
       point = package_scl.packageSampleDistance[package_Sample_Index];
-      node.distance_mm = (point.distance0 >> 2) + (point.distance1 << 8);
+      node.distance_mm = (point.distance_lsb >> 2) + (point.distance_msb << 6);
       node.intensity = point.intensity;
-      node.quality_flag = point.distance0 && 0x03;
+      node.quality_flag = point.distance_lsb && 0x03;
 
       if (node.distance_mm != 0) {
         AngleCorrectForDistance = (int32_t)(atan(17.8f/((float)node.distance_mm))*3666.929888837269f); // *64*360/2/pi

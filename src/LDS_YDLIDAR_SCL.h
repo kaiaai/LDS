@@ -50,8 +50,8 @@ class LDS_YDLIDAR_SCL : public LDS_YDLIDAR_X4 {
 
     struct cloud_point_scl_t {
       uint8_t intensity;
-      uint8_t distance0;
-      uint8_t distance1;
+      uint8_t distance_lsb;
+      uint8_t distance_msb;
     } __attribute__((packed));
 
     struct node_package_scl_t {
