@@ -50,7 +50,6 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::begin() {
   for (int i = 0; i < 16; i++)
     serial_num += String(deviceinfo.serialnum[i] & 0xff, HEX);
   postInfo(INFO_SERIAL_NUMBER, serial_num);
-  delay(100);
 
   /* TODO: Re-enable when getHealth is implemented
   device_health_t healthinfo;
@@ -59,15 +58,12 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::begin() {
   postInfo(INFO_DEVICE_HEALTH, healthinfo.status == 0 ? "OK" : "bad");
   */
 
-  // Start
   startScan();
   return RESULT_OK;
 }
 
 LDS::result_t LDS_YDLIDAR_X4_PRO::start() {
-  init();
-  begin();
-  return RESULT_OK;
+  return startScan();
 }
 
 uint32_t LDS_YDLIDAR_X4_PRO::getSerialBaudRate() {
@@ -99,10 +95,7 @@ void LDS_YDLIDAR_X4_PRO::initMotor() {
 
 void LDS_YDLIDAR_X4_PRO::enableMotor(bool enable) {
   motor_enabled = enable;
-  //setMotorPin(enable ? VALUE_PWM : VALUE_HIGH, LDS_MOTOR_PWM_PIN);
-  // TODO: Re-enable when motor control is implemented
-  //setMotorPin(enable ? VALUE_LOW : VALUE_HIGH, LDS_MOTOR_PWM_PIN);
-  //postInfo(LDS::INFO_OTHER, String(motor_enabled));
+  setMotorPin(enable ? VALUE_PWM : VALUE_HIGH, LDS_MOTOR_PWM_PIN);
 }
 
 bool LDS_YDLIDAR_X4_PRO::isActive() {
@@ -493,8 +486,9 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::getHealth(device_health_t & health, uint32_t t
 
 LDS::result_t LDS_YDLIDAR_X4_PRO::startScan(uint32_t timeout) {
   enableMotor(true);
-  // TODO: Dump the Serial buffer
-  //while (readSerial() >= 0);
+
+  // Clear the serial buffer
+  while (readSerial() >= 0);
 
   if (!power_on_info_processed)
     return ERROR_UNAVAILABLE;

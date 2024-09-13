@@ -38,7 +38,7 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
     virtual result_t setScanTargetFreqHz(float freq) override;
 
   protected:
-    bool motor_enabled;
+    bool motor_enabled = false;
     unsigned long int ring_start_ms[2];
     bool power_on_info_processed = false;
 
