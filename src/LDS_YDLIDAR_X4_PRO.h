@@ -55,7 +55,7 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
     struct node_info_t {
       uint8_t    sync_quality;
       uint16_t   angle_q6_checkbit;
-      uint16_t   distance_q2;
+      uint16_t   distance;
     } __attribute__((packed)) ;
 
     struct device_info_t{
@@ -78,6 +78,12 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
       uint8_t  type;
     } __attribute__((packed));
 
+    struct distance_measurement_t {
+      uint8_t   packageInterference:2;
+      uint8_t   packageDistanceLByte:6;
+      uint8_t   packageDistanceHByte;
+    } __attribute__((packed)) ;
+
     struct node_package_t {
       uint16_t  package_Head;
       uint8_t   package_CT; // package type
@@ -85,7 +91,7 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
       uint16_t  packageFirstSampleAngle;
       uint16_t  packageLastSampleAngle;
       uint16_t  checkSum;
-      uint16_t  packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH]; // SCL hack
+      distance_measurement_t packageSampleDistance[PACKAGE_SAMPLE_MAX_LENGTH];
     } __attribute__((packed)) ;
 
   protected:

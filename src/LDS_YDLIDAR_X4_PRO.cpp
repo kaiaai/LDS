@@ -167,14 +167,13 @@ void LDS_YDLIDAR_X4_PRO::checkInfo(int currentByte) {
 }
 
 LDS::result_t LDS_YDLIDAR_X4_PRO::waitScanDot() {
-  // TODO: Process interference filtering
   uint8_t *packageBuffer = (uint8_t*)&package.package_Head;
 
   switch(state) {
     case 1:
-      goto state1;
+      goto readHeader;
     case 2:
-      goto state2;
+      goto readSamples;
   }
 
   if (package_Sample_Index == 0) {
@@ -185,7 +184,7 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::waitScanDot() {
 
     // Read in 10-byte packet header
     while (true) {
-state1:
+readHeader:
       int currentByte = readSerial();
       if (currentByte < 0) {
         state = 1;
@@ -287,7 +286,7 @@ state1:
 
       // Read in samples, 2 bytes each
       while (true) {
-state2:
+readSamples:
         int currentByte = readSerial();
         if (currentByte < 0){
           state = 2;
@@ -330,6 +329,7 @@ state2:
     if (scan_completed)
       //scan_freq = package.package_CT >> 1;
       //F = CT[bit(7:1)]/10 (when CT[bit(7:1)] = 1).
+      // TODO: Parse CT to get health info
       scan_freq_hz = float(package.package_CT >> 1)*0.1f;
 
     postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
@@ -343,11 +343,11 @@ state2:
 
     if (CheckSumResult == true) {
       int32_t AngleCorrectForDistance;
-      node.distance_q2 = package.packageSampleDistance[package_Sample_Index];
+      node.distance = (package.packageSampleDistance[package_Sample_Index].packageDistanceHByte * 64) + (package.packageSampleDistance[package_Sample_Index].packageDistanceLByte);
 
-      if (node.distance_q2/4 != 0) {
+      if (node.distance != 0) {
         AngleCorrectForDistance = (int32_t)((atan(((21.8f*(155.3f
-          - (node.distance_q2*0.25f)) )/155.3f)/(node.distance_q2*0.25f)))*3666.93f);
+          - (node.distance)) )/155.3f)/(node.distance)))*3666.93f);
       } else {
         AngleCorrectForDistance = 0;
       }
@@ -373,17 +373,17 @@ state2:
       // Invalid checksum
       //node.sync_quality = NODE_DEFAULT_QUALITY + NODE_NOT_SYNC;
       node.angle_q6_checkbit = RESP_MEAS_CHECKBIT;
-      node.distance_q2 = 0;
+      node.distance = 0;
       package_Sample_Index = 0;
       state = 0;
       return ERROR_CHECKSUM;
     }
 
     // Dump out processed data
-    float point_distance_mm = node.distance_q2*0.25f;
+    float point_distance_mm = node.distance;
     float point_angle = (node.angle_q6_checkbit >> RESP_MEAS_ANGLE_SHIFT)*0.015625f; // /64.0f
     //uint8_t point_quality = (node.sync_quality>>RESP_MEAS_QUALITY_SHIFT);
-    uint8_t point_quality = node.sync_quality;
+    uint8_t point_quality = package.packageSampleDistance[package_Sample_Index].packageInterference;
     //bool point_startBit = (node.sync_quality & RESP_MEAS_SYNCBIT);
 
     //postScanPoint(point_angle, point_distance_mm, point_quality, point_startBit);
