@@ -39,6 +39,7 @@ class LDS {
       ERROR_INVALID_VALUE = -12,
       ERROR_UNKNOWN = -13,
       ERROR_INVALID_DATA = -14,
+      ERROR_UNAVAILABLE = -15,
     };
 
     enum info_t {
@@ -100,7 +101,7 @@ class LDS {
     virtual String infoCodeToString(info_t code);
     virtual String pinIDToString(lds_pin_t pin);
     virtual String pinStateToString(lds_pin_state_t state);
-    
+
   protected:
     void postScanPoint(float angle_deg, float dist_mm, float quality, bool scan_completed);
     void setMotorPin(float value, lds_pin_t pin);
