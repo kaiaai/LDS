@@ -470,7 +470,7 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::getHealth(device_health_t & health) {
   return RESULT_OK;
 }
 
-LDS::result_t LDS_YDLIDAR_X4_PRO::startScan(uint32_t timeout) {
+LDS::result_t LDS_YDLIDAR_X4_PRO::startScan() {
   enableMotor(true);
 
   // Clear the serial buffer

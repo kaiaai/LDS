@@ -110,7 +110,7 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
     void initMotor();
     virtual void enableMotor(bool enable);
     LDS::result_t abort();
-    LDS::result_t startScan(uint32_t timeout = DEFAULT_TIMEOUT_MS);
+    LDS::result_t startScan();
     virtual LDS::result_t waitScanDot(); // wait for one sample package to arrive
     LDS::result_t waitMessageHeader(ans_header_t * header, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     void markScanTime();
