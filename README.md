@@ -6,7 +6,7 @@ and read this [blog post](https://kaia.ai/blog/arduino-lidar-library/) for more 
 Please visit the [Support Forum](https://github.com/makerspet/support/discussions/)!
 
 This library supports:
-- YDLIDAR X4, X3, X3-PRO, X2/X2L, SCL models
+- YDLIDAR X4, X4-PRO, X3, X3-PRO, X2/X2L, SCL models
 - SLAMTEC RPLIDAR A1
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
@@ -79,6 +79,9 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
+## v0.5.7
+- added YDLIDAR X4-PRO
+
 ## v0.5.6
 - added YDLIDAR SCL
 
@@ -130,7 +133,6 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 - add Xiaomi Roborock LDS01RR
 - add LDROBOT LD20
 - add LDROBIT LD19P, https://github.com/Myzhar/ldrobot-lidar-ros2
-- add YDLIDAR SCL
 - add Hitachi-LG HLS-LFCD2
 - add Dreame TBD
 - reduce raw data volume
