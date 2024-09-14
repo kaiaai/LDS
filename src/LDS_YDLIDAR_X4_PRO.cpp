@@ -18,52 +18,24 @@
 
 void LDS_YDLIDAR_X4_PRO::init() {
   ring_start_ms[0] = ring_start_ms[1] = 0;
-  scan_freq_hz = 0;
   scan_completed = false;
   initMotor();
   enableMotor(false);
 }
 
-LDS::result_t LDS_YDLIDAR_X4_PRO::begin() {
-  device_info_t deviceinfo;
-  if (getDeviceInfo(deviceinfo, 500) != RESULT_OK)
-    return ERROR_DEVICE_INFO;
-
-  if (deviceinfo.model == YDLIDAR_X4_PRO_MODEL_NUM) {
-    postInfo(INFO_MODEL, getModelName());
-  } else {
-    postError(ERROR_INVALID_MODEL, String(deviceinfo.model));
+LDS::result_t LDS_YDLIDAR_X4_PRO::start() {
+  // Reset variables
+  ring_start_ms[0] = ring_start_ms[1] = 0;
+  scan_completed = false;
+  packets_since_last_completed_scan = 0;
+  for (uint8_t i = 0; i < sizeof(cached_ct_packets); i++) {
+    cached_ct_packets[i] = 0;
   }
+  ct_packets_ready = false;
 
-  uint16_t maxv = (uint16_t)(deviceinfo.firmware_version >> 8);
-  uint16_t midv = (uint16_t)(deviceinfo.firmware_version & 0xff) / 10;
-  uint16_t minv = (uint16_t)(deviceinfo.firmware_version & 0xff) % 10;
-  if (midv == 0) {
-    midv = minv;
-    minv = 0;
-  }
-
-  postInfo(INFO_FIRMWARE_VERSION, String(maxv + '.' + midv + '.' + minv));
-  postInfo(INFO_HARDWARE_VERSION, String((uint16_t)deviceinfo.hardware_version));
-
-  String serial_num;
-  for (int i = 0; i < 16; i++)
-    serial_num += String(deviceinfo.serialnum[i] & 0xff, HEX);
-  postInfo(INFO_SERIAL_NUMBER, serial_num);
-
-  /* TODO: Re-enable when getHealth is implemented
-  device_health_t healthinfo;
-  if (getHealth(healthinfo, 100) != RESULT_OK)
-    return ERROR_DEVICE_HEALTH;
-  postInfo(INFO_DEVICE_HEALTH, healthinfo.status == 0 ? "OK" : "bad");
-  */
-
+  // Start scanning
   startScan();
   return RESULT_OK;
-}
-
-LDS::result_t LDS_YDLIDAR_X4_PRO::start() {
-  return startScan();
 }
 
 uint32_t LDS_YDLIDAR_X4_PRO::getSerialBaudRate() {
@@ -73,6 +45,13 @@ uint32_t LDS_YDLIDAR_X4_PRO::getSerialBaudRate() {
 float LDS_YDLIDAR_X4_PRO::getCurrentScanFreqHz() {
   unsigned long int scan_period_ms = ring_start_ms[0] - ring_start_ms[1];
   return (!motor_enabled || scan_period_ms == 0) ? 0 : 1000.0f/float(scan_period_ms);
+}
+
+float LDS_YDLIDAR_X4_PRO::getReportedScanFreqHz() {
+  if (!ct_packets_ready) {
+    return -1;
+  }
+  return float(cached_ct_packets[0] >> 1)*0.1f;
 }
 
 float LDS_YDLIDAR_X4_PRO::getTargetScanFreqHz() {
@@ -207,12 +186,23 @@ readHeader:
           break;
         case 2:
           SampleNumlAndCTCal = currentByte;
-          if ((currentByte & 0x01) == CT_RING_START)
+
+          // Check to see if a new scan has started
+          if ((currentByte & 0x01) == CT_RING_START) {
             markScanTime();
-          //if ((currentByte != CT_NORMAL) && (currentByte != CT_RING_START)) {
-          //  recvPos = 0;
-          //  continue;
-          //}
+            if (packets_since_last_completed_scan >= sizeof(cached_ct_packets)) {
+              ct_packets_ready = true;
+            }
+            packets_since_last_completed_scan = 0;
+          }
+
+          // Store the CT value
+          if (packets_since_last_completed_scan < sizeof(cached_ct_packets)) {
+            cached_ct_packets[packets_since_last_completed_scan] = currentByte;
+          }
+
+          // Increment the number of packets since the last completed scan
+          packets_since_last_completed_scan++;
           break;
         case 3:
           SampleNumlAndCTCal += (currentByte<<RESP_MEAS_ANGLE_SAMPLE_SHIFT);
@@ -326,12 +316,6 @@ readSamples:
   scan_completed = false;
   if (CheckSumResult) {
     scan_completed = (package.package_CT & 0x01) == CT_RING_START;
-    if (scan_completed)
-      //scan_freq = package.package_CT >> 1;
-      //F = CT[bit(7:1)]/10 (when CT[bit(7:1)] = 1).
-      // TODO: Parse CT to get health info
-      scan_freq_hz = float(package.package_CT >> 1)*0.1f;
-
     postPacket(packageBuffer, PACKAGE_PAID_BYTES+package_sample_sum, scan_completed);
   }
 
@@ -417,38 +401,30 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::abort() {
   return RESULT_OK;
 }
 
-LDS::result_t LDS_YDLIDAR_X4_PRO::getDeviceInfo(device_info_t & info, uint32_t timeout) {
-  if (power_on_info_processed)
+LDS::result_t LDS_YDLIDAR_X4_PRO::getDeviceInfo(device_info_t & info) {
+  if (!ct_packets_ready)
     return ERROR_UNAVAILABLE;
 
-  uint8_t recvPos = 0;
-  uint32_t currentTs = millis();
-  uint8_t *infobuf = (uint8_t*)&info;
+  info.customer_version_major = cached_ct_packets[1] >> 6;
+  info.customer_version_minor = (cached_ct_packets[1] >> 1) & 0b11111;
 
-  ans_header_t response_header;
-  LDS::result_t ans = waitMessageHeader(&response_header, timeout);
-  if (ans != RESULT_OK)
-    return ans;
+  info.hardware_version = cached_ct_packets[4] >> 5;
+  info.major_firmware_version = (cached_ct_packets[4] >> 1) & 0b1111;
 
-  if (response_header.type != ANS_TYPE_DEV_INFO)
-    return ERROR_INVALID_PACKET;
+  info.minor_firmware_version = cached_ct_packets[5] >> 1;
 
-  if (response_header.size < sizeof(ans_header_t))
-    return ERROR_INVALID_PACKET;
+  info.manufacture_year = (cached_ct_packets[9] >> 3) + (uint16_t)2020;
+  info.manufacture_month = cached_ct_packets[10] >> 4;
+  info.manufacture_day = cached_ct_packets[11] >> 3;
 
-  while ((millis() - currentTs) <= timeout) {
-    int current_byte = readSerial();
-    if (current_byte < 0)
-      continue;
-    infobuf[recvPos++] = current_byte;
+  info.serial_num =
+    ((cached_ct_packets[9] >> 1) & 0b11 << 19) |
+    ((cached_ct_packets[10] >> 1) & 0b111 << 16) |
+    ((cached_ct_packets[11] >> 1) & 0b11 << 14) |
+    ((cached_ct_packets[12] >> 1) << 7) |
+    (cached_ct_packets[13] >> 1);
 
-    if (recvPos == sizeof(device_info_t)) {
-      power_on_info_processed = true;
-      return RESULT_OK;
-    }
-  }
-
-  return ERROR_TIMEOUT;
+  return RESULT_OK;
 }
 
 LDS::result_t LDS_YDLIDAR_X4_PRO::waitMessageHeader(ans_header_t * header, uint32_t timeout) {
@@ -480,8 +456,18 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::waitMessageHeader(ans_header_t * header, uint3
   }
   return ERROR_TIMEOUT;
 }
-LDS::result_t LDS_YDLIDAR_X4_PRO::getHealth(device_health_t & health, uint32_t timeout) {
-  return ERROR_NOT_IMPLEMENTED;
+
+LDS::result_t LDS_YDLIDAR_X4_PRO::getHealth(device_health_t & health) {
+  if (!ct_packets_ready)
+    return ERROR_UNAVAILABLE;
+
+  health.sensor_issue = (cached_ct_packets[3] >> 1) & 0x01;
+  health.encoding_issue = (cached_ct_packets[3] >> 2) & 0x01;
+  health.wireless_power_issue = (cached_ct_packets[3] >> 3) & 0x01;
+  health.power_delivery_issue = (cached_ct_packets[3] >> 4) & 0x01;
+  health.laser_issue = (cached_ct_packets[3] >> 5) & 0x01;
+  health.data_issue = (cached_ct_packets[3] >> 6) & 0x01;
+  return RESULT_OK;
 }
 
 LDS::result_t LDS_YDLIDAR_X4_PRO::startScan(uint32_t timeout) {
@@ -490,19 +476,6 @@ LDS::result_t LDS_YDLIDAR_X4_PRO::startScan(uint32_t timeout) {
   // Clear the serial buffer
   while (readSerial() >= 0);
 
-  if (!power_on_info_processed)
-    return ERROR_UNAVAILABLE;
-
-  ans_header_t response_header;
-  LDS::result_t ans = waitMessageHeader(&response_header, timeout);
-  if (ans != RESULT_OK)
-    return ans;
-
-  if (response_header.type != ANS_TYPE_MEAS)
-    return ERROR_INVALID_PACKET;
-
-  if (response_header.size < sizeof(node_info_t))
-    return ERROR_INVALID_PACKET;
   return RESULT_OK;
 }
 

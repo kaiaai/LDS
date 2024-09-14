@@ -22,7 +22,6 @@
 class LDS_YDLIDAR_X4_PRO : public LDS {
   public:
     virtual void init() override;
-    result_t begin();
 
     virtual result_t start() override;
     virtual result_t stop() override;
@@ -30,12 +29,37 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
 
     virtual uint32_t getSerialBaudRate() override;
     virtual float getCurrentScanFreqHz() override;
+    float getReportedScanFreqHz();
     virtual float getTargetScanFreqHz() override;
     virtual int getSamplingRateHz() override;
     virtual bool isActive() override;
     virtual const char* getModelName() override;
 
     virtual result_t setScanTargetFreqHz(float freq) override;
+
+    struct device_health_t {
+      bool sensor_issue;
+      bool encoding_issue;
+      bool wireless_power_issue;
+      bool power_delivery_issue;
+      bool laser_issue;
+      bool data_issue;
+    };
+    LDS::result_t getHealth(device_health_t & health);
+
+
+    struct device_info_t {
+      uint8_t customer_version_major;
+      uint8_t customer_version_minor;
+      uint8_t hardware_version;
+      uint8_t major_firmware_version;
+      uint8_t minor_firmware_version;
+      uint16_t manufacture_year;
+      uint8_t manufacture_month;
+      uint8_t manufacture_day;
+      uint32_t serial_num;
+    };
+    LDS::result_t getDeviceInfo(device_info_t & info);
 
   protected:
     bool motor_enabled = false;
@@ -57,18 +81,6 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
       uint16_t   angle_q6_checkbit;
       uint16_t   distance;
     } __attribute__((packed)) ;
-
-    struct device_info_t{
-      uint8_t   model;
-      uint16_t  firmware_version;
-      uint8_t   hardware_version;
-      uint8_t   serialnum[16];
-    } __attribute__((packed)) ;
-
-    struct device_health_t {
-      uint8_t   status;
-      uint16_t  error_code;
-    } __attribute__((packed))  ;
 
     struct ans_header_t {
       uint8_t  syncByte1;
@@ -97,8 +109,6 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
   protected:
     void initMotor();
     virtual void enableMotor(bool enable);
-    LDS::result_t getHealth(device_health_t & health, uint32_t timeout = DEFAULT_TIMEOUT_MS);
-    LDS::result_t getDeviceInfo(device_info_t & info, uint32_t timeout = DEFAULT_TIMEOUT_MS);
     LDS::result_t abort();
     LDS::result_t startScan(uint32_t timeout = DEFAULT_TIMEOUT_MS);
     virtual LDS::result_t waitScanDot(); // wait for one sample package to arrive
@@ -136,6 +146,8 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
     int package_sample_sum = 0;
 
     node_package_t package;
+    uint8_t cached_ct_packets[14] = {0};
+    bool ct_packets_ready = false;
 
     uint16_t package_Sample_Index = 0;
     float IntervalSampleAngle = 0;
@@ -152,6 +164,6 @@ class LDS_YDLIDAR_X4_PRO : public LDS {
 
     uint8_t state = 0;
 
-    float scan_freq_hz = 0;
     bool scan_completed = false;
+    uint8_t packets_since_last_completed_scan = 0;
 };
