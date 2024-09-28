@@ -20,6 +20,7 @@ void LDS_LDROBOT_LD14P::init() {
   parser_idx = 0;
   crc = 0;
   end_angle_deg_x100_prev = 0;
+  target_scan_freq = DEFAULT_SCAN_FREQ;
 
   enableMotor(false);
 }
@@ -35,7 +36,7 @@ uint32_t LDS_LDROBOT_LD14P::getSerialBaudRate() {
 }
 
 float LDS_LDROBOT_LD14P::getTargetScanFreqHz() {
-  return DEFAULT_VALUE;
+  return target_scan_freq;
 }
 
 int LDS_LDROBOT_LD14P::getSamplingRateHz() {
@@ -70,7 +71,30 @@ bool LDS_LDROBOT_LD14P::isActive() {
 }
 
 LDS::result_t LDS_LDROBOT_LD14P::setScanTargetFreqHz(float freq) {
-  return freq <= 0 ? RESULT_OK : ERROR_NOT_IMPLEMENTED;
+  uint8_t SET_SCAN_SPEED_CMD[] = {0x54, 0xA2, 0x04, 0x70, 0x08, 0x00, 0x00, 0xA1};
+
+  if (freq <= 0)
+    freq = DEFAULT_SCAN_FREQ;
+
+  if (freq < 2 || freq > 8)
+    return ERROR_INVALID_VALUE;
+
+  if (freq == target_scan_freq)
+    return RESULT_OK;
+
+  uint16_t deg_per_sec = uint16_t(round(freq * 360));
+  SET_SCAN_SPEED_CMD[3] = uint8_t(deg_per_sec & 0xff);
+  SET_SCAN_SPEED_CMD[4] = uint8_t((deg_per_sec >> 8) & 0xff);
+
+  uint8_t cmd_crc = 0;
+  for (uint8_t i = 0; i < sizeof(SET_SCAN_SPEED_CMD)-1; i++)
+    cmd_crc = checkSum(SET_SCAN_SPEED_CMD[i], cmd_crc);
+  SET_SCAN_SPEED_CMD[sizeof(SET_SCAN_SPEED_CMD)-1] = cmd_crc;
+
+  writeSerial(SET_SCAN_SPEED_CMD, sizeof(SET_SCAN_SPEED_CMD));
+  target_scan_freq = freq;
+
+  return RESULT_OK;
 }
 
 void LDS_LDROBOT_LD14P::loop() {
@@ -85,7 +109,7 @@ void LDS_LDROBOT_LD14P::loop() {
   }
 }
 
-void LDS_LDROBOT_LD14P::checkSum(uint8_t value) {
+inline uint8_t LDS_LDROBOT_LD14P::checkSum(uint8_t value, uint8_t crc) {
   static const uint8_t CRC_TABLE[256] = {
     0x00, 0x4d, 0x9a, 0xd7, 0x79, 0x34, 0xe3,
     0xae, 0xf2, 0xbf, 0x68, 0x25, 0x8b, 0xc6, 0x11, 0x5c, 0xa9, 0xe4, 0x33,
@@ -110,7 +134,7 @@ void LDS_LDROBOT_LD14P::checkSum(uint8_t value) {
     0x78, 0xd6, 0x9b, 0x4c, 0x01, 0xf4, 0xb9, 0x6e, 0x23, 0x8d, 0xc0, 0x17,
     0x5a, 0x06, 0x4b, 0x9c, 0xd1, 0x7f, 0x32, 0xe5, 0xa8
   };
-  crc = CRC_TABLE[(crc ^ value) & 0xff];
+  return CRC_TABLE[(crc ^ value) & 0xff];
 }
 
 LDS::result_t LDS_LDROBOT_LD14P::processByte(uint8_t c) {
@@ -125,19 +149,17 @@ LDS::result_t LDS_LDROBOT_LD14P::processByte(uint8_t c) {
   crc = parser_idx == 0 ? 0 : crc;
   rx_buffer[parser_idx++] = c;
   if (parser_idx < 47)
-    checkSum(c);
+    crc = checkSum(c, crc);
 
   switch (parser_idx) {
   case 1:
     if (c != START_BYTE) {
-      //result = ERROR_INVALID_VALUE;
       parser_idx = 0;
     }
     break;
 
   case 2:
     if (c != VER_LEN) {
-      //result = ERROR_INVALID_VALUE;
       parser_idx = 0;
     }
     break;

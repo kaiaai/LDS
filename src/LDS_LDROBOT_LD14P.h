@@ -36,6 +36,7 @@ class LDS_LDROBOT_LD14P : public LDS {
     static const uint8_t START_BYTE = 0x54;
     static const uint8_t POINTS_PER_PACK = 12;
     static const uint8_t VER_LEN = 0x2C;
+    static constexpr float DEFAULT_SCAN_FREQ = 6.0f;
 
     struct meas_sample_t {
       uint16_t distance_mm;
@@ -58,7 +59,7 @@ class LDS_LDROBOT_LD14P : public LDS {
     virtual void enableMotor(bool enable);
     LDS::result_t processByte(uint8_t c);
     uint16_t decodeUInt16(const uint16_t value) const;
-    void checkSum(uint8_t value);
+    uint8_t checkSum(uint8_t value, uint8_t crc);
 
     bool motor_enabled;
     uint16_t speed_deg_per_sec;
@@ -66,4 +67,5 @@ class LDS_LDROBOT_LD14P : public LDS {
     uint16_t parser_idx;
     uint8_t crc;
     uint16_t end_angle_deg_x100_prev;
+    float target_scan_freq;
 };
