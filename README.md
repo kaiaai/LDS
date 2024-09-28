@@ -79,6 +79,11 @@ Some LiDAR/LDS models do not have built-in motor control and therefore require a
 
 ## Release notes
 
+## v0.5.8
+- LDROBOT LD14P commands
+  - start, stop motor
+  - set, get scan frequency
+
 ## v0.5.7
 - added YDLIDAR X4-PRO
 
