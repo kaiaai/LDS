@@ -15,6 +15,7 @@
 #pragma once
 
 #include "LDS_YDLIDAR_X4.h"
+#include "LDS_YDLIDAR_X4_PRO.h"
 #include "LDS_YDLIDAR_X3_PRO.h"
 #include "LDS_YDLIDAR_X3.h"
 #include "LDS_YDLIDAR_X2_X2L.h"
