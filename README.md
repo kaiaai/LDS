@@ -59,6 +59,9 @@ Other models are in the works.
  <img src="http://img.youtube.com/vi/eyn5ccR_I1Y/maxresdefault.jpg" alt="CAMSENSE X1 LiDAR connected to Arduino, ROS2" width="720" height="405" border="10" />
 </a>
 
+## Example Code
+Please see the `examples` folder for sample Arduino sketches.
+
 ## Connecting to Arduino
 Please follow [this tutorial](https://kaia.ai/blog/tutorial-connect-ld14p-lidar/) to connect LDROBOT LD14P to Arduino ESP32.
 
