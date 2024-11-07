@@ -102,6 +102,10 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 
 ## Release notes
 
+## v0.5.9
+- added ESP32-C3 LD14P example
+- added ESP32-S3 LD14P example
+
 ## v0.5.8
 - LDROBOT LD14P commands
   - start, stop motor
