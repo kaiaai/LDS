@@ -124,18 +124,18 @@ void lidar_motor_pin_callback(float value, LDS::lds_pin_t lidar_pin) {
   int pin = (lidar_pin == LDS::LDS_MOTOR_EN_PIN) ?
     LDS_MOTOR_EN_PIN : LDS_MOTOR_PWM_PIN;
 
-  if (value <= LDS::DIR_INPUT) {
+  if (value <= (float)LDS::DIR_INPUT) {
     // Configure pin direction
-    if (value == LDS::DIR_OUTPUT_PWM) {
+    if (value == (float)LDS::DIR_OUTPUT_PWM) {
       ledcSetup(LDS_MOTOR_PWM_CHANNEL, LDS_MOTOR_PWM_FREQ, LDS_MOTOR_PWM_BITS);
       ledcAttachPin(pin, LDS_MOTOR_PWM_CHANNEL);
     } else
-      pinMode(pin, (value == LDS::DIR_INPUT) ? INPUT : OUTPUT);
+      pinMode(pin, (value == (float)LDS::DIR_INPUT) ? INPUT : OUTPUT);
     return;
   }
 
   if (value < LDS::VALUE_PWM) // set constant output
-    digitalWrite(pin, (value == LDS::VALUE_HIGH) ? HIGH : LOW);
+    digitalWrite(pin, (value == (float)LDS::VALUE_HIGH) ? HIGH : LOW);
   else { // set PWM duty cycle
     int pwm_value = ((1<<LDS_MOTOR_PWM_BITS)-1)*value;
     ledcWrite(LDS_MOTOR_PWM_CHANNEL, pwm_value);

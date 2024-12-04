@@ -8,6 +8,7 @@
 
 LDS	KEYWORD1
 LDS_YDLIDAR_X4	KEYWORD1
+LDS_YDLIDAR_X4_PRO	KEYWORD1
 LDS_YDLIDAR_X3	KEYWORD1
 LDS_YDLIDAR_X3_PRO	KEYWORD1
 LDS_YDLIDAR_X2_X2L	KEYWORD1
@@ -40,6 +41,16 @@ setInfoCallback	KEYWORD2
 setErrorCallback	KEYWORD2
 init	KEYWORD2
 getModelName	KEYWORD2
+setScanTargetFreqHz KEYWORD2
+getTargetScanFreqHz KEYWORD2
+getCurrentScanFreqHz KEYWORD2
+getSamplingRateHz KEYWORD2
+setScanPIDCoeffs KEYWORD2
+setScanPIDSamplePeriodMs KEYWORD2
+resultCodeToString KEYWORD2
+infoCodeToString KEYWORD2
+pinIDToString KEYWORD2
+pinStateToString KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
