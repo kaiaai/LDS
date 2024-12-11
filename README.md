@@ -63,11 +63,12 @@ Other models are in the works.
 Please see the `examples` folder for sample Arduino sketches.
 
 ## Connecting to Arduino
-Please follow [this tutorial](https://kaia.ai/blog/tutorial-connect-ld14p-lidar/) to connect LDROBOT LD14P to Arduino ESP32.
+- Maker's Pet offers Lidar breakout boards for ESP32 for sale in its [onine store](https://makerspet.com/store/)
+- follow [this DIY tutorial](https://kaia.ai/blog/tutorial-connect-ld14p-lidar/) to connect LDROBOT LD14P to Arduino ESP32
 
 ### Adapter Boards
-Some LiDAR/LDS models do not have built-in motor control and therefore require an additional board to operate:
-- for Xiaomi Roborock 1st gen LDS02RR use [this board](https://github.com/makerspet/pcb/tree/main/lds02rr_adapter)
+Some LiDAR models do not have built-in motor control and therefore require an additional board to operate:
+- for Xiaomi Roborock 1st gen LDS02RR use [this board](https://makerspet.com/store#!/Adapter-for-LDS02RR-LiDAR/p/697091363)
 - for Neato XV11 use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 - for 3irobotix Delta-2A, -2B, -2C PRO, -2D, -2G use [this board](https://github.com/makerspet/pcb/tree/main/neato_delta_adapter)
 
@@ -101,6 +102,9 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
   - so far I haven't heard back from 3irobotix support.
 
 ## Release notes
+
+## v0.6.1 in debug
+- added an all-in-one example sketch for all supported Lidar models
 
 ## v0.6.0
 - support for Espressif SDK 5.x (ESP32 Arduino 3.x)
