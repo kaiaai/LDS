@@ -1,4 +1,4 @@
-// Copyright 2023-2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
+// Copyright 2023-2024 KAIA.AI
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,13 +18,16 @@
 
 #include <LDS_YDLIDAR_X2_X2L.h>
 
-const uint8_t LDS_MOTOR_EN_PIN = 19; // ESP32 Dev Kit LiDAR enable pin
-const uint8_t LDS_MOTOR_PWM_PIN = 15; // LiDAR motor speed control using PWM
-#define LDS_MOTOR_PWM_FREQ    10000
-#define LDS_MOTOR_PWM_BITS    11
-#define LDS_MOTOR_PWM_CHANNEL    2 // ESP32 PWM channel for LiDAR motor speed control
+const uint8_t LIDAR_EN_PIN = 19; // ESP32 Dev Kit LiDAR enable pin
+const uint8_t LIDAR_PWM_PIN = 15; // LiDAR motor speed control using PWM
+const uint8_t LIDAR_TX_PIN = 17;
+const uint8_t LIDAR_RX_PIN = 16;
 
-HardwareSerial LidarSerial(2); // TX 17, RX 16
+#define LIDAR_PWM_FREQ    10000
+#define LIDAR_PWM_BITS    11
+#define LIDAR_PWM_CHANNEL    2 // ESP32 PWM channel for LiDAR motor speed control
+
+HardwareSerial LidarSerial(1);
 LDS_YDLIDAR_X2_X2L lidar;
 
 void setup() {
@@ -40,13 +43,7 @@ void setup() {
   Serial.print(", baud rate ");
   Serial.println(baud_rate);
 
-  LidarSerial.begin(baud_rate); // Use default GPIO TX 17, RX 16
-  // Assign TX, RX pins
-  // LidarSerial.begin(baud_rate, SERIAL_8N1, rxPin, txPin);
-  // Details https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/HardwareSerial.h
-  // Tutorial https://www.youtube.com/watch?v=eUPAoP7xC7A
-
-  //while (LidarSerial.read() >= 0);
+  LidarSerial.begin(baud_rate, SERIAL_8N1, LIDAR_RX_PIN, LIDAR_TX_PIN);
 
   lidar.setScanPointCallback(lidar_scan_point_callback);
   lidar.setPacketCallback(lidar_packet_callback);
@@ -78,17 +75,20 @@ size_t lidar_serial_write_callback(const uint8_t * buffer, size_t length) {
 void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality,
   bool scan_completed) {
   static int i=0;
-
-  if ((i++ % 20 == 0) || scan_completed) {
+  
+  if (i % 20 == 0) {
     Serial.print(i);
     Serial.print(' ');
     Serial.print(distance_mm);
     Serial.print(' ');
-    Serial.print(angle_deg);
-    if (scan_completed)
-      Serial.println('*');
-    else
-      Serial.println();
+    Serial.println(angle_deg);
+  }
+  i++;
+
+  if (scan_completed) {
+    i = 0;
+    Serial.print("Scan completed; RPM ");
+    Serial.println(lidar.getCurrentScanFreqHz());
   }
 }
 
@@ -108,27 +108,32 @@ void lidar_error_callback(LDS::result_t code, String aux_info) {
 
 void lidar_motor_pin_callback(float value, LDS::lds_pin_t lidar_pin) {
   int pin = (lidar_pin == LDS::LDS_MOTOR_EN_PIN) ?
-    LDS_MOTOR_EN_PIN : LDS_MOTOR_PWM_PIN;
+    LIDAR_EN_PIN : LIDAR_PWM_PIN;
 
   if (value <= (float)LDS::DIR_INPUT) {
     // Configure pin direction
     if (value == (float)LDS::DIR_OUTPUT_PWM) {
-      #if ESP_IDF_VERSION_MAJOR >= 5
-      ledcAttachChannel(pin, LDS_MOTOR_PWM_FREQ, LDS_MOTOR_PWM_BITS, LDS_MOTOR_PWM_CHANNEL);
+      #if ESP_IDF_VERSION_MAJOR < 5
+      ledcSetup(LIDAR_PWM_CHANNEL, LIDAR_PWM_FREQ, LIDAR_PWM_BITS);
+      ledcAttachPin(pin, LIDAR_PWM_CHANNEL);
       #else
-      ledcSetup(LDS_MOTOR_PWM_CHANNEL, LDS_MOTOR_PWM_FREQ, LDS_MOTOR_PWM_BITS);
-      ledcAttachPin(pin, LDS_MOTOR_PWM_CHANNEL);
+      ledcAttachChannel(pin, LIDAR_PWM_FREQ, LIDAR_PWM_BITS, LIDAR_PWM_CHANNEL);
       #endif
     } else
       pinMode(pin, (value == (float)LDS::DIR_INPUT) ? INPUT : OUTPUT);
     return;
   }
 
-  if (value < LDS::VALUE_PWM) // set constant output
+  if (value < (float)LDS::VALUE_PWM) // set constant output
     digitalWrite(pin, (value == (float)LDS::VALUE_HIGH) ? HIGH : LOW);
-  else { // set PWM duty cycle
-    int pwm_value = ((1<<LDS_MOTOR_PWM_BITS)-1)*value;
-    ledcWrite(LDS_MOTOR_PWM_CHANNEL, pwm_value);
+  else {
+    // Set PWM duty cycle
+    int pwm_value = ((1<<LIDAR_PWM_BITS)-1)*value;
+    #if ESP_IDF_VERSION_MAJOR < 5
+    ledcWrite(LIDAR_PWM_CHANNEL, pwm_value);
+    #else
+    ledcWriteChannel(LIDAR_PWM_CHANNEL, pwm_value);
+    #endif
   }
 }
 

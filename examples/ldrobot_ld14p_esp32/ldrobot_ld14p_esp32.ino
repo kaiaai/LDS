@@ -1,4 +1,4 @@
-// Copyright 2023-2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
+// Copyright 2023-2024 KAIA.AI
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@
 
 #include <LDS_LDROBOT_LD14P.h>
 
-HardwareSerial LidarSerial(2); // TX 17, RX 16
+const uint8_t LIDAR_TX_PIN = 17;
+const uint8_t LIDAR_RX_PIN = 16;
+
+HardwareSerial LidarSerial(1);
 LDS_LDROBOT_LD14P lidar;
 
 void setup() {
@@ -34,13 +37,7 @@ void setup() {
   Serial.print(", baud rate ");
   Serial.println(baud_rate);
 
-  LidarSerial.begin(baud_rate); // Use default GPIO TX 17, RX 16
-  // Assign TX, RX pins
-  // LidarSerial.begin(baud_rate, SERIAL_8N1, rxPin, txPin);
-  // Details https://github.com/espressif/arduino-esp32/blob/master/cores/esp32/HardwareSerial.h
-  // Tutorial https://www.youtube.com/watch?v=eUPAoP7xC7A
-
-  //while (LidarSerial.read() >= 0);
+  LidarSerial.begin(baud_rate, SERIAL_8N1, LIDAR_RX_PIN, LIDAR_TX_PIN);
 
   lidar.setScanPointCallback(lidar_scan_point_callback);
   lidar.setPacketCallback(lidar_packet_callback);
@@ -75,16 +72,19 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
   bool scan_completed) {
   static int i=0;
 
-  if ((i++ % 20 == 0) || scan_completed) {
+  if ((i % 20 == 0) || scan_completed) {
     Serial.print(i);
     Serial.print(' ');
     Serial.print(distance_mm);
     Serial.print(' ');
     Serial.print(angle_deg);
-    if (scan_completed)
-      Serial.println('*');
-    else
-      Serial.println();
+  }
+  i++;
+
+  if (scan_completed) {
+    i = 0;
+    Serial.print("Scan completed; RPM ");
+    Serial.println(lidar.getCurrentScanFreqHz());
   }
 }
 

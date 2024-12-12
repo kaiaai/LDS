@@ -103,8 +103,11 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 
 ## Release notes
 
-## v0.6.1 in debug
+## v0.6.1
 - added an all-in-one example sketch for all supported Lidar models
+  - pre-configured for LDS02RR
+- bugfixed Espressif SDK 5.x (ESP32 Arduino 3.x) build
+- examples cleanup
 
 ## v0.6.0
 - support for Espressif SDK 5.x (ESP32 Arduino 3.x)
