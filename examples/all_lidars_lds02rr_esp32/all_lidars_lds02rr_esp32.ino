@@ -158,7 +158,7 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
 
   if (scan_completed) {
     i = 0;
-    Serial.print("Scan completed; RPM ");
+    Serial.print("Scan completed; scans-per-second ");
     Serial.println(lidar->getCurrentScanFreqHz());
   }
 }
