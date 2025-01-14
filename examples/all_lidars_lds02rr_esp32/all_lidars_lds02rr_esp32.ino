@@ -42,6 +42,7 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 //#define LDROBOT_LD14P
 //#define YDLIDAR_X4
 //#define YDLIDAR_X4_PRO
+//#define CAMSENSE_X1
 
 
 const uint32_t SERIAL_MONITOR_BAUD = 115200;
@@ -85,6 +86,8 @@ void setupLidar() {
   lidar = new LDS_YDLIDAR_X4();
   #elif defined(YDLIDAR_X4_PRO)
   lidar = new LDS_YDLIDAR_X4_PRO();
+  #elif defined(CAMSENSE_X1)
+  lidar = new LDS_CAMSENSE_X1();
   #else
     #error "Define a Lidar model"
   #endif
