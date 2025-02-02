@@ -1,4 +1,4 @@
-// Copyright 2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
+// Copyright 2023-2025 KAIA.AI
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

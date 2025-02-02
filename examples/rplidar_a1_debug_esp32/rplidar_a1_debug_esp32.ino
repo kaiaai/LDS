@@ -19,9 +19,12 @@
 // 1. CHANGE these to match your wiring
 // IGNORE pins absent from your Lidar model (often EN, PWM)
 const uint8_t LIDAR_GPIO_EN = 19; // ESP32 GPIO connected to Lidar EN pin
-const uint8_t LIDAR_GPIO_RX = 16; // ESP32 GPIO connected to Lidar RX pin
-const uint8_t LIDAR_GPIO_TX = 17; // ESP32 GPIO connected to Lidar TX pin
-const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
+//const uint8_t LIDAR_GPIO_RX = 16; // ESP32 GPIO connected to Lidar RX pin
+//const uint8_t LIDAR_GPIO_TX = 17; // ESP32 GPIO connected to Lidar TX pin
+//const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
+const uint8_t LIDAR_GPIO_RX = 27; // ESP32 GPIO connected to Lidar RX pin
+const uint8_t LIDAR_GPIO_TX = 35; // ESP32 GPIO connected to Lidar TX pin
+const uint8_t LIDAR_GPIO_PWM = 13;// ESP32 GPIO connected to Lidar PWM pin
 
 // 2. UNCOMMENT if using PWM pin and PWM LOW enables the motor
 //#define INVERT_PWM_PIN
@@ -29,8 +32,8 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 // 3. UNCOMMENT your Lidar model
 //
 //#define NEATO_XV11
-//#define SLAMTEC_RPLIDAR_A1
-#define XIAOMI_LDS02RR
+#define SLAMTEC_RPLIDAR_A1
+//#define XIAOMI_LDS02RR
 //#define YDLIDAR_SCL
 //#define YDLIDAR_X2_X2L
 //#define YDLIDAR_X3
@@ -46,10 +49,10 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 
 // 4. UNCOMMENT debug option(s)
 // and increase SERIAL_MONITOR_BAUD to MAX possible
-//#define DEBUG_GPIO
+#define DEBUG_GPIO
 //#define DEBUG_PACKETS
 //#define DEBUG_SERIAL_IN
-//#define DEBUG_SERIAL_OUT
+#define DEBUG_SERIAL_OUT
 
 const uint32_t SERIAL_MONITOR_BAUD = 115200;
 const uint32_t LIDAR_PWM_FREQ = 10000;
@@ -109,7 +112,11 @@ void setupLidar() {
   lidar->setInfoCallback(lidar_info_callback);
   lidar->setErrorCallback(lidar_error_callback);
 
+  delay(200);
+
   LidarSerial.begin(lidar->getSerialBaudRate(), SERIAL_8N1, LIDAR_GPIO_TX, LIDAR_GPIO_RX);
+
+  delay(200);
 
   lidar->init();
   //lidar->stop();
@@ -123,6 +130,8 @@ void setup() {
   Serial.println(ESP_IDF_VERSION_MAJOR);
 
   setupLidar();
+
+  delay(200);
 
   Serial.print("LiDAR model ");
   Serial.print(lidar->getModelName());

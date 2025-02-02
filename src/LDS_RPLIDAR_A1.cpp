@@ -1,4 +1,4 @@
-// Copyright 2023-2024 REMAKE.AI, KAIA.AI, MAKERSPET.COM
+// Copyright 2023-2025 KAIA.AI
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ void LDS_RPLIDAR_A1::init() {
 }
 
 LDS::result_t LDS_RPLIDAR_A1::start() {
-  enableMotor(false);
-
-  abort();
+  //abort();
 
   device_info_t deviceinfo;
   if (getDeviceInfo(deviceinfo, 500) != RESULT_OK)
@@ -56,9 +54,9 @@ LDS::result_t LDS_RPLIDAR_A1::start() {
   postInfo(INFO_DEVICE_HEALTH, healthinfo.status == 0 ? "OK" : "bad");
 
   // Start
+  enableMotor(true);
   if (startScan() != RESULT_OK)
     return ERROR_START_SCAN;
-  enableMotor(true);
   delay(1000);
 
   return LDS::RESULT_OK;
@@ -91,8 +89,14 @@ LDS::result_t LDS_RPLIDAR_A1::stop() {
 void LDS_RPLIDAR_A1::enableMotor(bool enable) {
   motor_enabled = enable;
 
-  setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
-  setMotorPin(enable ? VALUE_HIGH : VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  if (enable) {
+    setMotorPin(DIR_OUTPUT_PWM, LDS_MOTOR_PWM_PIN);
+	// TODO add PID
+    setMotorPin(0.8, LDS_MOTOR_PWM_PIN);
+  } else {
+    setMotorPin(DIR_OUTPUT_CONST, LDS_MOTOR_PWM_PIN);
+    setMotorPin(VALUE_LOW, LDS_MOTOR_PWM_PIN);
+  }
 }
 
 bool LDS_RPLIDAR_A1::isActive() {
@@ -292,7 +296,7 @@ LDS::result_t LDS_RPLIDAR_A1::getHealth(device_health_t & health, uint32_t timeo
 }
 
 LDS::result_t LDS_RPLIDAR_A1::startScan(bool force, uint32_t timeout ) {
-  abort();
+  //abort();
 
   LDS::result_t ans = sendCommand(force ? CMD_FORCE_SCAN : CMD_SCAN, NULL, 0);
   if (ans != RESULT_OK)
