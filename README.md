@@ -103,6 +103,9 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 
 ## Release notes
 
+## v0.6.3
+- major bugfix: Delta, Delta-2G LiDARs decoding
+
 ## v0.6.2
 - added CAMSENSE_X1 to all-lidars example
 

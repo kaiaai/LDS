@@ -18,10 +18,11 @@
 
 // 1. CHANGE these to match your wiring
 // IGNORE pins absent from your Lidar model (often EN, PWM)
-const uint8_t LIDAR_GPIO_EN = 19; // ESP32S3 GPIO connected to Lidar EN pin
-const uint8_t LIDAR_GPIO_RX = 16; // ESP32S3 GPIO connected to Lidar RX pin
-const uint8_t LIDAR_GPIO_TX = 15; // ESP32S3 GPIO connected to Lidar TX pin
-const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
+// Maker's Pet BDC-30P board
+const uint8_t LIDAR_GPIO_EN = 19; // ESP32 GPIO connected to Lidar EN pin
+const uint8_t LIDAR_GPIO_RX = 27; //16; // ESP32 GPIO connected to Lidar RX pin
+const uint8_t LIDAR_GPIO_TX = 35; //17; // ESP32 GPIO connected to Lidar TX pin
+const uint8_t LIDAR_GPIO_PWM = 13; //15;// ESP32 GPIO connected to Lidar PWM pin
 
 // 2. UNCOMMENT if using PWM pin and PWM LOW enables the motor
 //#define INVERT_PWM_PIN
@@ -30,12 +31,12 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
 //
 //#define NEATO_XV11
 //#define SLAMTEC_RPLIDAR_A1
-#define XIAOMI_LDS02RR
+//#define XIAOMI_LDS02RR
 //#define YDLIDAR_SCL
 //#define YDLIDAR_X2_X2L
 //#define YDLIDAR_X3
 //#define YDLIDAR_X3_PRO
-//#define _3IROBOTIX_DELTA_2G
+#define _3IROBOTIX_DELTA_2G
 //#define _3IROBOTIX_DELTA_2A_115200
 //#define _3IROBOTIX_DELTA_2A
 //#define _3IROBOTIX_DELTA_2B
@@ -47,22 +48,21 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
 // 4. UNCOMMENT debug option(s)
 // and increase SERIAL_MONITOR_BAUD to MAX possible
 //#define DEBUG_GPIO
-//#define DEBUG_PACKETS
-//#define DEBUG_SERIAL_IN
+#define DEBUG_PACKETS
+#define DEBUG_SERIAL_IN
 //#define DEBUG_SERIAL_OUT
 
-HardwareSerial LidarSerial(1);
-
-const uint32_t SERIAL_MONITOR_BAUD = 115200;
+const uint32_t SERIAL_MONITOR_BAUD = 1000000; //115200;
 const uint32_t LIDAR_PWM_FREQ = 10000;
 const uint8_t LIDAR_PWM_BITS = 11;
 const uint8_t LIDAR_PWM_CHANNEL = 2;
 const uint16_t LIDAR_SERIAL_RX_BUF_LEN = 1024;
-const uint16_t PRINT_EVERY_NTH_POINT = 20;
+const uint16_t PRINT_EVERY_NTH_POINT = 1;
 const uint16_t HEX_DUMP_WIDTH = 16;
 
 #include "lds_all_models.h"
 
+HardwareSerial LidarSerial(1);
 LDS *lidar;
 uint16_t hex_dump_pos = 0;
 

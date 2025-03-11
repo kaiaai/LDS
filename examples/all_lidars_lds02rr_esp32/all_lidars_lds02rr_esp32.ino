@@ -35,10 +35,10 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 //#define YDLIDAR_X2_X2L
 //#define YDLIDAR_X3
 //#define YDLIDAR_X3_PRO
-//#define 3IROBOTIX_DELTA_2G
-//#define 3IROBOTIX_DELTA_2A_115200
-//#define 3IROBOTIX_DELTA_2A
-//#define 3IROBOTIX_DELTA_2B
+//#define _3IROBOTIX_DELTA_2G
+//#define _3IROBOTIX_DELTA_2A_115200
+//#define _3IROBOTIX_DELTA_2A
+//#define _3IROBOTIX_DELTA_2B
 //#define LDROBOT_LD14P
 //#define YDLIDAR_X4
 //#define YDLIDAR_X4_PRO
@@ -186,6 +186,12 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
   bool scan_completed) {
   static int i=0;
   
+  if (scan_completed) {
+    i = 0;
+    Serial.print("Scan completed; scans-per-second ");
+    Serial.println(lidar->getCurrentScanFreqHz());
+  }
+
   if (i % PRINT_EVERY_NTH_POINT == 0) {
     Serial.print(i);
     Serial.print(' ');
@@ -194,12 +200,6 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
     Serial.println(angle_deg);
   }
   i++;
-
-  if (scan_completed) {
-    i = 0;
-    Serial.print("Scan completed; scans-per-second ");
-    Serial.println(lidar->getCurrentScanFreqHz());
-  }
 }
 
 void lidar_motor_pin_callback(float value, LDS::lds_pin_t lidar_pin) {

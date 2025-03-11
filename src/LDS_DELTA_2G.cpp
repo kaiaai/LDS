@@ -17,3 +17,7 @@
 const char* LDS_DELTA_2G::getModelName() {
   return "3irobotics Delta-2G";
 }
+
+uint8_t LDS_DELTA_2G::get_packets_per_scan(){
+  return 15;
+}

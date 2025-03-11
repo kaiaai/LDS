@@ -75,6 +75,12 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
   bool scan_completed) {
   static int i=0;
 
+  if (scan_completed) {
+    i = 0;
+    Serial.print("Scan completed; RPM ");
+    Serial.println(lidar.getCurrentScanFreqHz());
+  }
+
   if (i % 20 == 0) {
     Serial.print(i);
     Serial.print(' ');
@@ -83,12 +89,6 @@ void lidar_scan_point_callback(float angle_deg, float distance_mm, float quality
     Serial.println(angle_deg);
   }
   i++;
-
-  if (scan_completed) {
-    i = 0;
-    Serial.print("Scan completed; RPM ");
-    Serial.println(lidar.getCurrentScanFreqHz());
-  }
 }
 
 void lidar_info_callback(LDS::info_t code, String info) {

@@ -196,7 +196,6 @@ LDS::result_t LDS_DELTA_2A_115200::processByte(uint8_t c) {
     }
 
     scan_freq_hz = packet_header->scan_freq_x20 * 0.05;
-    uint8_t packets_per_scan = get_packets_per_scan();
 
     if (packet_header->data_type == DATA_TYPE_RPM_AND_MEAS) {
       uint16_t start_angle_x100 = decodeUInt16(packet_header->start_angle_x100);
@@ -218,12 +217,10 @@ LDS::result_t LDS_DELTA_2A_115200::processByte(uint8_t c) {
 
       //int16_t offset_angle_x100 = (int16_t)decodeUInt16((uint16_t)packet_header->offset_angle_x100);
       float start_angle = start_angle_x100 * 0.01;
-      //start_angle += offset_angle_x100 * 0.01;
-      //DEG_PER_PACKET = 360.0f / (float)PACKETS_PER_SCAN; // 22.5 deg
 
-      float coeff = 360.0f / (packets_per_scan * sample_count);
-//      meas_sample_t * samples = (meas_sample_t *)&packet_header[sizeof(packet_header_t)];
-      meas_sample_t * samples = (meas_sample_t *)(packet_header + sizeof(packet_header_t));
+      float coeff = 360.0f / (get_packets_per_scan() * sample_count);
+      meas_sample_t * samples = (meas_sample_t *)(rx_buffer + sizeof(packet_header_t));
+
       for (uint16_t idx = 0; idx < sample_count; idx++) {
         float angle_deg = start_angle + idx * coeff;
 

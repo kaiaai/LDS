@@ -18,4 +18,5 @@
 class LDS_DELTA_2G : public LDS_DELTA_2A_115200 {
   public:
     const char* getModelName() override;
+    uint8_t get_packets_per_scan() override;
 };

@@ -45,7 +45,7 @@ class LDS_DELTA_2A_115200 : public LDS {
     struct meas_sample_t {
       uint8_t quality;
       uint16_t distance_mm_x4;
-    };
+    } __attribute__((packed));
 
     struct packet_header_t {
       uint8_t    start_byte; // 0xAA
