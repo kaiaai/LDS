@@ -96,11 +96,6 @@ HardwareSerial LidarSerial(1);
 LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 ```
 
-## Performance Notes
-- currently Delta-2A, -2B, -2G exhibit mysterious fixed pattern noise
-  - this noise does NOT show when using 3irobotix development kit, so it should be fix-able (somehow)
-  - so far I haven't heard back from 3irobotix support.
-
 ## Release notes
 
 ## v0.6.3
