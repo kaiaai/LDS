@@ -12,7 +12,7 @@ This library supports:
 - Xiaomi Roborock Mi 1st gen LDS02RR
 - 3irobotix Delta-2A, Delta-2B, Delta-2G, Delta-2A 115000 baud
   - Note: there is a fixed pattern noise issue that needs debug
-- LDROBOT LD14P
+- LDROBOT LD14P, LD19
 - CAMSENSE X1
 
 Other models are in the works.
@@ -97,6 +97,9 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 ```
 
 ## Release notes
+
+## v0.6.4
+- LDROBOT LD19 supported
 
 ## v0.6.3
 - major bugfix: Delta, Delta-2G LiDARs decoding
