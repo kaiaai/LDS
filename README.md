@@ -10,6 +10,7 @@ This library supports:
 - SLAMTEC RPLIDAR A1, C1
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
+- LDS08RR (aka Revo LDS used in Roborock & 3irobotix CRL-200S platform)
 - 3irobotix Delta-2A, Delta-2B, Delta-2D, Delta-2G, LDS08RR, Delta-2A 115000 baud
 - LDROBOT LD14P, LD19
 - CAMSENSE X1
