@@ -39,6 +39,8 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
 //#define _3IROBOTIX_DELTA_2A_115200
 //#define _3IROBOTIX_DELTA_2A
 //#define _3IROBOTIX_DELTA_2B
+//#define _3IROBOTIX_DELTA_2D
+//#define _3IROBOTIX_LDS08RR
 //#define LDROBOT_LD14P
 //#define YDLIDAR_X4
 //#define YDLIDAR_X4_PRO
@@ -90,6 +92,10 @@ void setupLidar() {
   lidar = new LDS_DELTA_2A_230400();
   #elif defined(_3IROBOTIX_DELTA_2B)
   lidar = new LDS_DELTA_2B();
+  #elif defined(_3IROBOTIX_DELTA_2D)
+  lidar = new LDS_DELTA_2D();
+  #elif defined(_3IROBOTIX_LDS08RR)
+  lidar = new LDS_LDS08RR();
   #elif defined(LDROBOT_LD14P)
   lidar = new LDS_LDROBOT_LD14P();
   #elif defined(YDLIDAR_X4)
