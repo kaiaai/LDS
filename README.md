@@ -7,7 +7,7 @@ Please visit the [Support Forum](https://github.com/makerspet/support/discussion
 
 This library supports:
 - YDLIDAR X4, X4-PRO, X3, X3-PRO, X2/X2L, SCL models
-- SLAMTEC RPLIDAR A1
+- SLAMTEC RPLIDAR A1, C1
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
 - 3irobotix Delta-2A, Delta-2B, Delta-2D, Delta-2G, LDS08RR, Delta-2A 115000 baud

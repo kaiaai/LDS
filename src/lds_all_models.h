@@ -23,6 +23,7 @@
 #include "LDS_NEATO_XV11.h"
 #include "LDS_LDS02RR.h"
 #include "LDS_RPLIDAR_A1.h"
+#include "LDS_RPLIDAR_C1.h"
 #include "LDS_DELTA_2A_115200.h"
 #include "LDS_DELTA_2A_230400.h"
 #include "LDS_DELTA_2B.h"

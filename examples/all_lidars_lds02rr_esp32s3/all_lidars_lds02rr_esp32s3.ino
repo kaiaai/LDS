@@ -30,6 +30,7 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
 //
 //#define NEATO_XV11
 //#define SLAMTEC_RPLIDAR_A1
+//#define SLAMTEC_RPLIDAR_C1
 #define XIAOMI_LDS02RR
 //#define YDLIDAR_SCL
 //#define YDLIDAR_X2_X2L
@@ -74,6 +75,8 @@ void setupLidar() {
   lidar = new LDS_NEATO_XV11();
   #elif defined(SLAMTEC_RPLIDAR_A1)
   lidar = new LDS_RPLIDAR_A1();
+  #elif defined(SLAMTEC_RPLIDAR_C1)
+  lidar = new LDS_RPLIDAR_C1();
   #elif defined(XIAOMI_LDS02RR)
   lidar = new LDS_LDS02RR();
   #elif defined(YDLIDAR_SCL)
