@@ -16,6 +16,7 @@ This library supports:
 - CAMSENSE X1
 
 ### Experimental (needs testing)
+- Xiaomi Roborock LDS01RR (2nd gen, ToF) - same protocol as Neato XV11
 - LDROBOT LD06 (same protocol as LD19)
 - LDROBOT STL-19P / D500 (same protocol as LD19)
 - Hitachi-LG HLS-LFCD2 / LDS-01 (TurtleBot3 LiDAR)
@@ -180,10 +181,8 @@ LidarSerial.begin(baud_rate, SERIAL_8N1, 4, 5); // GPIO4 as RX1, GPIO5 as TX1
 - initial release
 
 ## TODO
-- add Xiaomi Roborock LDS01RR
 - add LDROBOT LD20
 - add LDROBIT LD19P, https://github.com/Myzhar/ldrobot-lidar-ros2
-- add Hitachi-LG HLS-LFCD2
 - add Dreame TBD
 - reduce raw data volume
   - omit measurement quality since it usually does not get used

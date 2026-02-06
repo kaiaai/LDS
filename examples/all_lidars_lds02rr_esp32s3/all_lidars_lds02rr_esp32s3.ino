@@ -48,6 +48,7 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32S3 GPIO connected to Lidar PWM pin
 //#define CAMSENSE_X1
 //
 // EXPERIMENTAL - needs testing:
+//#define XIAOMI_LDS01RR
 //#define LDROBOT_LD06
 //#define LDROBOT_LD19
 //#define LDROBOT_STL19P
@@ -115,6 +116,8 @@ void setupLidar() {
   #elif defined(CAMSENSE_X1)
   lidar = new LDS_CAMSENSE_X1();
   // EXPERIMENTAL - needs testing:
+  #elif defined(XIAOMI_LDS01RR)
+  lidar = new LDS_LDS01RR();
   #elif defined(LDROBOT_LD06)
   lidar = new LDS_LDROBOT_LD06();
   #elif defined(LDROBOT_LD19)
