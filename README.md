@@ -21,8 +21,6 @@ This library supports:
 - Hitachi-LG HLS-LFCD2 / LDS-01 (TurtleBot3 LiDAR)
 - YDLIDAR T-mini Plus / T-mini Pro (ToF)
 
-Other models are in the works.
-
 ![LDS_collection_labeled_v3](https://github.com/kaiaai/LDS/assets/33589365/7b6a6a6f-a27c-45de-99c9-9e60d17b4d14)
 
 ### Video: YDLIDAR SCL runs on Arduino, ROS2
