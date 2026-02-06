@@ -17,6 +17,7 @@ This library supports:
 
 ### Experimental (needs testing)
 - LDROBOT LD06 (same protocol as LD19)
+- LDROBOT STL-19P / D500 (same protocol as LD19)
 - Hitachi-LG HLS-LFCD2 / LDS-01 (TurtleBot3 LiDAR)
 - YDLIDAR T-mini Plus / T-mini Pro (ToF)
 

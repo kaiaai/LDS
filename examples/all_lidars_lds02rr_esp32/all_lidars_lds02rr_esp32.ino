@@ -50,6 +50,7 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 // EXPERIMENTAL - needs testing:
 //#define LDROBOT_LD06
 //#define LDROBOT_LD19
+//#define LDROBOT_STL19P
 //#define HITACHI_LG_LFCD2
 //#define YDLIDAR_TMINI
 
@@ -116,6 +117,8 @@ void setupLidar() {
   lidar = new LDS_LDROBOT_LD06();
   #elif defined(LDROBOT_LD19)
   lidar = new LDS_LDROBOT_LD19();
+  #elif defined(LDROBOT_STL19P)
+  lidar = new LDS_LDROBOT_STL19P();
   #elif defined(HITACHI_LG_LFCD2)
   lidar = new LDS_HLS_LFCD2();
   #elif defined(YDLIDAR_TMINI)
