@@ -33,4 +33,6 @@
 #include "LDS_LDROBOT_LD14P.h"
 #include "LDS_CAMSENSE_X1.h"
 #include "LDS_LDROBOT_LD19.h"
-//#include "LDS_HLS_LFCD2.h"
+#include "LDS_LDROBOT_LD06.h"
+#include "LDS_HLS_LFCD2.h"
+#include "LDS_YDLIDAR_TMINI.h"

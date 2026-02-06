@@ -46,6 +46,12 @@ const uint8_t LIDAR_GPIO_PWM = 15;// ESP32 GPIO connected to Lidar PWM pin
 //#define YDLIDAR_X4
 //#define YDLIDAR_X4_PRO
 //#define CAMSENSE_X1
+//
+// EXPERIMENTAL - needs testing:
+//#define LDROBOT_LD06
+//#define LDROBOT_LD19
+//#define HITACHI_LG_LFCD2
+//#define YDLIDAR_TMINI
 
 // 4. UNCOMMENT debug option(s)
 // and increase SERIAL_MONITOR_BAUD to MAX possible
@@ -106,6 +112,14 @@ void setupLidar() {
   lidar = new LDS_YDLIDAR_X4_PRO();
   #elif defined(CAMSENSE_X1)
   lidar = new LDS_CAMSENSE_X1();
+  #elif defined(LDROBOT_LD06)
+  lidar = new LDS_LDROBOT_LD06();
+  #elif defined(LDROBOT_LD19)
+  lidar = new LDS_LDROBOT_LD19();
+  #elif defined(HITACHI_LG_LFCD2)
+  lidar = new LDS_HLS_LFCD2();
+  #elif defined(YDLIDAR_TMINI)
+  lidar = new LDS_YDLIDAR_TMINI();
   #else
     #error "Define a Lidar model"
   #endif
