@@ -11,7 +11,6 @@ This library supports:
 - Neato XV11/Botvac
 - Xiaomi Roborock Mi 1st gen LDS02RR
 - 3irobotix Delta-2A, Delta-2B, Delta-2G, Delta-2A 115000 baud
-  - Note: there is a fixed pattern noise issue that needs debug
 - LDROBOT LD14P, LD19
 - CAMSENSE X1
 
