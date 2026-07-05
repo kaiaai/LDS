@@ -25,6 +25,7 @@ This library supports:
 - LDROBOT STL-19P / D500 (same protocol as LD19)
 - Hitachi-LG HLS-LFCD2 / LDS-01 (TurtleBot3 LiDAR)
 - YDLIDAR T-mini Plus / T-mini Pro (ToF)
+- COIN-D4A (ToF) - ported from [QuirkyCort's MicroPython driver](https://github.com/QuirkyCort/IoTy/blob/main/public/extensions/coind4.py) ([awesome-2d-lidars#3](https://github.com/kaiaai/awesome-2d-lidars/issues/3)); not tested on hardware yet
 
 ![LDS_collection_labeled_v3](https://github.com/kaiaai/LDS/assets/33589365/7b6a6a6f-a27c-45de-99c9-9e60d17b4d14)
 

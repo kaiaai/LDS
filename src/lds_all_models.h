@@ -38,3 +38,4 @@
 #include "LDS_LDROBOT_STL19P.h"
 #include "LDS_HLS_LFCD2.h"
 #include "LDS_YDLIDAR_TMINI.h"
+#include "LDS_COIN_D4A.h"
