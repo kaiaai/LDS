@@ -1,0 +1,208 @@
+// Copyright 2023-2026 KAIA.AI
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// See LDS_LDS08RR_CAMSENSE.h for the protocol notes and credit.
+
+#include "LDS_LDS08RR_CAMSENSE.h"
+
+void LDS_LDS08RR_CAMSENSE::init() {
+  rotation_speed = 0;
+  parser_idx = 0;
+  end_angle_prev = 0;
+}
+
+LDS::result_t LDS_LDS08RR_CAMSENSE::start() {
+  postInfo(INFO_MODEL, getModelName());
+  return RESULT_OK;
+}
+
+uint32_t LDS_LDS08RR_CAMSENSE::getSerialBaudRate() {
+  return 115200;
+}
+
+float LDS_LDS08RR_CAMSENSE::getTargetScanFreqHz() {
+  return 5.0f;
+}
+
+int LDS_LDS08RR_CAMSENSE::getSamplingRateHz() {
+  return 1800; // ~5Hz * ~358 samples/rev, measured off the issue #17 capture
+}
+
+float LDS_LDS08RR_CAMSENSE::getCurrentScanFreqHz() {
+  static float constexpr ONE_OVER_3840 = 1.0 / 3840;
+  return rotation_speed * ONE_OVER_3840;
+}
+
+LDS::result_t LDS_LDS08RR_CAMSENSE::stop() {
+  return ERROR_NOT_IMPLEMENTED;
+}
+
+bool LDS_LDS08RR_CAMSENSE::isActive() {
+  return true; // motor runs always
+}
+
+LDS::result_t LDS_LDS08RR_CAMSENSE::setScanTargetFreqHz(float freq) {
+  return ERROR_NOT_IMPLEMENTED;
+}
+
+void LDS_LDS08RR_CAMSENSE::loop() {
+  while (true) {
+    int c = readSerial();
+    if (c < 0)
+      break;
+
+    result_t result = processByte((uint8_t)c);
+    if (result < 0)
+      postError(result, "");
+  }
+}
+
+LDS::result_t LDS_LDS08RR_CAMSENSE::processByte(uint8_t c) {
+  LDS::result_t result = RESULT_OK;
+  uint8_t * rx_buffer = (uint8_t *)&scan_packet;
+
+  if (parser_idx >= sizeof(scan_packet_t)) {
+    parser_idx = 0;
+    return RESULT_OK;
+  }
+
+  rx_buffer[parser_idx++] = c;
+
+  switch (parser_idx) {
+  case 1:
+    if (c != START_BYTE0)
+      parser_idx = 0;
+    break;
+
+  case 2:
+    if (c != START_BYTE1)
+      parser_idx = 0;
+    break;
+
+  case 3:
+    if (c != START_BYTE2)
+      parser_idx = 0;
+    break;
+
+  case 4:
+    if (c != SAMPLES_PER_PACKET)
+      result = ERROR_INVALID_PACKET;
+    break;
+
+  case 5: // speed LSB
+  case 6: // speed MSB
+    break;
+
+  case 7: // start angle LSB
+  case 8: // start angle MSB
+    break;
+
+  default:
+    if (parser_idx > sizeof(scan_packet_t))
+      result = ERROR_INVALID_PACKET;
+    break;
+
+  case sizeof(scan_packet_t) - 3: // end angle LSB
+  case sizeof(scan_packet_t) - 2: // end angle MSB
+    break;
+
+  case sizeof(scan_packet_t) - 1: // CRC16 LSB
+    break;
+
+  case sizeof(scan_packet_t) - 0: // CRC16 MSB
+    rotation_speed = decodeUInt16(scan_packet.rotation_speed);
+    uint16_t start_angle = decodeUInt16(scan_packet.start_angle);
+    uint16_t end_angle = decodeUInt16(scan_packet.end_angle);
+
+    if (start_angle < ANGLE_MIN || end_angle < ANGLE_MIN) {
+      result = ERROR_INVALID_PACKET;
+      break;
+    }
+
+    // 0x55 0xAA 0x07 0x0C also occurs inside sample data, so the header match
+    // alone locks onto false packets; the checksum is what rejects them.
+    if (checkSum(rx_buffer, sizeof(scan_packet_t) - sizeof(uint16_t))
+        != decodeUInt16(scan_packet.checksum)) {
+      result = ERROR_CHECKSUM;
+      break;
+    }
+
+    static float constexpr ONE_OVER_64 = 1.0 / 64;
+    float start_angle_deg = (start_angle - ANGLE_MIN) * ONE_OVER_64;
+    float end_angle_deg = (end_angle - ANGLE_MIN) * ONE_OVER_64;
+    if (start_angle > end_angle)
+      end_angle_deg += 360;
+
+    float span_deg = end_angle_deg - start_angle_deg;
+
+    bool scan_completed_mid_packet = end_angle < start_angle;
+    bool scan_completed_between_packets = start_angle < end_angle_prev;
+    bool scan_completed = scan_completed_mid_packet || scan_completed_between_packets;
+    end_angle_prev = end_angle;
+
+    postPacket(rx_buffer, sizeof(scan_packet_t), scan_completed);
+
+    static float constexpr ONE_OVER_11 = 1.0 / (SAMPLES_PER_PACKET - 1);
+    float step_deg = span_deg * ONE_OVER_11;
+
+    float angle_deg_prev = start_angle_deg;
+    for (uint8_t i = 0; i < SAMPLES_PER_PACKET; i++) {
+      float distance_mm = (int16_t) decodeUInt16(scan_packet.sample[i].distance_mm);
+      float quality = scan_packet.sample[i].quality;
+
+      float angle_deg = start_angle_deg + step_deg * i;
+
+      scan_completed = false;
+      if (scan_completed_mid_packet) {
+        scan_completed = (angle_deg >= 360 && angle_deg_prev < 360);
+      } else if (scan_completed_between_packets) {
+        scan_completed = (i == 0);
+      }
+      angle_deg_prev = angle_deg;
+
+      angle_deg = angle_deg > 360 ? angle_deg - 360 : angle_deg;
+
+      postScanPoint(angle_deg, distance_mm, quality, scan_completed);
+    }
+    parser_idx = 0;
+    break;
+  }
+
+  if (result < RESULT_OK)
+    parser_idx = 0;
+
+  return result;
+}
+
+uint16_t LDS_LDS08RR_CAMSENSE::checkSum(const uint8_t * buffer,
+                                        uint16_t length_bytes) const {
+  uint32_t chk32 = 0;
+  for (uint16_t i = 0; i < length_bytes / 2; i++) {
+    uint16_t word = (uint16_t)buffer[2*i] | ((uint16_t)buffer[2*i + 1] << 8);
+    chk32 = (chk32 << 1) + word;
+  }
+  uint16_t checksum = (chk32 & 0x7FFF) + (chk32 >> 15);
+  return checksum & 0x7FFF;
+}
+
+uint16_t LDS_LDS08RR_CAMSENSE::decodeUInt16(const uint16_t value) const {
+  union {
+    uint16_t i;
+    char c[2];
+  } bint = {0x0201};
+
+  return bint.c[0] == 0x01 ? value : (value << 8) + (value >> 8);
+}
+
+const char* LDS_LDS08RR_CAMSENSE::getModelName() { return "LDS08RR (Camsense protocol)"; }

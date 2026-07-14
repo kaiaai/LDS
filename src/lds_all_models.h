@@ -39,3 +39,4 @@
 #include "LDS_HLS_LFCD2.h"
 #include "LDS_YDLIDAR_TMINI.h"
 #include "LDS_COIN_D4A.h"
+#include "LDS_LDS08RR_CAMSENSE.h"

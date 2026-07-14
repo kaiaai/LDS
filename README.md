@@ -26,6 +26,7 @@ This library supports:
 - Hitachi-LG HLS-LFCD2 / LDS-01 (TurtleBot3 LiDAR)
 - YDLIDAR T-mini Plus / T-mini Pro (ToF)
 - COIN-D4A (ToF) - ported from [QuirkyCort's MicroPython driver](https://github.com/QuirkyCort/IoTy/blob/main/public/extensions/coind4.py) ([awesome-2d-lidars#3](https://github.com/kaiaai/awesome-2d-lidars/issues/3)); not tested on hardware yet
+- LDS08RR, Camsense-protocol revision - use `LDS_LDS08RR_CAMSENSE` if your unit's stream starts with 0x55 0xAA, or `LDS_LDS08RR` if it starts with 0xAA (Delta protocol). Reverse engineered from the capture in [issue #17](https://github.com/kaiaai/LDS/issues/17), thanks to Nelson (@npireso); not tested on hardware yet
 
 ![LDS_collection_labeled_v3](https://github.com/kaiaai/LDS/assets/33589365/7b6a6a6f-a27c-45de-99c9-9e60d17b4d14)
 
