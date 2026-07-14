@@ -53,11 +53,19 @@ class LDS_CAMSENSE_X1 : public LDS {
       uint16_t start_angle;
       meas_sample_t sample[SAMPLES_PER_PACKET];
       uint16_t end_angle;
-      uint16_t crc16;
+      uint16_t checksum; // 15-bit, see checkSum()
     } __attribute__((packed));
 
     LDS::result_t processByte(uint8_t c);
     uint16_t decodeUInt16(const uint16_t value) const;
+
+    // 15-bit checksum over the packet's leading little-endian uint16 words,
+    // excluding the trailing checksum field itself. Despite sitting in what the
+    // community drivers call an unidentified "crc16", this is not a CRC: it is
+    // Camsense's own Neato-XV11-style fold, from HCLidar::checkDataCal() in the
+    // official SDK (github.com/camsense/T2SDK, src/base/hclidar.cpp). Verified
+    // against the 47 sample packets at github.com/thijses/camsense-X1.
+    uint16_t checkSum(const uint8_t * buffer, uint16_t length_bytes) const;
 
     uint16_t rotation_speed;
     scan_packet_t scan_packet;

@@ -126,8 +126,13 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
   case sizeof(scan_packet_t) - 1: // CRC16 LSB
     break;
 
-  case sizeof(scan_packet_t) - 0: // CRC16 MSB
-    //result = ERROR_CHECKSUM;
+  case sizeof(scan_packet_t) - 0: // checksum MSB
+    if (checkSum(rx_buffer, sizeof(scan_packet_t) - sizeof(uint16_t))
+        != decodeUInt16(scan_packet.checksum)) {
+      result = ERROR_CHECKSUM;
+      break;
+    }
+
     rotation_speed = decodeUInt16(scan_packet.rotation_speed);
     uint16_t start_angle = decodeUInt16(scan_packet.start_angle);
     uint16_t end_angle = decodeUInt16(scan_packet.end_angle);
@@ -185,6 +190,17 @@ LDS::result_t LDS_CAMSENSE_X1::processByte(uint8_t c) {
     parser_idx = 0;
 
   return result;
+}
+
+uint16_t LDS_CAMSENSE_X1::checkSum(const uint8_t * buffer,
+                                   uint16_t length_bytes) const {
+  uint32_t chk32 = 0;
+  for (uint16_t i = 0; i < length_bytes / 2; i++) {
+    uint16_t word = (uint16_t)buffer[2*i] | ((uint16_t)buffer[2*i + 1] << 8);
+    chk32 = (chk32 << 1) + word;
+  }
+  uint16_t checksum = (chk32 & 0x7FFF) + (chk32 >> 15);
+  return checksum & 0x7FFF;
 }
 
 uint16_t LDS_CAMSENSE_X1::decodeUInt16(const uint16_t value) const {
