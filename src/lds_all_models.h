@@ -28,6 +28,7 @@
 #include "LDS_DELTA_2A_115200.h"
 #include "LDS_DELTA_2A_230400.h"
 #include "LDS_DELTA_2B.h"
+#include "LDS_DELTA_2C_115200.h"
 #include "LDS_DELTA_2G.h"
 #include "LDS_DELTA_2D.h"
 #include "LDS_LDS08RR.h"
