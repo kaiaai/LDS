@@ -166,7 +166,7 @@ LDS::result_t LDS_DELTA_2C_115200::processByte(uint8_t c) {
     break;
 
   case 4:
-    if (c != PROTOCOL_VERSION)
+    if (c != PROTOCOL_VERSION && c != PROTOCOL_VERSION_ALT)
       result = ERROR_INVALID_VALUE;
     break;
 

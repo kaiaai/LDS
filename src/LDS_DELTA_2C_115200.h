@@ -62,7 +62,12 @@ class LDS_DELTA_2C_115200 : public LDS {
 
   protected:
     static const uint8_t START_BYTE = 0xAA;
-    static const uint8_t PROTOCOL_VERSION = 0x13; // 2C, not 0x01 like the rest
+    // Delta-2C PRO uses protocol version 0x13 or 0x11, both with the identical
+    // frame layout (0x01 is the different-layout 2A/2B/2D/2G family, rejected).
+    // Two units confirmed: 0x13 (hapynfdj) and 0x11 (rolandslepcik98, poteytoman
+    // — kaiaai/LDS#16, makerspet/support#95), verified byte-exact against both.
+    static const uint8_t PROTOCOL_VERSION = 0x13;
+    static const uint8_t PROTOCOL_VERSION_ALT = 0x11;
     static const uint8_t PACKET_TYPE = 0x61;
     static const uint8_t DATA_TYPE_RPM_AND_MEAS = 0xAD;
     static const uint8_t DATA_TYPE_RPM_ONLY = 0xAE;
