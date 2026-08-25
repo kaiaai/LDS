@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// EXPERIMENTAL: DELTA-2C PRO support for kaiaai/LDS.
+// DELTA-2C PRO support for kaiaai/LDS.
 // ------------------------------------------------
-// This is a work-in-progress contribution to the kaiaai/LDS Arduino library.
-// The protocol has been reverse-engineered from real captures, but the
-// measurement precision has NOT been fully characterized. This code is provided
-// in a "usable" state — it parses scans correctly, but treat all numbers as
-// approximate pending calibration.
+// Reverse-engineered from real captures of two units. The 0x11 revision is
+// hardware-confirmed (rolandslepcik98, kaiaai/LDS#16): full 360-degree scans,
+// and distances tape-measure-verified at two ranges (a 1 m wall read ~1016 mm
+// and a 420 mm object read ~422 mm). The 0x13 revision is byte-exact against
+// captures but not yet run on hardware by us.
 //
 // Differences vs the 2A/2B/2D/2G variants (see PROTOCOL.md in the companion
 // repository for full details):
-//   - protocol version is 0x13 (not 0x01)
+//   - protocol version is 0x13 or 0x11 (0x01 is the 2A/2B/2D/2G family)
 //   - the packet header carries an extra 2-byte end_angle after start_angle
 //   - sample angle is interpolated between the explicit start/end angles
 //
 // Distance scale is 0.25 mm/unit, same as the Delta-2A family. The original
 // contribution used 0.5 mm/unit (empirical); a second Delta-2C PRO unit's
 // working decoder (rolandslepcik98, kaiaai/LDS#16) reports quarter-mm-quantized
-// distances, showing 0.25 mm/unit is correct and 0.5 doubled every range.
+// distances, and a tape-measure check confirmed 0.25 mm/unit (0.5 doubled every
+// range).
 //
 // Motor note: the DELTA-2C PRO module has only M+/M- (motor power) and no
 // PWM/EN input pin. The PID output below is intended for an external motor
